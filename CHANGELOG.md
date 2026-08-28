@@ -287,3 +287,23 @@ This file records material implementation changes to the Operational AI Authorit
 - Import/export tests pass 12 of 12.
 - UI tests pass 18 of 18.
 - Combined fresh-profile browser suite passes 148 of 148.
+
+## 2026-08-28 - V1 accessibility and negative/attack hardening
+
+- Committed the previously verified scenario and run-evidence import/export layer.
+- Added tests/negative-tests.js.
+- Added tests/accessibility-tests.js.
+- Implemented the governing-required negative/attack test pass.
+- Attack coverage includes invalid authority, required separation, original-owner bypass attempts, missing disposition, unauthorized authority modification, stale prior-authority reuse, missing required evidence, unreviewed evidence, narrowed-boundary enforcement, recommendation bypass attempts, confidence escalation, technical revalidation PASS while authority remains invalid, disposition shortcut resistance, replay-result tampering, unsupported imported schemas, and separation claims discipline.
+- NARROW was explicitly tested with a resulting boundary that still permits the requested action; execution ALLOW confirms that the execution engine evaluates the boundary rather than the disposition label.
+- Recommendation-confidence variation does not alter authority or permission.
+- Technical revalidation PASS while authority remains INVALID leaves execution BLOCKED.
+- Added skip navigation to the application.
+- Added explicit visible focus styling for select and input controls in addition to existing button/textarea focus styling.
+- Added semantic and screen-reader-oriented accessibility verification.
+- Accessibility verification covers landmarks, keyboard accessibility, associated labels, live status messaging, textual status representation, body contrast, accessible button names, and heading structure.
+- Existing suites remain 148 of 148 passing.
+- Required negative/attack tests pass 16 of 16.
+- Accessibility tests pass 8 of 8.
+- Combined fresh-profile browser suite passes 172 of 172.
+- Automated accessibility verification is not represented as a complete substitute for manual assistive-technology testing.

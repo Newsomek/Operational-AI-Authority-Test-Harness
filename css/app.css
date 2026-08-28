@@ -296,3 +296,28 @@ legend {
         grid-template-columns: 1fr;
     }
 }
+
+.skip-link {
+    position: absolute;
+    left: 1rem;
+    top: -5rem;
+    z-index: 1000;
+    background: #ffffff;
+    color: #111111;
+    border: 2px solid #111111;
+    padding: 0.65rem 0.85rem;
+}
+
+.skip-link:focus {
+    top: 1rem;
+}
+
+select:focus-visible,
+input:focus-visible {
+    outline: 3px solid currentColor;
+    outline-offset: 2px;
+}
+
+[role="status"] {
+    min-height: 2.75rem;
+}

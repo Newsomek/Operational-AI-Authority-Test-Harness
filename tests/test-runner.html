@@ -4,7 +4,9 @@
     <meta charset="utf-8">
     <title>Operational AI Authority Test Harness - Tests</title>
 </head>
-<body>
+<body style="color:#161616;background-color:#f4f4f4;">
+    <header><h1>Operational AI Authority Test Harness Tests</h1></header>
+    <main id="main-content">
     <main>
         <h1>Operational AI Authority Test Harness Tests</h1>
 
@@ -67,12 +69,25 @@
             <ol id="import-export-results"></ol>
         </section>
 
+        <section aria-labelledby="negative-heading">
+            <h2 id="negative-heading">Negative and Attack Tests</h2>
+            <p id="negative-summary">Tests have not run.</p>
+            <ol id="negative-results"></ol>
+        </section>
+
+        <section aria-labelledby="accessibility-heading">
+            <h2 id="accessibility-heading">Accessibility Verification</h2>
+            <p id="accessibility-summary">Tests have not run.</p>
+            <ol id="accessibility-results"></ol>
+        </section>
+
         <section aria-labelledby="ui-heading">
             <h2 id="ui-heading">Application UI Contract</h2>
             <p id="ui-summary">Tests have not run.</p>
             <ol id="ui-results"></ol>
 
             <div hidden>
+                <label for="scenario-editor">Scenario JSON</label>
                 <textarea id="scenario-editor"></textarea>
                 <button id="load-default" type="button">Load</button>
                 <button id="import-scenario" type="button">Import</button>
@@ -122,7 +137,7 @@
                     <option value="PASS" selected>PASS</option>
                 </select>
 
-                <div id="validation-status"></div>
+                <div id="validation-status" role="status" aria-live="polite"></div>
                 <pre id="architecture-output"></pre>
                 <pre id="recommendation-output"></pre>
                 <pre id="capability-output"></pre>
