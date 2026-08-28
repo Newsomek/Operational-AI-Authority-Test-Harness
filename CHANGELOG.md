@@ -265,3 +265,25 @@ This file records material implementation changes to the Operational AI Authorit
 - Architecture topology tests pass 10 of 10.
 - UI interaction/comparison tests pass 14 of 14.
 - Combined fresh-profile browser suite passes 132 of 132.
+
+## 2026-08-28 - Scenario and run-evidence import/export
+
+- Committed the previously verified architecture-topology and controlled-comparison layer.
+- Added js/import-export.js.
+- Added tests/import-export-tests.js.
+- Added schemaVersion 1.0 to the default scenario.
+- Added plain-JSON scenario export.
+- Scenario exports preserve schema version, scenario version, conditions, materiality rules, actors, authority rules, evidence requirements, decision criteria, expected result, and policy configuration.
+- Scenario exports also preserve the complete compatible scenario object for round-trip import without reconstructing it from a partial representation.
+- Added compatible plain-JSON scenario import.
+- Malformed JSON and unsupported schema versions are rejected.
+- Imported scenarios update scenario inputs and do not create observed execution results.
+- Added plain-JSON complete run-evidence export.
+- Run export preserves scenario snapshot, scenario version, policy version, authority history, decision history, event log, execution attempts, expected result, actual result, expected-versus-actual comparison, control assertions, control assertion results, and replay inputs.
+- MATCH/MISMATCH remains separate from control PASS/FAIL in exported evidence.
+- Added deterministic scenario and run-evidence filenames.
+- Added browser controls for Import Scenario, Export Scenario, and Export Run Evidence.
+- Import/export functionality remains browser-native and requires no server-side application logic.
+- Import/export tests pass 12 of 12.
+- UI tests pass 18 of 18.
+- Combined fresh-profile browser suite passes 148 of 148.

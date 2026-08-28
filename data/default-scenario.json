@@ -163,5 +163,6 @@
       "REAUTHORIZE"
     ]
   },
-  "separationReason": "Configured policy requires the reauthorization decision to move outside the operational layer."
+  "separationReason": "Configured policy requires the reauthorization decision to move outside the operational layer.",
+  "schemaVersion": "1.0"
 }

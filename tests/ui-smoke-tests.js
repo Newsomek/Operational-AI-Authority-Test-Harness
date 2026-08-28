@@ -374,6 +374,67 @@
             );
         }
     );
+    test(
+        "Scenario import control exists",
+        function () {
+            assertTrue(
+                !!document.getElementById(
+                    "import-scenario"
+                ),
+                "Scenario import control should exist."
+            );
+        }
+    );
+
+    test(
+        "Scenario export control exists",
+        function () {
+            assertTrue(
+                !!document.getElementById(
+                    "export-scenario"
+                ),
+                "Scenario export control should exist."
+            );
+        }
+    );
+
+    test(
+        "Run evidence export control exists",
+        function () {
+            assertTrue(
+                !!document.getElementById(
+                    "export-run"
+                ),
+                "Run evidence export control should exist."
+            );
+        }
+    );
+
+    test(
+        "Importing compatible scenario updates inputs but does not manufacture run evidence",
+        function () {
+            const imported =
+                window.OAATH.App.importScenarioText(
+                    JSON.stringify(
+                        sampleScenario()
+                    )
+                );
+
+            assertEqual(
+                imported.scenarioVersion,
+                "SCENARIO-1",
+                "Imported scenario should be returned."
+            );
+
+            assertTrue(
+                !Object.prototype.hasOwnProperty.call(
+                    imported,
+                    "actualResult"
+                ),
+                "Imported scenario must not manufacture observed execution."
+            );
+        }
+    );
     const summary =
         document.getElementById(
             "ui-summary"

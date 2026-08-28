@@ -15,7 +15,16 @@
 
         <div class="header-actions">
             <button id="load-default" type="button">Load default</button>
+            <button id="import-scenario" type="button">Import scenario</button>
+            <button id="export-scenario" type="button">Export scenario</button>
+            <button id="export-run" type="button">Export run evidence</button>
             <button id="reset-scenario" type="button">Reset</button>
+            <input
+                id="scenario-file-input"
+                type="file"
+                accept="application/json,.json"
+                hidden
+            >
             <button id="run-experiment" type="button">Run experiment</button>
             <button id="compare-architectures" type="button">Compare architectures</button>
             <button id="run-replay" type="button">Replay last run</button>
@@ -300,6 +309,7 @@
     <script src="js/run-evidence-engine.js"></script>
     <script src="js/test-runner.js"></script>
     <script src="js/replay-engine.js"></script>
+    <script src="js/import-export.js"></script>
     <script src="js/app.js"></script>
 </body>
 </html>

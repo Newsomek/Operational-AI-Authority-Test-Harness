@@ -7,9 +7,12 @@
     const replay =
         window.OAATH.ReplayEngine;
 
-    if (!runner || !replay) {
+    const importExport =
+        window.OAATH.ImportExport;
+
+    if (!runner || !replay || !importExport) {
         throw new Error(
-            "TestRunner and ReplayEngine must load before app.js."
+            "TestRunner, ReplayEngine, and ImportExport must load before app.js."
         );
     }
 
@@ -18,6 +21,14 @@
             document.getElementById("scenario-editor"),
         loadDefault:
             document.getElementById("load-default"),
+        importScenario:
+            document.getElementById("import-scenario"),
+        exportScenario:
+            document.getElementById("export-scenario"),
+        exportRun:
+            document.getElementById("export-run"),
+        scenarioFileInput:
+            document.getElementById("scenario-file-input"),
         reset:
             document.getElementById("reset-scenario"),
         run:
@@ -648,6 +659,213 @@
         }
     }
 
+    function downloadJson(
+        fileName,
+        text
+    ) {
+        const blob =
+            new Blob(
+                [text],
+                {
+                    type:
+                        "application/json;charset=utf-8"
+                }
+            );
+
+        const url =
+            URL.createObjectURL(
+                blob
+            );
+
+        const link =
+            document.createElement(
+                "a"
+            );
+
+        link.href =
+            url;
+
+        link.download =
+            fileName;
+
+        document.body.appendChild(
+            link
+        );
+
+        link.click();
+
+        document.body.removeChild(
+            link
+        );
+
+        URL.revokeObjectURL(
+            url
+        );
+    }
+
+    function exportScenario() {
+        try {
+            applyControls();
+
+            const scenario =
+                parseScenario();
+
+            const text =
+                importExport.exportScenario(
+                    scenario
+                );
+
+            downloadJson(
+                importExport.scenarioFileName(
+                    scenario
+                ),
+                text
+            );
+
+            setValidation(
+                "PASS",
+                "Scenario JSON exported."
+            );
+
+            return text;
+        }
+        catch (error) {
+            setValidation(
+                "FAIL",
+                "Scenario export failed: " +
+                error.message
+            );
+
+            return null;
+        }
+    }
+
+    function exportRunEvidence() {
+        if (!lastRunRecord) {
+            setValidation(
+                "FAIL",
+                "Run the experiment before exporting run evidence."
+            );
+
+            return null;
+        }
+
+        try {
+            const text =
+                importExport.exportRun(
+                    lastRunRecord
+                );
+
+            downloadJson(
+                importExport.runFileName(
+                    lastRunRecord
+                ),
+                text
+            );
+
+            setValidation(
+                "PASS",
+                "Complete run evidence exported."
+            );
+
+            return text;
+        }
+        catch (error) {
+            setValidation(
+                "FAIL",
+                "Run evidence export failed: " +
+                error.message
+            );
+
+            return null;
+        }
+    }
+
+    function importScenarioText(text) {
+        const scenario =
+            importExport.importScenario(
+                text
+            );
+
+        elements.editor.value =
+            pretty(
+                scenario
+            );
+
+        syncControlsFromScenario(
+            scenario
+        );
+
+        clearOutputs();
+
+        setValidation(
+            "PASS",
+            "Compatible scenario JSON imported."
+        );
+
+        return scenario;
+    }
+
+    function requestScenarioImport() {
+        elements.scenarioFileInput.value =
+            "";
+
+        elements.scenarioFileInput.click();
+    }
+
+    function handleScenarioFile(event) {
+        const files =
+            event.target.files;
+
+        if (
+            !files ||
+            files.length === 0
+        ) {
+            return;
+        }
+
+        const file =
+            files[0];
+
+        const reader =
+            new FileReader();
+
+        reader.addEventListener(
+            "load",
+            function () {
+                try {
+                    importScenarioText(
+                        String(
+                            reader.result
+                        )
+                    );
+                }
+                catch (error) {
+                    setValidation(
+                        "FAIL",
+                        "Scenario import failed: " +
+                        error.message
+                    );
+                }
+            }
+        );
+
+        reader.addEventListener(
+            "error",
+            function () {
+                setValidation(
+                    "FAIL",
+                    "Scenario file could not be read."
+                );
+            }
+        );
+
+        reader.readAsText(
+            file,
+            "UTF-8"
+        );
+    }
+
     function runReplay() {
         if (!lastRunRecord) {
             setValidation(
@@ -801,6 +1019,26 @@
         loadDefaultScenario
     );
 
+    elements.importScenario.addEventListener(
+        "click",
+        requestScenarioImport
+    );
+
+    elements.exportScenario.addEventListener(
+        "click",
+        exportScenario
+    );
+
+    elements.exportRun.addEventListener(
+        "click",
+        exportRunEvidence
+    );
+
+    elements.scenarioFileInput.addEventListener(
+        "change",
+        handleScenarioFile
+    );
+
     elements.reset.addEventListener(
         "click",
         resetScenario
@@ -843,6 +1081,12 @@
             compareArchitectures,
         architectureComparisonSummary:
             architectureComparisonSummary,
+        importScenarioText:
+            importScenarioText,
+        exportScenario:
+            exportScenario,
+        exportRunEvidence:
+            exportRunEvidence,
         runReplay:
             runReplay,
         resetScenario:

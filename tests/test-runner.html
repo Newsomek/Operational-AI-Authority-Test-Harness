@@ -61,6 +61,12 @@
             <p id="architecture-summary">Tests have not run.</p>
             <ol id="architecture-results"></ol>
         </section>
+        <section aria-labelledby="import-export-heading">
+            <h2 id="import-export-heading">Import and Export</h2>
+            <p id="import-export-summary">Tests have not run.</p>
+            <ol id="import-export-results"></ol>
+        </section>
+
         <section aria-labelledby="ui-heading">
             <h2 id="ui-heading">Application UI Contract</h2>
             <p id="ui-summary">Tests have not run.</p>
@@ -69,6 +75,10 @@
             <div hidden>
                 <textarea id="scenario-editor"></textarea>
                 <button id="load-default" type="button">Load</button>
+                <button id="import-scenario" type="button">Import</button>
+                <button id="export-scenario" type="button">Export Scenario</button>
+                <button id="export-run" type="button">Export Run</button>
+                <input id="scenario-file-input" type="file">
                 <button id="reset-scenario" type="button">Reset</button>
                 <button id="run-experiment" type="button">Run</button>
                 <button id="compare-architectures" type="button">Compare</button>
@@ -151,6 +161,7 @@
     <script src="../js/run-evidence-engine.js"></script>
     <script src="../js/test-runner.js"></script>
     <script src="../js/replay-engine.js"></script>
+    <script src="../js/import-export.js"></script>
     <script src="../js/app.js"></script>
 
     <script src="state-tests.js"></script>
