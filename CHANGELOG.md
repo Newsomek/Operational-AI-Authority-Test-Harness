@@ -72,3 +72,26 @@ This file records material implementation changes to the Operational AI Authorit
 - Combined browser software-verification suite passes 32 of 32.
 - No boundary-to-execution evaluation engine has yet been implemented.
 - These results are software verification and control-behavior foundation checks, not evidence proving the broader authority hypothesis.
+
+## 2026-08-28 - Boundary-to-execution evaluation foundation
+
+- Committed the previously verified authority and boundary translation foundation.
+- Added js/execution-engine.js.
+- Added tests/execution-tests.js.
+- Extended tests/test-runner.html to execute boundary-to-execution tests.
+- Implemented deterministic execution evaluation against the current enforceable boundary.
+- Execution permission does not consume governance disposition, recommendation, confidence, human approval, previous execution, expected result, or decision identifier.
+- Requested action type, amount, customer risk, and transaction age are evaluated against the current boundary scope where configured.
+- Technical capability must support the requested action but does not itself create authority.
+- Technical validity must be PASS but does not itself create authority.
+- Technical validity PASS does not override an insufficient authority boundary.
+- Missing or non-enforceable authority boundaries fail closed.
+- Required typed conditions must be evaluable and satisfied.
+- Missing, malformed, or unsatisfied required conditions fail closed.
+- Execution results identify the authority boundary actually evaluated.
+- Execution results are frozen after creation.
+- Existing state tests remain 16 of 16 passing.
+- Existing authority/boundary tests remain 16 of 16 passing.
+- Execution tests pass 18 of 18.
+- Combined browser software-verification suite passes 50 of 50.
+- These tests verify implementation behavior against declared V1 rules; they do not prove the broader organizational-authority hypothesis.
