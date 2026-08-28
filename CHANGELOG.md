@@ -206,3 +206,25 @@ This file records material implementation changes to the Operational AI Authorit
 - The complete browser suite was run with a fresh Microsoft Edge user-data profile and browser cache disabled.
 - All 108 tests passed.
 - Replay equivalence demonstrates deterministic recomputation of the formalized harness behavior; it does not independently validate the conceptual governance model or prove the broader hypothesis.
+
+## 2026-08-28 - Initial browser-native V1 application shell
+
+- Committed the previously verified deterministic replay foundation.
+- Added index.html.
+- Added css/app.css.
+- Added js/app.js.
+- Added data/default-scenario.json.
+- Added tests/ui-smoke-tests.js.
+- Extended the browser test runner with UI contract tests.
+- Added an editable default refund authority scenario.
+- The application shell exposes scenario inputs, recommendation, technical capability, technical validity, materiality, governance decision, authority history, enforceable boundary, execution result, expected-versus-actual comparison, control assertions, event evidence, and replay result as separate visible artifacts.
+- The UI controller invokes the governed deterministic orchestration engine and does not independently infer permission from disposition.
+- The UI controller invokes the deterministic replay engine rather than simulating replay locally.
+- Recommendation is displayed as an input artifact but is not passed as an execution-authorizing input.
+- Authority history and enforceable boundary remain separate visible outputs.
+- Expected-versus-actual and control assertion results remain separate visible outputs.
+- Added responsive browser-native presentation and keyboard-focus styling.
+- Existing deterministic and replay suites remain 108 of 108 passing.
+- UI contract tests pass 8 of 8.
+- Combined browser software-verification suite passes 116 of 116 using a fresh Edge profile with browser cache disabled.
+- The application shell is an interface over the deterministic engines; it is not an alternate source of authority, execution state, or experimental truth.

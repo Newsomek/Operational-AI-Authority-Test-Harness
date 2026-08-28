@@ -1,0 +1,149 @@
+{
+  "scenarioId": "REFUND-DEFAULT",
+  "scenarioVersion": "SCENARIO-1",
+  "policyVersion": "POLICY-1",
+  "name": "Default Refund Authority Test",
+  "description": "Tests whether a material change in authority changes the permitted consequence while capability and technical validity remain constant.",
+  "priorConditions": {
+    "customerRisk": "LOW",
+    "refundAmountCents": 40000,
+    "transactionAgeDays": 20
+  },
+  "currentConditions": {
+    "customerRisk": "MEDIUM",
+    "refundAmountCents": 40000,
+    "transactionAgeDays": 20
+  },
+  "recommendation": {
+    "recommendationId": "REC-1",
+    "actionType": "AUTO_REFUND",
+    "amountCents": 40000,
+    "confidence": 0.91,
+    "source": "Configured recommendation"
+  },
+  "technicalCapability": {
+    "supported": true,
+    "actionType": "AUTO_REFUND",
+    "technicalLimitCents": 500000
+  },
+  "technicalRevalidation": {
+    "status": "PASS",
+    "reason": "Technical behavior remains valid under changed conditions.",
+    "evidenceReferences": [
+      "E-TECH"
+    ]
+  },
+  "requestedAction": {
+    "actionType": "AUTO_REFUND",
+    "amountCents": 40000,
+    "customerRisk": "MEDIUM",
+    "transactionAgeDays": 20
+  },
+  "materialityRules": [
+    {
+      "ruleId": "RISK-LOW-MEDIUM",
+      "type": "FIELD_TRANSITION",
+      "field": "customerRisk",
+      "from": "LOW",
+      "to": "MEDIUM",
+      "result": "MATERIAL"
+    }
+  ],
+  "priorAuthority": {
+    "authorityId": "AUTH-104",
+    "authorityVersion": 104,
+    "actionType": "AUTO_REFUND",
+    "purpose": "CUSTOMER_REFUND",
+    "status": "ACTIVE",
+    "owner": "Operations",
+    "scope": {
+      "maximumAmountCents": 50000,
+      "allowedRiskLevels": [
+        "LOW"
+      ],
+      "maximumTransactionAgeDays": 30
+    },
+    "conditions": [],
+    "createdByDecisionId": "DECISION-2",
+    "replacesAuthorityId": "AUTH-103",
+    "invalidatedByEventId": null,
+    "scenarioVersion": "SCENARIO-1",
+    "policyVersion": "POLICY-1"
+  },
+  "decisionActor": {
+    "actorId": "ACTOR-RISK",
+    "name": "Risk Officer",
+    "capabilities": [
+      "REAUTHORIZE"
+    ]
+  },
+  "evidenceItems": [
+    {
+      "evidenceId": "E-POLICY",
+      "type": "POLICY",
+      "description": "Applicable refund policy",
+      "available": true,
+      "reviewed": true
+    },
+    {
+      "evidenceId": "E-RISK",
+      "type": "RISK_CHANGE",
+      "description": "Customer risk changed from LOW to MEDIUM",
+      "available": true,
+      "reviewed": true
+    }
+  ],
+  "requiredEvidenceIds": [
+    "E-POLICY",
+    "E-RISK"
+  ],
+  "allowedDispositions": [
+    "RENEW",
+    "NARROW",
+    "CONDITION",
+    "TRANSFER",
+    "SUSPEND",
+    "REFUSE"
+  ],
+  "decision": {
+    "decisionId": "DECISION-3",
+    "disposition": "NARROW",
+    "evidenceReviewed": [
+      "E-POLICY",
+      "E-RISK"
+    ],
+    "newScope": {
+      "maximumAmountCents": 25000,
+      "allowedRiskLevels": [
+        "LOW",
+        "MEDIUM"
+      ],
+      "maximumTransactionAgeDays": 30
+    },
+    "scenarioVersion": "SCENARIO-1",
+    "policyVersion": "POLICY-1"
+  },
+  "expectedResult": {
+    "expectedExecutionResult": "BLOCK",
+    "declaredBeforeExecution": true,
+    "scenarioVersion": "SCENARIO-1",
+    "policyVersion": "POLICY-1"
+  },
+  "controlAssertions": [
+    {
+      "assertionId": "ASSERT-INVALID-BLOCK",
+      "ruleReference": "INVALID_AUTHORITY_BLOCKS",
+      "assertionVersion": "1",
+      "description": "Material invalidation must block before reauthorization."
+    },
+    {
+      "assertionId": "ASSERT-NARROW-250",
+      "ruleReference": "ACTIVE_BOUNDARY_MAXIMUM",
+      "assertionVersion": "1",
+      "description": "The renewed executable boundary maximum is 250 dollars.",
+      "parameters": {
+        "maximumAmountCents": 25000
+      }
+    }
+  ]
+}

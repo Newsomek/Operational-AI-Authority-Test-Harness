@@ -55,6 +55,32 @@
             <p id="replay-summary">Tests have not run.</p>
             <ol id="replay-results"></ol>
         </section>
+
+        <section aria-labelledby="ui-heading">
+            <h2 id="ui-heading">Application UI Contract</h2>
+            <p id="ui-summary">Tests have not run.</p>
+            <ol id="ui-results"></ol>
+
+            <div hidden>
+                <textarea id="scenario-editor"></textarea>
+                <button id="load-default" type="button">Load</button>
+                <button id="run-experiment" type="button">Run</button>
+                <button id="run-replay" type="button">Replay</button>
+                <div id="validation-status"></div>
+                <pre id="recommendation-output"></pre>
+                <pre id="capability-output"></pre>
+                <pre id="validity-output"></pre>
+                <pre id="materiality-output"></pre>
+                <pre id="decision-output"></pre>
+                <pre id="boundary-output"></pre>
+                <pre id="execution-output"></pre>
+                <pre id="prediction-output"></pre>
+                <pre id="assertion-output"></pre>
+                <pre id="replay-output"></pre>
+                <pre id="authority-history-output"></pre>
+                <pre id="event-log-output"></pre>
+            </div>
+        </section>
     </main>
 
     <script src="../js/validation-engine.js"></script>
@@ -71,6 +97,7 @@
     <script src="../js/run-evidence-engine.js"></script>
     <script src="../js/test-runner.js"></script>
     <script src="../js/replay-engine.js"></script>
+    <script src="../js/app.js"></script>
 
     <script src="state-tests.js"></script>
     <script src="authority-tests.js"></script>
@@ -80,5 +107,6 @@
     <script src="governance-control-tests.js"></script>
     <script src="run-evidence-tests.js"></script>
     <script src="replay-tests.js"></script>
+    <script src="ui-smoke-tests.js"></script>
 </body>
 </html>

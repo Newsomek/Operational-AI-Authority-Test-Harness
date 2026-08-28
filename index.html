@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Operational AI Authority Test Harness</title>
+    <link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+    <header class="app-header">
+        <div>
+            <p class="eyebrow">Operational AI Authority Test Harness</p>
+            <h1>Authority-to-Execution Laboratory</h1>
+        </div>
+        <div class="header-actions">
+            <button id="load-default" type="button">Load default scenario</button>
+            <button id="run-experiment" type="button">Run experiment</button>
+            <button id="run-replay" type="button">Replay last run</button>
+        </div>
+    </header>
+
+    <main class="layout">
+        <section class="panel scenario-panel" aria-labelledby="scenario-heading">
+            <div class="panel-heading">
+                <div>
+                    <p class="eyebrow">Editable input</p>
+                    <h2 id="scenario-heading">Scenario</h2>
+                </div>
+                <p class="muted">The UI edits scenario data. It does not determine authority or execution permission.</p>
+            </div>
+
+            <label for="scenario-editor">Scenario JSON</label>
+            <textarea id="scenario-editor" spellcheck="false" aria-describedby="scenario-help"></textarea>
+            <p id="scenario-help" class="muted">
+                Edit inputs, policy configuration, evidence, disposition, expected result, or control assertions, then run the experiment.
+            </p>
+
+            <div id="validation-status" class="status-box" role="status" aria-live="polite">
+                No scenario loaded.
+            </div>
+        </section>
+
+        <section class="panel results-panel" aria-labelledby="results-heading">
+            <div class="panel-heading">
+                <div>
+                    <p class="eyebrow">Observed state</p>
+                    <h2 id="results-heading">Experiment results</h2>
+                </div>
+            </div>
+
+            <div class="card-grid">
+                <article class="result-card">
+                    <h3>Recommendation</h3>
+                    <pre id="recommendation-output">Not run.</pre>
+                </article>
+
+                <article class="result-card">
+                    <h3>Technical capability</h3>
+                    <pre id="capability-output">Not run.</pre>
+                </article>
+
+                <article class="result-card">
+                    <h3>Technical validity</h3>
+                    <pre id="validity-output">Not run.</pre>
+                </article>
+
+                <article class="result-card">
+                    <h3>Materiality</h3>
+                    <pre id="materiality-output">Not run.</pre>
+                </article>
+
+                <article class="result-card">
+                    <h3>Governance decision</h3>
+                    <pre id="decision-output">Not run.</pre>
+                </article>
+
+                <article class="result-card">
+                    <h3>Enforceable boundary</h3>
+                    <pre id="boundary-output">Not run.</pre>
+                </article>
+
+                <article class="result-card">
+                    <h3>Execution</h3>
+                    <pre id="execution-output">Not run.</pre>
+                </article>
+
+                <article class="result-card">
+                    <h3>Expected vs actual</h3>
+                    <pre id="prediction-output">Not run.</pre>
+                </article>
+
+                <article class="result-card">
+                    <h3>Control assertions</h3>
+                    <pre id="assertion-output">Not run.</pre>
+                </article>
+
+                <article class="result-card">
+                    <h3>Replay</h3>
+                    <pre id="replay-output">Not run.</pre>
+                </article>
+            </div>
+        </section>
+
+        <section class="panel evidence-panel" aria-labelledby="authority-heading">
+            <div class="panel-heading">
+                <div>
+                    <p class="eyebrow">Versioned evidence</p>
+                    <h2 id="authority-heading">Authority history</h2>
+                </div>
+            </div>
+            <pre id="authority-history-output">Not run.</pre>
+        </section>
+
+        <section class="panel evidence-panel" aria-labelledby="events-heading">
+            <div class="panel-heading">
+                <div>
+                    <p class="eyebrow">Deterministic evidence</p>
+                    <h2 id="events-heading">Event log</h2>
+                </div>
+            </div>
+            <pre id="event-log-output">Not run.</pre>
+        </section>
+    </main>
+
+    <footer>
+        <p>
+            Software verification, control-behavior testing, and experimental interpretation are distinct.
+            A passing run does not prove the broader hypothesis.
+        </p>
+    </footer>
+
+    <script src="js/validation-engine.js"></script>
+    <script src="js/state-machine.js"></script>
+    <script src="js/authority-engine.js"></script>
+    <script src="js/boundary-engine.js"></script>
+    <script src="js/execution-engine.js"></script>
+    <script src="js/materiality-engine.js"></script>
+    <script src="js/actor-engine.js"></script>
+    <script src="js/evidence-engine.js"></script>
+    <script src="js/governance-decision-engine.js"></script>
+    <script src="js/event-log.js"></script>
+    <script src="js/control-assertion-engine.js"></script>
+    <script src="js/run-evidence-engine.js"></script>
+    <script src="js/test-runner.js"></script>
+    <script src="js/replay-engine.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
