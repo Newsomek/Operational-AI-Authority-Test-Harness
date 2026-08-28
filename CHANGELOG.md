@@ -95,3 +95,29 @@ This file records material implementation changes to the Operational AI Authorit
 - Execution tests pass 18 of 18.
 - Combined browser software-verification suite passes 50 of 50.
 - These tests verify implementation behavior against declared V1 rules; they do not prove the broader organizational-authority hypothesis.
+
+## 2026-08-28 - Materiality and core end-to-end orchestration
+
+- Committed the previously verified boundary-to-execution foundation.
+- Added js/materiality-engine.js.
+- Added js/test-runner.js as a deterministic orchestration layer over the independently tested engines.
+- Added tests/materiality-tests.js.
+- Added tests/end-to-end-tests.js.
+- Extended the browser test runner to execute materiality and core end-to-end tests.
+- Implemented explicit materiality evaluation from configured rules.
+- Default LOW to MEDIUM customer-risk transition can be configured as MATERIAL.
+- AMBIGUOUS remains a distinct materiality result and does not silently create permission.
+- Material change invalidates prior authority while technical revalidation may independently remain PASS.
+- Material change moves the modeled workflow to REAUTHORIZATION_REQUIRED and blocks execution pending renewed authority.
+- Reauthorization continues through the existing authority-to-boundary-to-execution chain rather than bypassing it.
+- TRANSFER and REFUSE create no executable authority.
+- SUSPEND creates no executable boundary.
+- Core end-to-end tests hold the requested action, technical capability, and technical revalidation constant while varying governance disposition and resulting authority.
+- State tests remain 16 of 16 passing.
+- Authority/boundary tests remain 16 of 16 passing.
+- Execution tests remain 18 of 18 passing.
+- Materiality tests pass 10 of 10.
+- Core end-to-end tests pass 8 of 8.
+- Combined browser software-verification suite passes 68 of 68.
+- Actor authorization and substantive evidence-review controls are not yet represented by this orchestration layer and remain required before claiming the complete V1 governance workflow is implemented.
+- Core end-to-end results remain control-behavior testing within the formalized harness and do not prove real-world organizational authority or the broader hypothesis.
