@@ -188,3 +188,21 @@ This file records material implementation changes to the Operational AI Authorit
 - Governance decision evaluation remains an observed event, while SUBMIT_GOVERNANCE_DECISION is the causal replay command.
 - Re-ran the complete existing 99-test suite using a fresh Microsoft Edge user-data profile and disabled browser cache.
 - Fresh-profile verification passed 99 of 99 tests before the run-evidence foundation commit.
+
+## 2026-08-28 - Deterministic causal replay foundation
+
+- Added js/replay-engine.js.
+- Added tests/replay-tests.js.
+- Extended the browser test runner with deterministic replay tests.
+- Expanded preserved scenario snapshots with the initial configuration required to reconstruct governed runs.
+- Replay reconstructs a run from the preserved scenario snapshot plus causal commands.
+- Replay commands are limited to START_SCENARIO, CHANGE_CONDITION, RECORD_TECHNICAL_REVALIDATION, SUBMIT_GOVERNANCE_DECISION, and ATTEMPT_EXECUTION.
+- Derived materiality, authority, boundary, execution, and control results are recomputed rather than replayed as commands.
+- Replay re-enters the governed orchestration path and recomputes materiality, authority transitions, enforceable boundaries, execution outcomes, prediction comparison, and control assertions.
+- Replay compares recomputed authority history, decision history, execution attempts, actual result, prediction comparison, control assertion results, and deterministic event evidence against the original run.
+- Tampering with a recorded actual result does not force the replayed execution result.
+- Tampering with a recorded control assertion result does not force the replayed assertion result.
+- Such tampering creates replay evidence divergence instead.
+- The complete browser suite was run with a fresh Microsoft Edge user-data profile and browser cache disabled.
+- All 108 tests passed.
+- Replay equivalence demonstrates deterministic recomputation of the formalized harness behavior; it does not independently validate the conceptual governance model or prove the broader hypothesis.
