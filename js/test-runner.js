@@ -6,6 +6,9 @@
     const materiality =
         root.MaterialityEngine;
 
+    const controlRunEngine =
+        root.ControlRunEngine;
+
     const architectureEngine =
         root.ArchitectureEngine;
 
@@ -29,6 +32,7 @@
 
     if (
         !materiality ||
+        !controlRunEngine ||
         !architectureEngine ||
         !state ||
         !governance ||
@@ -443,6 +447,68 @@
             input.priorAuthority.authorityVersion
         );
 
+        const controlRun =
+            controlRunEngine.run({
+                priorAuthority:
+                    input.priorAuthority,
+                priorConditions:
+                    input.priorConditions,
+                requestedAction:
+                    input.requestedAction,
+                technicalCapability:
+                    input.technicalCapability,
+                initialTechnicalValidity:
+                    input.initialTechnicalValidity,
+                controlExpectedResult:
+                    input.controlExpectedResult
+            });
+
+        log.append({
+            eventType:
+                "CONTROL_BOUNDARY_CREATED",
+            actorId:
+                null,
+            priorState:
+                null,
+            newState: {
+                boundaryId:
+                    controlRun.boundaryResult.boundary.boundaryId
+            },
+            reason:
+                "Initial ACTIVE authority produced the baseline enforceable boundary.",
+            evidenceReferences: [],
+            authorityVersion:
+                input.priorAuthority.authorityVersion,
+            scenarioVersion:
+                input.scenarioVersion,
+            policyVersion:
+                input.policyVersion
+        });
+
+        log.append({
+            eventType:
+                "CONTROL_EXECUTION_EVALUATED",
+            actorId:
+                null,
+            priorState:
+                null,
+            newState: {
+                executionResult:
+                    controlRun.executionResult.result,
+                boundaryId:
+                    controlRun.executionResult.boundaryId
+            },
+            reason:
+                controlRun.executionResult.reason,
+            evidenceReferences: [],
+            authorityVersion:
+                input.priorAuthority.authorityVersion,
+            scenarioVersion:
+                input.scenarioVersion,
+            policyVersion:
+                input.policyVersion
+        });
+
         recordCommand(
             "CONDITION_CHANGED",
             null,
@@ -756,6 +822,8 @@
                     input.scenarioVersion,
                 policyVersion:
                     input.policyVersion,
+                controlRun:
+                    controlRun,
                 authorityHistory:
                     authorityHistory,
                 decisionHistory:
@@ -777,6 +845,8 @@
             });
 
         return deepFreeze({
+            controlRun:
+                controlRun,
             architectureContext:
                 architectureContext,
             changedState:

@@ -164,5 +164,18 @@
     ]
   },
   "separationReason": "Configured policy requires the reauthorization decision to move outside the operational layer.",
-  "schemaVersion": "1.0"
+  "schemaVersion": "1.0",
+  "initialTechnicalValidity": {
+    "status": "PASS",
+    "reason": "Initial technical validation passed before the material change.",
+    "evidenceReferences": [
+      "E-TECH-INITIAL"
+    ]
+  },
+  "controlExpectedResult": {
+    "expectedExecutionResult": "ALLOW",
+    "declaredBeforeExecution": true,
+    "scenarioVersion": "SCENARIO-1",
+    "policyVersion": "POLICY-1"
+  }
 }

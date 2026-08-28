@@ -59,6 +59,8 @@
 
         architectureOutput:
             document.getElementById("architecture-output"),
+        controlRun:
+            document.getElementById("control-run-output"),
         recommendation:
             document.getElementById("recommendation-output"),
         capability:
@@ -314,6 +316,10 @@
                 scenario.decisionActor.actorId,
             revalidationActorId:
                 "ACTOR-TECH",
+            initialTechnicalValidity:
+                scenario.initialTechnicalValidity,
+            controlExpectedResult:
+                scenario.controlExpectedResult,
             technicalRevalidation:
                 scenario.technicalRevalidation,
             technicalCapability:
@@ -445,6 +451,11 @@
 
         lastRunRecord =
             run;
+
+        elements.controlRun.textContent =
+            pretty(
+                result.controlRun
+            );
 
         elements.materiality.textContent =
             pretty(
@@ -915,6 +926,7 @@
     function clearOutputs() {
         [
             elements.architectureOutput,
+            elements.controlRun,
             elements.recommendation,
             elements.capability,
             elements.validity,

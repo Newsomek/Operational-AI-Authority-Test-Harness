@@ -129,6 +129,10 @@
                 input.scenarioVersion,
             policyVersion:
                 input.policyVersion,
+            controlRun:
+                deepClone(
+                    input.controlRun || null
+                ),
             authorityHistory:
                 deepClone(
                     input.authorityHistory || []

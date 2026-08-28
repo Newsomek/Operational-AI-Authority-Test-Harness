@@ -69,6 +69,12 @@
             <ol id="import-export-results"></ol>
         </section>
 
+        <section aria-labelledby="control-run-heading">
+            <h2 id="control-run-heading">Baseline Control Run</h2>
+            <p id="control-run-summary">Tests have not run.</p>
+            <ol id="control-run-results"></ol>
+        </section>
+
         <section aria-labelledby="negative-heading">
             <h2 id="negative-heading">Negative and Attack Tests</h2>
             <p id="negative-summary">Tests have not run.</p>
@@ -139,6 +145,7 @@
 
                 <div id="validation-status" role="status" aria-live="polite"></div>
                 <pre id="architecture-output"></pre>
+                <pre id="control-run-output"></pre>
                 <pre id="recommendation-output"></pre>
                 <pre id="capability-output"></pre>
                 <pre id="validity-output"></pre>
@@ -174,6 +181,7 @@
     <script src="../js/event-log.js"></script>
     <script src="../js/control-assertion-engine.js"></script>
     <script src="../js/run-evidence-engine.js"></script>
+    <script src="../js/control-run-engine.js"></script>
     <script src="../js/test-runner.js"></script>
     <script src="../js/replay-engine.js"></script>
     <script src="../js/import-export.js"></script>

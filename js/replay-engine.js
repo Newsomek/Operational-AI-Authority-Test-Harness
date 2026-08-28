@@ -51,6 +51,14 @@
                 deepClone(input.priorAuthority),
             technicalCapability:
                 deepClone(input.technicalCapability),
+            initialTechnicalValidity:
+                deepClone(
+                    input.initialTechnicalValidity
+                ),
+            controlExpectedResult:
+                deepClone(
+                    input.controlExpectedResult
+                ),
             reauthorizationArchitecture:
                 input.reauthorizationArchitecture ||
                 "SAME_LAYER_REAUTHORIZATION",
@@ -258,6 +266,14 @@
                 deepClone(
                     snapshot.technicalCapability
                 ),
+            initialTechnicalValidity:
+                deepClone(
+                    snapshot.initialTechnicalValidity
+                ),
+            controlExpectedResult:
+                deepClone(
+                    snapshot.controlExpectedResult
+                ),
             requestedAction:
                 deepClone(
                     executionAttempt.payload.requestedAction
@@ -309,6 +325,8 @@
 
     function comparableEvidence(runRecord) {
         return {
+            controlRun:
+                runRecord.controlRun,
             authorityHistory:
                 runRecord.authorityHistory,
             decisionHistory:

@@ -131,6 +131,23 @@
             revalidationActorId:
                 "ACTOR-TECH",
 
+            initialTechnicalValidity: {
+                status:
+                    "PASS",
+                reason:
+                    "Initial technical validation passed.",
+                evidenceReferences: [
+                    "E-TECH-INITIAL"
+                ]
+            },
+
+            controlExpectedResult: {
+                expectedExecutionResult:
+                    "ALLOW",
+                declaredBeforeExecution:
+                    true
+            },
+
             technicalRevalidation: {
                 status:
                     "PASS",
@@ -289,6 +306,9 @@
             input
         );
     }
+
+    window.OAATH.NegativeTestInputFactory =
+        baseInput;
 
     test(
         "ATTACK: execute while authority is INVALID remains blocked",

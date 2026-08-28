@@ -348,6 +348,11 @@
             policyVersion:
                 runRecord.policyVersion,
 
+            controlRun:
+                deepClone(
+                    runRecord.controlRun || null
+                ),
+
             authorityHistory:
                 deepClone(
                     runRecord.authorityHistory

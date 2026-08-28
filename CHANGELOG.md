@@ -307,3 +307,25 @@ This file records material implementation changes to the Operational AI Authorit
 - Accessibility tests pass 8 of 8.
 - Combined fresh-profile browser suite passes 172 of 172.
 - Automated accessibility verification is not represented as a complete substitute for manual assistive-technology testing.
+
+## 2026-08-28 - Required baseline control-run correction
+
+- Committed the previously verified V1 accessibility and negative/attack hardening layer.
+- Final readiness review identified a V1-blocking implementation omission: the governed run did not yet execute the governing-required baseline control run before material change.
+- Added js/control-run-engine.js.
+- Added tests/control-run-tests.js.
+- Added explicit initialTechnicalValidity and controlExpectedResult inputs to the default scenario.
+- The baseline control run now executes before CONDITION_CHANGED.
+- The control run creates an enforceable boundary from the initial ACTIVE authority.
+- The default baseline evaluates AUTO_REFUND 400 dollars under LOW risk, 20-day transaction age, 500-dollar authority, supported capability, and initial technical validity PASS.
+- The default baseline result is ALLOW.
+- The predeclared baseline expected result is ALLOW and therefore produces MATCH in the default scenario.
+- A separately evaluated initial-boundary control assertion produces PASS.
+- The changed-authority experiment continues only after the baseline reference point is established.
+- Run evidence now preserves the complete baseline control-run evidence.
+- Run-evidence export now includes the control run.
+- Deterministic replay now reconstructs and compares the baseline control run.
+- The application now displays the baseline control run as a separate visible artifact.
+- Added 10 baseline control-run tests.
+- Previous 172 tests remain passing.
+- Combined fresh-profile browser suite passes 182 of 182.
