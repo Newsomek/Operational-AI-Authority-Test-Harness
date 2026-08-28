@@ -50,3 +50,25 @@ This file records material implementation changes to the Operational AI Authorit
 - The first actual repository commit therefore preserves the complete verified foundation as it truly existed at commit time: governing documents, project documentation, conceptual and experimental models, deterministic validation logic, deterministic state-machine logic, and the initial passing state-foundation tests.
 - The state-foundation browser tests were re-run before the first actual commit and passed 16 of 16 tests.
 - This correction preserves actual repository history rather than implying a pre-code commit that never existed.
+
+## 2026-08-28 - Authority and boundary translation foundation
+
+- Added js/authority-engine.js.
+- Added js/boundary-engine.js.
+- Added tests/authority-tests.js.
+- Extended tests/test-runner.html to execute authority and boundary translation tests.
+- Implemented deterministic governance-decision-to-authority translation for RENEW, NARROW, CONDITION, TRANSFER, SUSPEND, and REFUSE.
+- RENEW creates a new ACTIVE authority version rather than reactivating the prior version.
+- NARROW creates a new authority version with explicitly supplied narrower scope and does not itself create an execution outcome.
+- CONDITION creates a new authority version containing typed conditions.
+- TRANSFER creates no executable authority and records only the transferred decision owner.
+- SUSPEND creates a new SUSPENDED authority version and no executable boundary.
+- REFUSE creates no authority record.
+- Added explicit authority-to-enforceable-boundary translation as a separate implementation layer.
+- Malformed required conditions do not produce an enforceable boundary.
+- Authority records and boundaries are deeply frozen after creation to protect experimental history from accidental mutation.
+- Existing deterministic state tests remain 16 of 16 passing.
+- Authority and boundary translation tests pass 16 of 16.
+- Combined browser software-verification suite passes 32 of 32.
+- No boundary-to-execution evaluation engine has yet been implemented.
+- These results are software verification and control-behavior foundation checks, not evidence proving the broader authority hypothesis.
