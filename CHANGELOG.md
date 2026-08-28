@@ -121,3 +121,30 @@ This file records material implementation changes to the Operational AI Authorit
 - Combined browser software-verification suite passes 68 of 68.
 - Actor authorization and substantive evidence-review controls are not yet represented by this orchestration layer and remain required before claiming the complete V1 governance workflow is implemented.
 - Core end-to-end results remain control-behavior testing within the formalized harness and do not prove real-world organizational authority or the broader hypothesis.
+
+## 2026-08-28 - Governance decision control foundation
+
+- Committed the previously verified materiality and core orchestration layer.
+- Added js/actor-engine.js.
+- Added js/evidence-engine.js.
+- Added js/governance-decision-engine.js.
+- Added js/event-log.js.
+- Added tests/governance-control-tests.js.
+- Extended tests/test-runner.html to execute governance-control tests.
+- Added configured actor capability enforcement for reauthorization decisions.
+- Added required-evidence availability and evidence-review validation.
+- Required evidence existing is not treated as equivalent to required evidence being reviewed.
+- Added configured allowed-disposition validation before authority translation occurs.
+- Invalid governance decisions do not invoke the authority translation engine.
+- Added deterministic append-only-in-use event sequencing beginning at sequence 1.
+- Caller-supplied sequence values cannot override the event-log sequence.
+- Stored event records and returned event listings are frozen to reduce accidental mutation.
+- State tests remain 16 of 16 passing.
+- Authority/boundary tests remain 16 of 16 passing.
+- Execution tests remain 18 of 18 passing.
+- Materiality tests remain 10 of 10 passing.
+- Core end-to-end tests remain 8 of 8 passing.
+- Governance-control tests pass 16 of 16.
+- Combined browser software-verification suite passes 84 of 84.
+- Configured actor authorization remains an experimental input and does not establish real-world identity or legitimate organizational authority.
+- Browser-side event logging remains logically append-only during use and is not represented as cryptographically immutable or tamper-resistant.
