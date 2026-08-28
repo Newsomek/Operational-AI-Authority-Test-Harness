@@ -148,3 +148,43 @@ This file records material implementation changes to the Operational AI Authorit
 - Combined browser software-verification suite passes 84 of 84.
 - Configured actor authorization remains an experimental input and does not establish real-world identity or legitimate organizational authority.
 - Browser-side event logging remains logically append-only during use and is not represented as cryptographically immutable or tamper-resistant.
+
+## 2026-08-28 - Complete run-evidence foundation
+
+- Committed the previously verified governance-decision control layer.
+- Added js/control-assertion-engine.js.
+- Added js/run-evidence-engine.js.
+- Integrated governance-decision validation into js/test-runner.js.
+- Added tests/run-evidence-tests.js.
+- Extended tests/test-runner.html with complete run-evidence tests.
+- The governed orchestration path now validates actor authorization, evidence review, and configured disposition before authority translation.
+- Deterministic events are emitted across scenario start, condition change, materiality evaluation, authority invalidation, technical revalidation, governance decision evaluation, authority creation, boundary creation, and execution evaluation as applicable.
+- Authority history preserves original, invalidated, and newly created authority records rather than overwriting prior versions.
+- Execution attempts identify the boundary actually evaluated.
+- Expected-versus-actual comparison reports MATCH or MISMATCH and requires the expected result to have been declared before execution.
+- Prediction comparison remains separate from governance control assertion results.
+- Added independent control assertion evaluation with PASS and FAIL results.
+- The control assertion engine does not call the production AuthorityEngine or ExecutionEngine as its test oracle.
+- A prediction may MISMATCH while the relevant governance control assertion still PASSes.
+- A deliberately incorrect predefined control assertion can FAIL even when production execution behaves consistently with its implemented boundary.
+- Run records preserve scenario snapshot, authority history, decision history, event log, execution attempts, expected result, actual result, prediction comparison, control assertion definitions/results, and causal replay inputs.
+- Replay inputs preserve causal commands and do not contain forced execution-result or control-assertion-result commands.
+- State tests remain 16 of 16 passing.
+- Authority/boundary tests remain 16 of 16 passing.
+- Execution tests remain 18 of 18 passing.
+- Materiality tests remain 10 of 10 passing.
+- Core end-to-end tests remain 8 of 8 passing.
+- Governance-control tests remain 16 of 16 passing.
+- Run-evidence tests pass 15 of 15.
+- Combined browser software-verification suite passes 99 of 99.
+- Deterministic replay itself is not yet implemented and remains the next required layer.
+
+## 2026-08-28 - Replay-input causal-command correction
+
+- Corrected the run-evidence replay-input representation before committing the run-evidence foundation.
+- Replay inputs now retain only causal commands required to reproduce a run.
+- Derived events such as MATERIALITY_EVALUATED, AUTHORITY_INVALIDATED, AUTHORITY_CREATED, and BOUNDARY_CREATED remain in the event evidence but are not replay commands.
+- EXECUTION_EVALUATED remains an observed event, while ATTEMPT_EXECUTION is the causal replay command.
+- Governance decision evaluation remains an observed event, while SUBMIT_GOVERNANCE_DECISION is the causal replay command.
+- Re-ran the complete existing 99-test suite using a fresh Microsoft Edge user-data profile and disabled browser cache.
+- Fresh-profile verification passed 99 of 99 tests before the run-evidence foundation commit.

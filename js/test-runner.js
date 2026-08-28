@@ -9,8 +9,8 @@
     const state =
         root.StateMachine;
 
-    const authority =
-        root.AuthorityEngine;
+    const governance =
+        root.GovernanceDecisionEngine;
 
     const boundary =
         root.BoundaryEngine;
@@ -18,15 +18,23 @@
     const execution =
         root.ExecutionEngine;
 
+    const eventLogFactory =
+        root.EventLog;
+
+    const runEvidence =
+        root.RunEvidenceEngine;
+
     if (
         !materiality ||
         !state ||
-        !authority ||
+        !governance ||
         !boundary ||
-        !execution
+        !execution ||
+        !eventLogFactory ||
+        !runEvidence
     ) {
         throw new Error(
-            "Core engines must be loaded before TestRunner."
+            "Governed run engines must be loaded before TestRunner."
         );
     }
 
@@ -125,17 +133,14 @@
             });
         }
 
-        const invalidAuthority =
-            invalidateAuthority(
-                input.priorAuthority,
-                input.invalidationEventId
-            );
-
         return deepFreeze({
             materiality:
                 materialityResult,
             currentAuthority:
-                invalidAuthority,
+                invalidateAuthority(
+                    input.priorAuthority,
+                    input.invalidationEventId
+                ),
             workflowState:
                 state.WORKFLOW_STATE.REAUTHORIZATION_REQUIRED,
             executionState:
@@ -145,7 +150,15 @@
         });
     }
 
-    function performReauthorization(input) {
+    function blockedResult(reason) {
+        return deepFreeze({
+            result: "BLOCK",
+            reason: reason,
+            boundaryId: null
+        });
+    }
+
+    function performGovernedReauthorization(input) {
         if (
             input.currentAuthority.status !==
             state.AUTHORITY_STATUS.INVALID
@@ -155,22 +168,49 @@
             );
         }
 
+        const decisionResult =
+            governance.decide({
+                actor:
+                    input.actor,
+                evidenceItems:
+                    input.evidenceItems,
+                requiredEvidenceIds:
+                    input.requiredEvidenceIds,
+                allowedDispositions:
+                    input.allowedDispositions,
+                currentAuthority:
+                    input.currentAuthority,
+                decision:
+                    input.decision
+            });
+
+        if (!decisionResult.valid) {
+            return deepFreeze({
+                decisionResult:
+                    decisionResult,
+                boundaryResult:
+                    null,
+                executionResult:
+                    blockedResult(
+                        "Governance decision was invalid: " +
+                        decisionResult.reason
+                    )
+            });
+        }
+
         const translation =
-            authority.translateDecision(
-                input.currentAuthority,
-                input.decision
-            );
+            decisionResult.translation;
 
         if (!translation.authorityCreated) {
             return deepFreeze({
-                translation: translation,
-                boundaryResult: null,
-                executionResult: {
-                    result: "BLOCK",
-                    reason:
-                        "No executable authority was created by the governance decision.",
-                    boundaryId: null
-                }
+                decisionResult:
+                    decisionResult,
+                boundaryResult:
+                    null,
+                executionResult:
+                    blockedResult(
+                        "No executable authority was created by the governance decision."
+                    )
             });
         }
 
@@ -181,14 +221,14 @@
 
         if (!boundaryResult.boundaryCreated) {
             return deepFreeze({
-                translation: translation,
-                boundaryResult: boundaryResult,
-                executionResult: {
-                    result: "BLOCK",
-                    reason:
-                        "No enforceable boundary was created.",
-                    boundaryId: null
-                }
+                decisionResult:
+                    decisionResult,
+                boundaryResult:
+                    boundaryResult,
+                executionResult:
+                    blockedResult(
+                        "No enforceable boundary was created."
+                    )
             });
         }
 
@@ -207,7 +247,8 @@
             });
 
         return deepFreeze({
-            translation: translation,
+            decisionResult:
+                decisionResult,
             boundaryResult:
                 boundaryResult,
             executionResult:
@@ -215,26 +256,284 @@
         });
     }
 
-    function runCoreExperiment(input) {
-        const changedState =
-            evaluateConditionChange(input);
+    function buildAssertionEvidence(
+        changedState,
+        governedResult,
+        input
+    ) {
+        const map =
+            Object.create(null);
 
-        if (
-            changedState.materiality.result !==
-            materiality.MATERIALITY_RESULT.MATERIAL
+        input.controlAssertions.forEach(
+            function (assertion) {
+                if (
+                    assertion.ruleReference ===
+                    "INVALID_AUTHORITY_BLOCKS"
+                ) {
+                    map[
+                        assertion.assertionId
+                    ] = {
+                        authorityStatus:
+                            changedState.currentAuthority.status,
+                        executionResult:
+                            changedState.executionState ===
+                                state.EXECUTION_STATE.BLOCKED
+                                ? "BLOCK"
+                                : "ALLOW"
+                    };
+                }
+                else if (
+                    assertion.ruleReference ===
+                    "ACTIVE_BOUNDARY_MAXIMUM"
+                ) {
+                    map[
+                        assertion.assertionId
+                    ] = {
+                        boundaryMaximumAmountCents:
+                            governedResult.boundaryResult &&
+                            governedResult.boundaryResult.boundary
+                                ? governedResult.boundaryResult.boundary.scope.maximumAmountCents
+                                : null,
+                        requestedAmountCents:
+                            input.requestedAction.amountCents,
+                        executionResult:
+                            governedResult.executionResult.result
+                    };
+                }
+                else if (
+                    assertion.ruleReference ===
+                    "NO_AUTHORITY_BLOCKS"
+                ) {
+                    map[
+                        assertion.assertionId
+                    ] = {
+                        authorityCreated:
+                            governedResult.decisionResult.valid &&
+                            governedResult.decisionResult.translation
+                                ? governedResult.decisionResult.translation.authorityCreated
+                                : false,
+                        executionResult:
+                            governedResult.executionResult.result
+                    };
+                }
+                else if (
+                    assertion.ruleReference ===
+                    "SUSPENDED_AUTHORITY_NO_BOUNDARY"
+                ) {
+                    const translatedAuthority =
+                        governedResult.decisionResult.valid &&
+                        governedResult.decisionResult.translation
+                            ? governedResult.decisionResult.translation.authority
+                            : null;
+
+                    map[
+                        assertion.assertionId
+                    ] = {
+                        authorityStatus:
+                            translatedAuthority
+                                ? translatedAuthority.status
+                                : null,
+                        boundaryCreated:
+                            governedResult.boundaryResult
+                                ? governedResult.boundaryResult.boundaryCreated
+                                : false,
+                        executionResult:
+                            governedResult.executionResult.result
+                    };
+                }
+            }
+        );
+
+        return map;
+    }
+
+    function runGovernedExperiment(input) {
+        const log =
+            eventLogFactory.create();
+
+        const replayInputs = [];
+
+        function recordCommand(
+            eventType,
+            actorId,
+            payload,
+            priorState,
+            newState,
+            reason,
+            evidenceReferences,
+            authorityVersion
         ) {
-            return deepFreeze({
-                changedState:
-                    changedState,
-                reauthorization:
-                    null
+            const replayCommandMap = {
+                SCENARIO_STARTED:
+                    "START_SCENARIO",
+                CONDITION_CHANGED:
+                    "CHANGE_CONDITION",
+                TECHNICAL_REVALIDATION_RECORDED:
+                    "RECORD_TECHNICAL_REVALIDATION",
+                GOVERNANCE_DECISION_EVALUATED:
+                    "SUBMIT_GOVERNANCE_DECISION",
+                EXECUTION_EVALUATED:
+                    "ATTEMPT_EXECUTION"
+            };
+
+            if (
+                Object.prototype.hasOwnProperty.call(
+                    replayCommandMap,
+                    eventType
+                )
+            ) {
+                replayInputs.push(
+                    deepFreeze({
+                        commandType:
+                            replayCommandMap[eventType],
+                        actorId:
+                            actorId || null,
+                        payload:
+                            deepClone(payload || {})
+                    })
+                );
+            }
+
+            return log.append({
+                eventType:
+                    eventType,
+                actorId:
+                    actorId || null,
+                priorState:
+                    deepClone(priorState || null),
+                newState:
+                    deepClone(newState || null),
+                reason:
+                    reason || null,
+                evidenceReferences:
+                    deepClone(
+                        evidenceReferences || []
+                    ),
+                authorityVersion:
+                    authorityVersion || null,
+                scenarioVersion:
+                    input.scenarioVersion,
+                policyVersion:
+                    input.policyVersion
             });
         }
 
-        const reauthorization =
-            performReauthorization({
+        recordCommand(
+            "SCENARIO_STARTED",
+            null,
+            {
+                runId:
+                    input.runId
+            },
+            null,
+            {
+                authorityStatus:
+                    input.priorAuthority.status,
+                workflowState:
+                    state.WORKFLOW_STATE.STABLE,
+                executionState:
+                    state.EXECUTION_STATE.NOT_ATTEMPTED
+            },
+            "Scenario run started.",
+            [],
+            input.priorAuthority.authorityVersion
+        );
+
+        recordCommand(
+            "CONDITION_CHANGED",
+            null,
+            {
+                priorConditions:
+                    input.priorConditions,
+                currentConditions:
+                    input.currentConditions
+            },
+            input.priorConditions,
+            input.currentConditions,
+            "Configured experimental condition changed.",
+            [],
+            input.priorAuthority.authorityVersion
+        );
+
+        const changedState =
+            evaluateConditionChange(input);
+
+        recordCommand(
+            "MATERIALITY_EVALUATED",
+            input.materialityActorId || null,
+            {
+                rules:
+                    input.materialityRules
+            },
+            {
+                workflowState:
+                    state.WORKFLOW_STATE.MATERIALITY_REVIEW_REQUIRED
+            },
+            {
+                materiality:
+                    changedState.materiality.result,
+                workflowState:
+                    changedState.workflowState
+            },
+            "Materiality evaluated from configured rules.",
+            [],
+            changedState.currentAuthority.authorityVersion
+        );
+
+        if (
+            changedState.materiality.result ===
+            materiality.MATERIALITY_RESULT.MATERIAL
+        ) {
+            recordCommand(
+                "AUTHORITY_INVALIDATED",
+                null,
+                {
+                    invalidationEventId:
+                        input.invalidationEventId
+                },
+                {
+                    authorityStatus:
+                        input.priorAuthority.status
+                },
+                {
+                    authorityStatus:
+                        changedState.currentAuthority.status
+                },
+                "Material change invalidated prior authority.",
+                [],
+                changedState.currentAuthority.authorityVersion
+            );
+        }
+
+        recordCommand(
+            "TECHNICAL_REVALIDATION_RECORDED",
+            input.revalidationActorId || null,
+            {
+                technicalRevalidation:
+                    input.technicalRevalidation
+            },
+            null,
+            {
+                technicalValidity:
+                    input.technicalRevalidation.status
+            },
+            "Technical revalidation recorded independently of authority.",
+            input.technicalRevalidation.evidenceReferences || [],
+            changedState.currentAuthority.authorityVersion
+        );
+
+        const governedResult =
+            performGovernedReauthorization({
                 currentAuthority:
                     changedState.currentAuthority,
+                actor:
+                    input.decisionActor,
+                evidenceItems:
+                    input.evidenceItems,
+                requiredEvidenceIds:
+                    input.requiredEvidenceIds,
+                allowedDispositions:
+                    input.allowedDispositions,
                 decision:
                     input.decision,
                 requestedAction:
@@ -247,11 +546,198 @@
                     input.currentConditions
             });
 
+        recordCommand(
+            "GOVERNANCE_DECISION_EVALUATED",
+            input.decisionActor.actorId,
+            {
+                decision:
+                    input.decision
+            },
+            {
+                workflowState:
+                    changedState.workflowState,
+                authorityStatus:
+                    changedState.currentAuthority.status
+            },
+            {
+                decisionValid:
+                    governedResult.decisionResult.valid
+            },
+            governedResult.decisionResult.valid
+                ? "Governance decision validated."
+                : governedResult.decisionResult.reason,
+            input.decision.evidenceReviewed || [],
+            changedState.currentAuthority.authorityVersion
+        );
+
+        const translation =
+            governedResult.decisionResult.valid
+                ? governedResult.decisionResult.translation
+                : null;
+
+        if (
+            translation &&
+            translation.authorityCreated
+        ) {
+            recordCommand(
+                "AUTHORITY_CREATED",
+                input.decisionActor.actorId,
+                {
+                    disposition:
+                        input.decision.disposition
+                },
+                {
+                    authorityStatus:
+                        changedState.currentAuthority.status
+                },
+                {
+                    authorityStatus:
+                        translation.authority.status,
+                    authorityVersion:
+                        translation.authority.authorityVersion
+                },
+                "Governance decision created a new authority version.",
+                input.decision.evidenceReviewed || [],
+                translation.authority.authorityVersion
+            );
+        }
+
+        if (
+            governedResult.boundaryResult &&
+            governedResult.boundaryResult.boundaryCreated
+        ) {
+            recordCommand(
+                "BOUNDARY_CREATED",
+                null,
+                {
+                    authorityId:
+                        governedResult.boundaryResult.boundary.sourceAuthorityId
+                },
+                null,
+                {
+                    boundaryId:
+                        governedResult.boundaryResult.boundary.boundaryId
+                },
+                "Current authority produced an enforceable boundary.",
+                [],
+                translation.authority.authorityVersion
+            );
+        }
+
+        recordCommand(
+            "EXECUTION_EVALUATED",
+            null,
+            {
+                requestedAction:
+                    input.requestedAction
+            },
+            null,
+            {
+                executionResult:
+                    governedResult.executionResult.result,
+                boundaryId:
+                    governedResult.executionResult.boundaryId
+            },
+            governedResult.executionResult.reason,
+            [],
+            translation && translation.authority
+                ? translation.authority.authorityVersion
+                : changedState.currentAuthority.authorityVersion
+        );
+
+        const authorityHistory = [
+            deepClone(
+                input.priorAuthority
+            ),
+            deepClone(
+                changedState.currentAuthority
+            )
+        ];
+
+        if (
+            translation &&
+            translation.authorityCreated
+        ) {
+            authorityHistory.push(
+                deepClone(
+                    translation.authority
+                )
+            );
+        }
+
+        const decisionHistory = [
+            deepClone(
+                input.decision
+            )
+        ];
+
+        const executionAttempts = [
+            {
+                requestedAction:
+                    deepClone(
+                        input.requestedAction
+                    ),
+                boundaryId:
+                    governedResult.executionResult.boundaryId,
+                technicalCapability:
+                    deepClone(
+                        input.technicalCapability
+                    ),
+                technicalValidity:
+                    deepClone(
+                        input.technicalRevalidation
+                    ),
+                result:
+                    governedResult.executionResult.result,
+                reason:
+                    governedResult.executionResult.reason
+            }
+        ];
+
+        const assertionEvidence =
+            buildAssertionEvidence(
+                changedState,
+                governedResult,
+                input
+            );
+
+        const runRecord =
+            runEvidence.createRunRecord({
+                runId:
+                    input.runId,
+                scenarioSnapshot:
+                    input.scenarioSnapshot,
+                scenarioVersion:
+                    input.scenarioVersion,
+                policyVersion:
+                    input.policyVersion,
+                authorityHistory:
+                    authorityHistory,
+                decisionHistory:
+                    decisionHistory,
+                eventLog:
+                    log.list(),
+                executionAttempts:
+                    executionAttempts,
+                expectedResult:
+                    input.expectedResult,
+                actualResult:
+                    governedResult.executionResult.result,
+                controlAssertions:
+                    input.controlAssertions,
+                assertionEvidence:
+                    assertionEvidence,
+                replayInputs:
+                    replayInputs
+            });
+
         return deepFreeze({
             changedState:
                 changedState,
-            reauthorization:
-                reauthorization
+            governedResult:
+                governedResult,
+            runRecord:
+                runRecord
         });
     }
 
@@ -260,9 +746,9 @@
             invalidateAuthority,
         evaluateConditionChange:
             evaluateConditionChange,
-        performReauthorization:
-            performReauthorization,
-        runCoreExperiment:
-            runCoreExperiment
+        performGovernedReauthorization:
+            performGovernedReauthorization,
+        runGovernedExperiment:
+            runGovernedExperiment
     });
 }(window));
