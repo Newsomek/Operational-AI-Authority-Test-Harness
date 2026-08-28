@@ -18,12 +18,36 @@
             document.getElementById("scenario-editor"),
         loadDefault:
             document.getElementById("load-default"),
+        reset:
+            document.getElementById("reset-scenario"),
         run:
             document.getElementById("run-experiment"),
         replay:
             document.getElementById("run-replay"),
+        applyControls:
+            document.getElementById("apply-controls"),
         validation:
             document.getElementById("validation-status"),
+
+        sameLayer:
+            document.getElementById("architecture-same-layer"),
+        separated:
+            document.getElementById("architecture-separated"),
+        currentRisk:
+            document.getElementById("current-risk"),
+        requestedAmount:
+            document.getElementById("requested-amount"),
+        disposition:
+            document.getElementById("decision-disposition"),
+        expectedResult:
+            document.getElementById("expected-result"),
+        newAuthorityMaximum:
+            document.getElementById("new-authority-maximum"),
+        technicalValidity:
+            document.getElementById("technical-validity"),
+
+        architectureOutput:
+            document.getElementById("architecture-output"),
         recommendation:
             document.getElementById("recommendation-output"),
         capability:
@@ -51,6 +75,7 @@
     };
 
     let lastRunRecord = null;
+    let loadedDefaultText = null;
 
     function pretty(value) {
         return JSON.stringify(
@@ -95,6 +120,155 @@
         }
     }
 
+    function selectedArchitecture() {
+        if (elements.separated.checked) {
+            return "SEPARATED_REAUTHORIZATION";
+        }
+
+        return "SAME_LAYER_REAUTHORIZATION";
+    }
+
+    function syncControlsFromScenario(scenario) {
+        const architecture =
+            scenario.reauthorizationArchitecture ||
+            "SAME_LAYER_REAUTHORIZATION";
+
+        elements.sameLayer.checked =
+            architecture ===
+            "SAME_LAYER_REAUTHORIZATION";
+
+        elements.separated.checked =
+            architecture ===
+            "SEPARATED_REAUTHORIZATION";
+
+        elements.currentRisk.value =
+            scenario.currentConditions.customerRisk;
+
+        elements.requestedAmount.value =
+            String(
+                scenario.requestedAction.amountCents
+            );
+
+        elements.disposition.value =
+            scenario.decision.disposition;
+
+        elements.expectedResult.value =
+            scenario.expectedResult.expectedExecutionResult;
+
+        elements.technicalValidity.value =
+            scenario.technicalRevalidation.status;
+
+        if (
+            scenario.decision.newScope &&
+            Number.isInteger(
+                scenario.decision.newScope.maximumAmountCents
+            )
+        ) {
+            elements.newAuthorityMaximum.value =
+                String(
+                    scenario.decision.newScope.maximumAmountCents
+                );
+        }
+        else {
+            elements.newAuthorityMaximum.value =
+                "";
+        }
+    }
+
+    function applyControlsToScenarioObject(scenario) {
+        scenario.reauthorizationArchitecture =
+            selectedArchitecture();
+
+        scenario.currentConditions.customerRisk =
+            elements.currentRisk.value;
+
+        scenario.requestedAction.customerRisk =
+            elements.currentRisk.value;
+
+        scenario.requestedAction.amountCents =
+            Number(
+                elements.requestedAmount.value
+            );
+
+        scenario.currentConditions.refundAmountCents =
+            Number(
+                elements.requestedAmount.value
+            );
+
+        scenario.decision.disposition =
+            elements.disposition.value;
+
+        scenario.expectedResult.expectedExecutionResult =
+            elements.expectedResult.value;
+
+        scenario.technicalRevalidation.status =
+            elements.technicalValidity.value;
+
+        if (
+            scenario.decision.disposition === "NARROW"
+        ) {
+            if (!scenario.decision.newScope) {
+                scenario.decision.newScope = {};
+            }
+
+            scenario.decision.newScope.maximumAmountCents =
+                Number(
+                    elements.newAuthorityMaximum.value
+                );
+
+            if (
+                !Array.isArray(
+                    scenario.decision.newScope.allowedRiskLevels
+                )
+            ) {
+                scenario.decision.newScope.allowedRiskLevels = [
+                    "LOW",
+                    "MEDIUM"
+                ];
+            }
+
+            if (
+                !Number.isInteger(
+                    scenario.decision.newScope.maximumTransactionAgeDays
+                )
+            ) {
+                scenario.decision.newScope.maximumTransactionAgeDays =
+                    30;
+            }
+        }
+
+        return scenario;
+    }
+
+    function applyControls() {
+        try {
+            const scenario =
+                parseScenario();
+
+            const updated =
+                applyControlsToScenarioObject(
+                    scenario
+                );
+
+            elements.editor.value =
+                pretty(
+                    updated
+                );
+
+            setValidation(
+                "PASS",
+                "Structured controls applied to scenario JSON."
+            );
+        }
+        catch (error) {
+            setValidation(
+                "FAIL",
+                "Unable to apply controls: " +
+                error.message
+            );
+        }
+    }
+
     function buildRunInput(scenario) {
         return {
             runId:
@@ -111,7 +285,9 @@
                 name:
                     scenario.name,
                 description:
-                    scenario.description
+                    scenario.description,
+                reauthorizationArchitecture:
+                    scenario.reauthorizationArchitecture
             },
             priorConditions:
                 scenario.priorConditions,
@@ -146,11 +322,16 @@
             expectedResult:
                 scenario.expectedResult,
             controlAssertions:
-                scenario.controlAssertions
+                scenario.controlAssertions,
+            reauthorizationArchitecture:
+                scenario.reauthorizationArchitecture
         };
     }
 
     function renderScenarioInputs(scenario) {
+        elements.architectureOutput.textContent =
+            scenario.reauthorizationArchitecture;
+
         elements.recommendation.textContent =
             pretty(
                 scenario.recommendation
@@ -230,6 +411,8 @@
 
     function runExperiment() {
         try {
+            applyControls();
+
             const scenario =
                 parseScenario();
 
@@ -251,7 +434,7 @@
 
             setValidation(
                 "PASS",
-                "Experiment completed. UI is displaying deterministic engine output."
+                "Experiment completed through deterministic governed engines."
             );
         }
         catch (error) {
@@ -309,6 +492,65 @@
         }
     }
 
+    function clearOutputs() {
+        [
+            elements.architectureOutput,
+            elements.recommendation,
+            elements.capability,
+            elements.validity,
+            elements.materiality,
+            elements.decision,
+            elements.boundary,
+            elements.execution,
+            elements.prediction,
+            elements.assertions,
+            elements.replayOutput,
+            elements.authorityHistory,
+            elements.eventLog
+        ].forEach(function (element) {
+            element.textContent =
+                "Not run.";
+        });
+
+        lastRunRecord = null;
+
+        document.body.removeAttribute(
+            "data-last-run-result"
+        );
+
+        document.body.removeAttribute(
+            "data-prediction-comparison"
+        );
+
+        document.body.removeAttribute(
+            "data-replay-equivalent"
+        );
+    }
+
+    function loadScenarioText(text, message) {
+        const scenario =
+            JSON.parse(text);
+
+        loadedDefaultText =
+            text;
+
+        elements.editor.value =
+            pretty(
+                scenario
+            );
+
+        syncControlsFromScenario(
+            scenario
+        );
+
+        clearOutputs();
+
+        setValidation(
+            "PASS",
+            message
+        );
+    }
+
     function loadDefaultScenario() {
         fetch(
             "data/default-scenario.json",
@@ -326,13 +568,8 @@
                 return response.text();
             })
             .then(function (text) {
-                JSON.parse(text);
-
-                elements.editor.value =
-                    text;
-
-                setValidation(
-                    "PASS",
+                loadScenarioText(
+                    text,
                     "Default editable scenario loaded."
                 );
             })
@@ -344,9 +581,32 @@
             });
     }
 
+    function resetScenario() {
+        if (loadedDefaultText !== null) {
+            loadScenarioText(
+                loadedDefaultText,
+                "Scenario reset to the loaded default."
+            );
+
+            return;
+        }
+
+        loadDefaultScenario();
+    }
+
     elements.loadDefault.addEventListener(
         "click",
         loadDefaultScenario
+    );
+
+    elements.reset.addEventListener(
+        "click",
+        resetScenario
+    );
+
+    elements.applyControls.addEventListener(
+        "click",
+        applyControls
     );
 
     elements.run.addEventListener(
@@ -362,12 +622,20 @@
     window.OAATH.App = Object.freeze({
         parseScenario:
             parseScenario,
+        selectedArchitecture:
+            selectedArchitecture,
+        syncControlsFromScenario:
+            syncControlsFromScenario,
+        applyControlsToScenarioObject:
+            applyControlsToScenarioObject,
         buildRunInput:
             buildRunInput,
         runExperiment:
             runExperiment,
         runReplay:
             runReplay,
+        resetScenario:
+            resetScenario,
         loadDefaultScenario:
             loadDefaultScenario
     });

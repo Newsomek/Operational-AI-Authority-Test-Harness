@@ -210,3 +210,68 @@ footer {
         padding: 1rem;
     }
 }
+
+.control-panel {
+    grid-column: 1 / -1;
+}
+
+fieldset {
+    border: 1px solid #ccc;
+    border-radius: 0.5rem;
+    padding: 0.85rem;
+    margin: 0 0 1rem;
+}
+
+legend {
+    font-weight: 700;
+    padding: 0 0.35rem;
+}
+
+.radio-row {
+    display: flex;
+    gap: 0.65rem;
+    align-items: flex-start;
+    padding: 0.55rem 0;
+    font-weight: 400;
+}
+
+.radio-row input {
+    margin-top: 0.25rem;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.8rem;
+}
+
+.form-grid label {
+    margin: 0;
+}
+
+.form-grid input,
+.form-grid select {
+    width: 100%;
+    margin-top: 0.35rem;
+    border: 1px solid #aaa;
+    border-radius: 0.4rem;
+    padding: 0.55rem;
+    background: #fff;
+    color: #111;
+}
+
+.control-actions {
+    margin-top: 1rem;
+}
+
+@media (max-width: 950px) {
+    .form-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 650px) {
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+}

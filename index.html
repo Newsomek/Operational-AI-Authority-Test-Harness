@@ -12,32 +12,128 @@
             <p class="eyebrow">Operational AI Authority Test Harness</p>
             <h1>Authority-to-Execution Laboratory</h1>
         </div>
+
         <div class="header-actions">
-            <button id="load-default" type="button">Load default scenario</button>
+            <button id="load-default" type="button">Load default</button>
+            <button id="reset-scenario" type="button">Reset</button>
             <button id="run-experiment" type="button">Run experiment</button>
             <button id="run-replay" type="button">Replay last run</button>
         </div>
     </header>
 
     <main class="layout">
-        <section class="panel scenario-panel" aria-labelledby="scenario-heading">
+        <section class="panel control-panel" aria-labelledby="controls-heading">
             <div class="panel-heading">
                 <div>
-                    <p class="eyebrow">Editable input</p>
-                    <h2 id="scenario-heading">Scenario</h2>
+                    <p class="eyebrow">Structured controls</p>
+                    <h2 id="controls-heading">Experiment inputs</h2>
                 </div>
-                <p class="muted">The UI edits scenario data. It does not determine authority or execution permission.</p>
+                <p class="muted">
+                    Controls edit scenario data only. Deterministic engines remain authoritative.
+                </p>
             </div>
 
-            <label for="scenario-editor">Scenario JSON</label>
-            <textarea id="scenario-editor" spellcheck="false" aria-describedby="scenario-help"></textarea>
-            <p id="scenario-help" class="muted">
-                Edit inputs, policy configuration, evidence, disposition, expected result, or control assertions, then run the experiment.
-            </p>
+            <fieldset>
+                <legend>Reauthorization architecture</legend>
+
+                <label class="radio-row">
+                    <input
+                        id="architecture-same-layer"
+                        type="radio"
+                        name="reauthorization-architecture"
+                        value="SAME_LAYER_REAUTHORIZATION"
+                    >
+                    <span>
+                        <strong>SAME-LAYER REAUTHORIZATION</strong><br>
+                        <small>Reauthorization occurs within the configured operating layer.</small>
+                    </span>
+                </label>
+
+                <label class="radio-row">
+                    <input
+                        id="architecture-separated"
+                        type="radio"
+                        name="reauthorization-architecture"
+                        value="SEPARATED_REAUTHORIZATION"
+                    >
+                    <span>
+                        <strong>SEPARATED REAUTHORIZATION</strong><br>
+                        <small>Reauthorization is modeled as a separated governance function.</small>
+                    </span>
+                </label>
+            </fieldset>
+
+            <div class="form-grid">
+                <label>
+                    Current customer risk
+                    <select id="current-risk">
+                        <option value="LOW">LOW</option>
+                        <option value="MEDIUM">MEDIUM</option>
+                        <option value="HIGH">HIGH</option>
+                    </select>
+                </label>
+
+                <label>
+                    Requested refund amount
+                    <input id="requested-amount" type="number" min="0" step="1">
+                </label>
+
+                <label>
+                    Governance disposition
+                    <select id="decision-disposition">
+                        <option value="RENEW">RENEW</option>
+                        <option value="NARROW">NARROW</option>
+                        <option value="CONDITION">CONDITION</option>
+                        <option value="TRANSFER">TRANSFER</option>
+                        <option value="SUSPEND">SUSPEND</option>
+                        <option value="REFUSE">REFUSE</option>
+                    </select>
+                </label>
+
+                <label>
+                    Expected execution result
+                    <select id="expected-result">
+                        <option value="ALLOW">ALLOW</option>
+                        <option value="BLOCK">BLOCK</option>
+                    </select>
+                </label>
+
+                <label>
+                    New authority maximum
+                    <input id="new-authority-maximum" type="number" min="0" step="1">
+                </label>
+
+                <label>
+                    Technical validity
+                    <select id="technical-validity">
+                        <option value="PASS">PASS</option>
+                        <option value="FAIL">FAIL</option>
+                    </select>
+                </label>
+            </div>
+
+            <div class="control-actions">
+                <button id="apply-controls" type="button">Apply controls to JSON</button>
+            </div>
 
             <div id="validation-status" class="status-box" role="status" aria-live="polite">
                 No scenario loaded.
             </div>
+        </section>
+
+        <section class="panel scenario-panel" aria-labelledby="scenario-heading">
+            <div class="panel-heading">
+                <div>
+                    <p class="eyebrow">Raw editable input</p>
+                    <h2 id="scenario-heading">Scenario JSON</h2>
+                </div>
+                <p class="muted">
+                    Raw JSON remains visible and editable for inspection and reproducibility.
+                </p>
+            </div>
+
+            <label for="scenario-editor">Scenario JSON</label>
+            <textarea id="scenario-editor" spellcheck="false"></textarea>
         </section>
 
         <section class="panel results-panel" aria-labelledby="results-heading">
@@ -49,6 +145,11 @@
             </div>
 
             <div class="card-grid">
+                <article class="result-card">
+                    <h3>Architecture</h3>
+                    <pre id="architecture-output">Not run.</pre>
+                </article>
+
                 <article class="result-card">
                     <h3>Recommendation</h3>
                     <pre id="recommendation-output">Not run.</pre>
@@ -124,8 +225,7 @@
 
     <footer>
         <p>
-            Software verification, control-behavior testing, and experimental interpretation are distinct.
-            A passing run does not prove the broader hypothesis.
+            Architecture selection is an experimental input. It does not itself create authority or execution permission.
         </p>
     </footer>
 

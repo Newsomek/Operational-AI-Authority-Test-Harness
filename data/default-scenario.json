@@ -145,5 +145,6 @@
         "maximumAmountCents": 25000
       }
     }
-  ]
+  ],
+  "reauthorizationArchitecture": "SAME_LAYER_REAUTHORIZATION"
 }

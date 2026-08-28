@@ -228,3 +228,20 @@ This file records material implementation changes to the Operational AI Authorit
 - UI contract tests pass 8 of 8.
 - Combined browser software-verification suite passes 116 of 116 using a fresh Edge profile with browser cache disabled.
 - The application shell is an interface over the deterministic engines; it is not an alternate source of authority, execution state, or experimental truth.
+
+## 2026-08-28 - V1 interaction and architecture-selection layer
+
+- Committed the previously verified initial browser-native V1 application shell.
+- Added reauthorizationArchitecture to the editable default scenario.
+- Added explicit SAME-LAYER REAUTHORIZATION and SEPARATED REAUTHORIZATION controls.
+- Architecture selection is preserved as an experimental scenario input and does not directly create authority or execution permission.
+- Added structured controls for current risk, requested amount, disposition, expected execution result, new authority maximum, and technical validity.
+- Structured controls update scenario JSON rather than bypassing it.
+- Raw scenario JSON remains visible and editable.
+- Added explicit Apply Controls, Reset, Run Experiment, and Replay Last Run workflow.
+- Reset clears prior displayed run state and restores the loaded default scenario.
+- Added visible architecture output as a separate experiment artifact.
+- Added UI tests proving neither architecture option manufactures execution results.
+- Existing deterministic and replay tests remain 108 of 108 passing.
+- UI interaction tests pass 10 of 10.
+- Combined browser software-verification suite passes 118 of 118 using a fresh Edge profile with browser cache disabled.

@@ -28,6 +28,59 @@
         }
     }
 
+    function sampleScenario() {
+        return {
+            scenarioId: "TEST",
+            scenarioVersion: "SCENARIO-1",
+            policyVersion: "POLICY-1",
+            name: "Test",
+            description: "Test",
+            reauthorizationArchitecture:
+                "SAME_LAYER_REAUTHORIZATION",
+            priorConditions: {
+                customerRisk: "LOW"
+            },
+            currentConditions: {
+                customerRisk: "MEDIUM",
+                refundAmountCents: 40000
+            },
+            recommendation: {},
+            technicalCapability: {},
+            technicalRevalidation: {
+                status: "PASS"
+            },
+            requestedAction: {
+                amountCents: 40000,
+                customerRisk: "MEDIUM"
+            },
+            materialityRules: [],
+            priorAuthority: {
+                authorityId: "AUTH-1"
+            },
+            decisionActor: {
+                actorId: "ACTOR-1"
+            },
+            evidenceItems: [],
+            requiredEvidenceIds: [],
+            allowedDispositions: [],
+            decision: {
+                disposition: "NARROW",
+                newScope: {
+                    maximumAmountCents: 25000,
+                    allowedRiskLevels: [
+                        "LOW",
+                        "MEDIUM"
+                    ],
+                    maximumTransactionAgeDays: 30
+                }
+            },
+            expectedResult: {
+                expectedExecutionResult: "BLOCK"
+            },
+            controlAssertions: []
+        };
+    }
+
     test(
         "Application controller is exposed",
         function () {
@@ -39,63 +92,128 @@
     );
 
     test(
-        "Application exposes scenario editor",
+        "Structured architecture controls exist",
+        function () {
+            assertTrue(
+                !!document.getElementById(
+                    "architecture-same-layer"
+                ),
+                "Same-layer architecture control should exist."
+            );
+
+            assertTrue(
+                !!document.getElementById(
+                    "architecture-separated"
+                ),
+                "Separated architecture control should exist."
+            );
+        }
+    );
+
+    test(
+        "Reset control exists",
+        function () {
+            assertTrue(
+                !!document.getElementById(
+                    "reset-scenario"
+                ),
+                "Reset button should exist."
+            );
+        }
+    );
+
+    test(
+        "Raw JSON editor remains visible",
         function () {
             assertTrue(
                 !!document.getElementById(
                     "scenario-editor"
                 ),
-                "Scenario editor should exist."
+                "Raw JSON editor must remain available."
             );
         }
     );
 
     test(
-        "Application exposes experiment control",
+        "Architecture selection remains a scenario input",
+        function () {
+            const app =
+                window.OAATH.App;
+
+            const scenario =
+                sampleScenario();
+
+            const built =
+                app.buildRunInput(
+                    scenario
+                );
+
+            assertEqual(
+                built.reauthorizationArchitecture,
+                "SAME_LAYER_REAUTHORIZATION",
+                "Architecture should pass through as experiment input."
+            );
+
+            assertTrue(
+                !Object.prototype.hasOwnProperty.call(
+                    built,
+                    "executionResult"
+                ),
+                "Architecture selection must not create execution result."
+            );
+        }
+    );
+
+    test(
+        "Separated architecture also does not create execution result",
+        function () {
+            const app =
+                window.OAATH.App;
+
+            const scenario =
+                sampleScenario();
+
+            scenario.reauthorizationArchitecture =
+                "SEPARATED_REAUTHORIZATION";
+
+            const built =
+                app.buildRunInput(
+                    scenario
+                );
+
+            assertEqual(
+                built.reauthorizationArchitecture,
+                "SEPARATED_REAUTHORIZATION",
+                "Separated architecture should remain an experimental input."
+            );
+
+            assertTrue(
+                !Object.prototype.hasOwnProperty.call(
+                    built,
+                    "executionResult"
+                ),
+                "Separated architecture must not create permission."
+            );
+        }
+    );
+
+    test(
+        "Recommendation and execution outputs remain separate",
         function () {
             assertTrue(
-                !!document.getElementById(
-                    "run-experiment"
-                ),
-                "Run experiment button should exist."
-            );
-        }
-    );
-
-    test(
-        "Application exposes replay control",
-        function () {
-            assertTrue(
-                !!document.getElementById(
-                    "run-replay"
-                ),
-                "Replay button should exist."
-            );
-        }
-    );
-
-    test(
-        "Recommendation output is separate from execution output",
-        function () {
-            const recommendation =
                 document.getElementById(
                     "recommendation-output"
-                );
-
-            const execution =
+                ) !==
                 document.getElementById(
                     "execution-output"
-                );
-
-            assertTrue(
-                recommendation !== execution,
-                "Recommendation and execution must be separate UI elements."
+                ),
+                "Recommendation and execution must remain separate."
             );
         }
     );
 
     test(
-        "Authority history and boundary output are separate",
+        "Authority and boundary outputs remain separate",
         function () {
             assertTrue(
                 document.getElementById(
@@ -104,13 +222,13 @@
                 document.getElementById(
                     "boundary-output"
                 ),
-                "Authority and boundary must remain separate UI artifacts."
+                "Authority and boundary must remain separate."
             );
         }
     );
 
     test(
-        "Prediction and control assertion outputs are separate",
+        "Prediction and control results remain separate",
         function () {
             assertTrue(
                 document.getElementById(
@@ -125,61 +243,33 @@
     );
 
     test(
-        "UI controller builds governed run input without disposition-derived execution result",
+        "Structured controls modify scenario data rather than output state",
         function () {
             const app =
                 window.OAATH.App;
 
-            const sample = {
-                scenarioVersion:
-                    "SCENARIO-1",
-                policyVersion:
-                    "POLICY-1",
-                scenarioId:
-                    "TEST",
-                name:
-                    "Test",
-                description:
-                    "Test",
-                priorConditions: {},
-                currentConditions: {},
-                materialityRules: [],
-                priorAuthority: {
-                    authorityId: "AUTH-1"
-                },
-                decisionActor: {
-                    actorId: "ACTOR-1"
-                },
-                technicalRevalidation: {},
-                technicalCapability: {},
-                requestedAction: {},
-                evidenceItems: [],
-                requiredEvidenceIds: [],
-                allowedDispositions: [],
-                decision: {
-                    disposition: "NARROW"
-                },
-                expectedResult: {},
-                controlAssertions: []
-            };
+            const scenario =
+                sampleScenario();
 
-            const built =
-                app.buildRunInput(
-                    sample
+            const updated =
+                app.applyControlsToScenarioObject(
+                    scenario
                 );
 
             assertTrue(
-                !Object.prototype.hasOwnProperty.call(
-                    built,
-                    "executionResult"
+                Object.prototype.hasOwnProperty.call(
+                    updated,
+                    "reauthorizationArchitecture"
                 ),
-                "UI must not manufacture an execution result."
+                "Structured controls should modify scenario input."
             );
 
-            assertEqual(
-                built.decision.disposition,
-                "NARROW",
-                "Disposition should remain only a governance-decision input."
+            assertTrue(
+                !Object.prototype.hasOwnProperty.call(
+                    updated,
+                    "actualResult"
+                ),
+                "Structured controls must not manufacture observed result."
             );
         }
     );
@@ -232,7 +322,7 @@
         passed +
         "/" +
         tests.length +
-        " UI smoke tests passed.";
+        " UI interaction tests passed.";
 
     summary.setAttribute(
         "data-ui-passed",

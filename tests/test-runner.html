@@ -64,9 +64,50 @@
             <div hidden>
                 <textarea id="scenario-editor"></textarea>
                 <button id="load-default" type="button">Load</button>
+                <button id="reset-scenario" type="button">Reset</button>
                 <button id="run-experiment" type="button">Run</button>
                 <button id="run-replay" type="button">Replay</button>
+                <button id="apply-controls" type="button">Apply</button>
+
+                <input
+                    id="architecture-same-layer"
+                    type="radio"
+                    name="reauthorization-architecture"
+                    value="SAME_LAYER_REAUTHORIZATION"
+                    checked
+                >
+
+                <input
+                    id="architecture-separated"
+                    type="radio"
+                    name="reauthorization-architecture"
+                    value="SEPARATED_REAUTHORIZATION"
+                >
+
+                <select id="current-risk">
+                    <option value="LOW">LOW</option>
+                    <option value="MEDIUM" selected>MEDIUM</option>
+                    <option value="HIGH">HIGH</option>
+                </select>
+
+                <input id="requested-amount" type="number" value="40000">
+
+                <select id="decision-disposition">
+                    <option value="NARROW" selected>NARROW</option>
+                </select>
+
+                <select id="expected-result">
+                    <option value="BLOCK" selected>BLOCK</option>
+                </select>
+
+                <input id="new-authority-maximum" type="number" value="25000">
+
+                <select id="technical-validity">
+                    <option value="PASS" selected>PASS</option>
+                </select>
+
                 <div id="validation-status"></div>
+                <pre id="architecture-output"></pre>
                 <pre id="recommendation-output"></pre>
                 <pre id="capability-output"></pre>
                 <pre id="validity-output"></pre>
