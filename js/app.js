@@ -324,7 +324,14 @@
             controlAssertions:
                 scenario.controlAssertions,
             reauthorizationArchitecture:
-                scenario.reauthorizationArchitecture
+                scenario.reauthorizationArchitecture,
+            operationalActor:
+                scenario.operationalActor ||
+                scenario.decisionActor,
+            designatedAuthorityOwner:
+                scenario.designatedAuthorityOwner,
+            separationReason:
+                scenario.separationReason
         };
     }
 
@@ -346,6 +353,79 @@
             pretty(
                 scenario.technicalRevalidation
             );
+    }
+
+    function explainRun(result) {
+        const translation =
+            result.governedResult.decisionResult.valid
+                ? result.governedResult.decisionResult.translation
+                : null;
+
+        const boundaryResult =
+            result.governedResult.boundaryResult;
+
+        const executionResult =
+            result.governedResult.executionResult;
+
+        elements.authorityExplain.textContent =
+            pretty({
+                architecture:
+                    result.architectureContext.architecture,
+                decisionActor:
+                    result.architectureContext.decisionActor.actorId,
+                authorityMoved:
+                    result.architectureContext.authorityMoved,
+                movementReason:
+                    result.architectureContext.movementReason,
+                materiality:
+                    result.changedState.materiality.result,
+                priorAuthorityStatus:
+                    result.changedState.currentAuthority.status,
+                disposition:
+                    translation
+                        ? translation.disposition
+                        : null,
+                newAuthorityCreated:
+                    translation
+                        ? translation.authorityCreated
+                        : false
+            });
+
+        elements.boundaryExplain.textContent =
+            pretty({
+                boundaryCreated:
+                    boundaryResult
+                        ? boundaryResult.boundaryCreated
+                        : false,
+                sourceAuthorityId:
+                    boundaryResult &&
+                    boundaryResult.boundary
+                        ? boundaryResult.boundary.sourceAuthorityId
+                        : null,
+                scope:
+                    boundaryResult &&
+                    boundaryResult.boundary
+                        ? boundaryResult.boundary.scope
+                        : null,
+                reason:
+                    boundaryResult
+                        ? boundaryResult.reason
+                        : "No boundary was created."
+            });
+
+        elements.executionExplain.textContent =
+            pretty({
+                result:
+                    executionResult.result,
+                reason:
+                    executionResult.reason,
+                evaluatedBoundary:
+                    executionResult.boundaryId,
+                technicalValidity:
+                    result.runRecord.executionAttempts[0].technicalValidity,
+                technicalCapability:
+                    result.runRecord.executionAttempts[0].technicalCapability
+            });
     }
 
     function renderRun(result) {
@@ -395,6 +475,10 @@
                 run.eventLog
             );
 
+        explainRun(
+            result
+        );
+
         elements.replayOutput.textContent =
             "Run available for deterministic replay.";
 
@@ -441,6 +525,124 @@
             setValidation(
                 "FAIL",
                 "Experiment failed: " +
+                error.message
+            );
+        }
+    }
+
+    function architectureComparisonSummary(
+        sameResult,
+        separatedResult
+    ) {
+        return {
+            heldConstant: [
+                "scenario",
+                "recommendation",
+                "technical capability",
+                "technical revalidation",
+                "evidence",
+                "requested action",
+                "governance disposition"
+            ],
+            changedVariable:
+                "reauthorization architecture",
+            sameLayerDecisionActor:
+                sameResult.architectureContext.decisionActor.actorId,
+            separatedDecisionActor:
+                separatedResult.architectureContext.decisionActor.actorId,
+            sameLayerExecution:
+                sameResult.runRecord.actualResult,
+            separatedExecution:
+                separatedResult.runRecord.actualResult,
+            executionDifference:
+                sameResult.runRecord.actualResult !==
+                separatedResult.runRecord.actualResult,
+            sameLayerBoundary:
+                sameResult.governedResult.executionResult.boundaryId,
+            separatedBoundary:
+                separatedResult.governedResult.executionResult.boundaryId,
+            interpretation:
+                sameResult.runRecord.actualResult ===
+                separatedResult.runRecord.actualResult
+                    ? "No execution-outcome difference was observed for this controlled scenario. That is a valid experimental result."
+                    : "An execution-outcome difference was observed. Inspect actor, authority, boundary, and event evidence before interpreting why."
+        };
+    }
+
+    function compareArchitectures() {
+        try {
+            applyControls();
+
+            const scenario =
+                parseScenario();
+
+            const sameScenario =
+                JSON.parse(
+                    JSON.stringify(scenario)
+                );
+
+            const separatedScenario =
+                JSON.parse(
+                    JSON.stringify(scenario)
+                );
+
+            sameScenario.reauthorizationArchitecture =
+                "SAME_LAYER_REAUTHORIZATION";
+
+            separatedScenario.reauthorizationArchitecture =
+                "SEPARATED_REAUTHORIZATION";
+
+            const sameResult =
+                runner.runGovernedExperiment(
+                    buildRunInput(
+                        sameScenario
+                    )
+                );
+
+            const separatedResult =
+                runner.runGovernedExperiment(
+                    buildRunInput(
+                        separatedScenario
+                    )
+                );
+
+            elements.sameComparison.textContent =
+                pretty({
+                    architecture:
+                        sameResult.architectureContext,
+                    execution:
+                        sameResult.governedResult.executionResult,
+                    boundary:
+                        sameResult.governedResult.boundaryResult
+                });
+
+            elements.separatedComparison.textContent =
+                pretty({
+                    architecture:
+                        separatedResult.architectureContext,
+                    execution:
+                        separatedResult.governedResult.executionResult,
+                    boundary:
+                        separatedResult.governedResult.boundaryResult
+                });
+
+            elements.comparisonSummary.textContent =
+                pretty(
+                    architectureComparisonSummary(
+                        sameResult,
+                        separatedResult
+                    )
+                );
+
+            setValidation(
+                "PASS",
+                "Controlled architecture comparison completed."
+            );
+        }
+        catch (error) {
+            setValidation(
+                "FAIL",
+                "Architecture comparison failed: " +
                 error.message
             );
         }
@@ -614,6 +816,11 @@
         runExperiment
     );
 
+    elements.compareArchitectures.addEventListener(
+        "click",
+        compareArchitectures
+    );
+
     elements.replay.addEventListener(
         "click",
         runReplay
@@ -632,6 +839,10 @@
             buildRunInput,
         runExperiment:
             runExperiment,
+        compareArchitectures:
+            compareArchitectures,
+        architectureComparisonSummary:
+            architectureComparisonSummary,
         runReplay:
             runReplay,
         resetScenario:

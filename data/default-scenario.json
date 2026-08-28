@@ -71,9 +71,10 @@
     "policyVersion": "POLICY-1"
   },
   "decisionActor": {
-    "actorId": "ACTOR-RISK",
-    "name": "Risk Officer",
+    "actorId": "ACTOR-OPERATIONS",
+    "name": "Operations Authority Owner",
     "capabilities": [
+      "OPERATE_SYSTEM",
       "REAUTHORIZE"
     ]
   },
@@ -146,5 +147,21 @@
       }
     }
   ],
-  "reauthorizationArchitecture": "SAME_LAYER_REAUTHORIZATION"
+  "reauthorizationArchitecture": "SAME_LAYER_REAUTHORIZATION",
+  "operationalActor": {
+    "actorId": "ACTOR-OPERATIONS",
+    "name": "Operations Authority Owner",
+    "capabilities": [
+      "OPERATE_SYSTEM",
+      "REAUTHORIZE"
+    ]
+  },
+  "designatedAuthorityOwner": {
+    "actorId": "ACTOR-GOVERNANCE",
+    "name": "Designated Governance Authority Owner",
+    "capabilities": [
+      "REAUTHORIZE"
+    ]
+  },
+  "separationReason": "Configured policy requires the reauthorization decision to move outside the operational layer."
 }

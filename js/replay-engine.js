@@ -51,6 +51,20 @@
                 deepClone(input.priorAuthority),
             technicalCapability:
                 deepClone(input.technicalCapability),
+            reauthorizationArchitecture:
+                input.reauthorizationArchitecture ||
+                "SAME_LAYER_REAUTHORIZATION",
+            operationalActor:
+                deepClone(
+                    input.operationalActor ||
+                    input.decisionActor
+                ),
+            designatedAuthorityOwner:
+                deepClone(
+                    input.designatedAuthorityOwner || null
+                ),
+            separationReason:
+                input.separationReason || null,
             decisionActor:
                 deepClone(input.decisionActor),
             evidenceItems:
@@ -248,6 +262,20 @@
                 deepClone(
                     executionAttempt.payload.requestedAction
                 ),
+            reauthorizationArchitecture:
+                snapshot.reauthorizationArchitecture ||
+                "SAME_LAYER_REAUTHORIZATION",
+            operationalActor:
+                deepClone(
+                    snapshot.operationalActor ||
+                    snapshot.decisionActor
+                ),
+            designatedAuthorityOwner:
+                deepClone(
+                    snapshot.designatedAuthorityOwner || null
+                ),
+            separationReason:
+                snapshot.separationReason || null,
             decisionActor:
                 deepClone(
                     snapshot.decisionActor

@@ -6,6 +6,9 @@
     const materiality =
         root.MaterialityEngine;
 
+    const architectureEngine =
+        root.ArchitectureEngine;
+
     const state =
         root.StateMachine;
 
@@ -26,6 +29,7 @@
 
     if (
         !materiality ||
+        !architectureEngine ||
         !state ||
         !governance ||
         !boundary ||
@@ -522,12 +526,53 @@
             changedState.currentAuthority.authorityVersion
         );
 
+        const architectureContext =
+            architectureEngine.resolve({
+                reauthorizationArchitecture:
+                    input.reauthorizationArchitecture,
+                operationalActor:
+                    input.operationalActor ||
+                    input.decisionActor,
+                designatedAuthorityOwner:
+                    input.designatedAuthorityOwner,
+                decisionActor:
+                    input.decisionActor,
+                separationReason:
+                    input.separationReason
+            });
+
+        recordCommand(
+            "ARCHITECTURE_RESOLVED",
+            architectureContext.decisionActor.actorId,
+            {
+                architecture:
+                    architectureContext.architecture,
+                topology:
+                    architectureContext.topology,
+                authorityMoved:
+                    architectureContext.authorityMoved,
+                movementReason:
+                    architectureContext.movementReason
+            },
+            {
+                workflowState:
+                    changedState.workflowState
+            },
+            {
+                decisionActorId:
+                    architectureContext.decisionActor.actorId
+            },
+            architectureContext.description,
+            [],
+            changedState.currentAuthority.authorityVersion
+        );
+
         const governedResult =
             performGovernedReauthorization({
                 currentAuthority:
                     changedState.currentAuthority,
                 actor:
-                    input.decisionActor,
+                    architectureContext.decisionActor,
                 evidenceItems:
                     input.evidenceItems,
                 requiredEvidenceIds:
@@ -548,7 +593,7 @@
 
         recordCommand(
             "GOVERNANCE_DECISION_EVALUATED",
-            input.decisionActor.actorId,
+            architectureContext.decisionActor.actorId,
             {
                 decision:
                     input.decision
@@ -581,7 +626,7 @@
         ) {
             recordCommand(
                 "AUTHORITY_CREATED",
-                input.decisionActor.actorId,
+                architectureContext.decisionActor.actorId,
                 {
                     disposition:
                         input.decision.disposition
@@ -732,6 +777,8 @@
             });
 
         return deepFreeze({
+            architectureContext:
+                architectureContext,
             changedState:
                 changedState,
             governedResult:

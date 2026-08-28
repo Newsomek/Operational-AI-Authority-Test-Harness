@@ -274,6 +274,106 @@
         }
     );
 
+    test(
+        "Architecture comparison button exists",
+        function () {
+            assertTrue(
+                !!document.getElementById(
+                    "compare-architectures"
+                ),
+                "Architecture comparison control should exist."
+            );
+        }
+    );
+
+    test(
+        "Architecture comparison summary does not declare separated architecture superior",
+        function () {
+            const app =
+                window.OAATH.App;
+
+            const summary =
+                app.architectureComparisonSummary(
+                    {
+                        architectureContext: {
+                            decisionActor: {
+                                actorId: "OPS"
+                            }
+                        },
+                        runRecord: {
+                            actualResult: "BLOCK"
+                        },
+                        governedResult: {
+                            executionResult: {
+                                boundaryId: "B1"
+                            }
+                        }
+                    },
+                    {
+                        architectureContext: {
+                            decisionActor: {
+                                actorId: "GOV"
+                            }
+                        },
+                        runRecord: {
+                            actualResult: "BLOCK"
+                        },
+                        governedResult: {
+                            executionResult: {
+                                boundaryId: "B2"
+                            }
+                        }
+                    }
+                );
+
+            assertTrue(
+                !summary.interpretation.toLowerCase().includes(
+                    "superior"
+                ),
+                "Comparison must remain neutral."
+            );
+        }
+    );
+
+    test(
+        "Explain outputs are separate visible artifacts",
+        function () {
+            assertTrue(
+                document.getElementById(
+                    "authority-explain-output"
+                ) !==
+                document.getElementById(
+                    "boundary-explain-output"
+                ),
+                "Authority and boundary explanations must remain separate."
+            );
+
+            assertTrue(
+                document.getElementById(
+                    "boundary-explain-output"
+                ) !==
+                document.getElementById(
+                    "execution-explain-output"
+                ),
+                "Boundary and execution explanations must remain separate."
+            );
+        }
+    );
+
+    test(
+        "Architecture comparison output is separate from execution result",
+        function () {
+            assertTrue(
+                document.getElementById(
+                    "architecture-comparison-summary"
+                ) !==
+                document.getElementById(
+                    "execution-output"
+                ),
+                "Comparison interpretation must not replace observed execution."
+            );
+        }
+    );
     const summary =
         document.getElementById(
             "ui-summary"

@@ -17,6 +17,7 @@
             <button id="load-default" type="button">Load default</button>
             <button id="reset-scenario" type="button">Reset</button>
             <button id="run-experiment" type="button">Run experiment</button>
+            <button id="compare-architectures" type="button">Compare architectures</button>
             <button id="run-replay" type="button">Replay last run</button>
         </div>
     </header>
@@ -202,6 +203,61 @@
             </div>
         </section>
 
+        <section class="panel comparison-panel" aria-labelledby="comparison-heading">
+            <div class="panel-heading">
+                <div>
+                    <p class="eyebrow">Controlled comparison</p>
+                    <h2 id="comparison-heading">Architecture comparison</h2>
+                </div>
+                <p class="muted">
+                    Both runs use the same scenario, capability, recommendation, evidence, requested action, and governance disposition. Only reauthorization topology changes.
+                </p>
+            </div>
+
+            <div class="comparison-grid">
+                <article class="result-card">
+                    <h3>SAME-LAYER REAUTHORIZATION</h3>
+                    <pre id="same-layer-comparison-output">Not run.</pre>
+                </article>
+
+                <article class="result-card">
+                    <h3>SEPARATED REAUTHORIZATION</h3>
+                    <pre id="separated-comparison-output">Not run.</pre>
+                </article>
+            </div>
+
+            <article class="result-card comparison-summary">
+                <h3>Observed comparison</h3>
+                <pre id="architecture-comparison-summary">Not run.</pre>
+            </article>
+        </section>
+
+        <section class="panel explain-panel" aria-labelledby="explain-heading">
+            <div class="panel-heading">
+                <div>
+                    <p class="eyebrow">Inspectable reasoning</p>
+                    <h2 id="explain-heading">Explain</h2>
+                </div>
+            </div>
+
+            <div class="card-grid">
+                <article class="result-card">
+                    <h3>Why authority changed</h3>
+                    <pre id="authority-explain-output">Not run.</pre>
+                </article>
+
+                <article class="result-card">
+                    <h3>Why this boundary exists</h3>
+                    <pre id="boundary-explain-output">Not run.</pre>
+                </article>
+
+                <article class="result-card">
+                    <h3>Why execution was allowed or blocked</h3>
+                    <pre id="execution-explain-output">Not run.</pre>
+                </article>
+            </div>
+        </section>
+
         <section class="panel evidence-panel" aria-labelledby="authority-heading">
             <div class="panel-heading">
                 <div>
@@ -231,6 +287,7 @@
 
     <script src="js/validation-engine.js"></script>
     <script src="js/state-machine.js"></script>
+    <script src="js/architecture-engine.js"></script>
     <script src="js/authority-engine.js"></script>
     <script src="js/boundary-engine.js"></script>
     <script src="js/execution-engine.js"></script>

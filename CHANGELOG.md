@@ -245,3 +245,23 @@ This file records material implementation changes to the Operational AI Authorit
 - Existing deterministic and replay tests remain 108 of 108 passing.
 - UI interaction tests pass 10 of 10.
 - Combined browser software-verification suite passes 118 of 118 using a fresh Edge profile with browser cache disabled.
+
+## 2026-08-28 - Architecture topology and controlled comparison
+
+- Committed the previously verified V1 interaction and architecture-selection layer.
+- Added js/architecture-engine.js.
+- Added tests/architecture-tests.js.
+- Implemented SAME-LAYER REAUTHORIZATION as an authorized decision occurring within the operational layer.
+- Implemented SEPARATED REAUTHORIZATION as a topology in which the operational layer detects/classifies change, invalidates authority, and blocks, while the reauthorization decision moves to a distinct designated authority owner.
+- Separated reauthorization requires a designated authority owner distinct from the operational actor.
+- Architecture resolution creates no authority record, enforceable boundary, or execution result.
+- Architecture terminology remains neutral; neither architecture is labeled weak or superior.
+- Added architecture topology to replay-preserved scenario inputs.
+- Added a visible controlled comparison that holds scenario, recommendation, capability, technical revalidation, evidence, requested action, and disposition constant while varying reauthorization architecture.
+- A comparison may legitimately show no execution-outcome difference.
+- Added Explain views for authority change, enforceable boundary formation, and execution evaluation.
+- Explain views present observed/recomputed evidence and do not become an alternate execution oracle.
+- Existing deterministic and replay tests remain 108 of 108 passing.
+- Architecture topology tests pass 10 of 10.
+- UI interaction/comparison tests pass 14 of 14.
+- Combined fresh-profile browser suite passes 132 of 132.

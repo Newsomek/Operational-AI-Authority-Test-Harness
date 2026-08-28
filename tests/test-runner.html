@@ -56,6 +56,11 @@
             <ol id="replay-results"></ol>
         </section>
 
+        <section aria-labelledby="architecture-test-heading">
+            <h2 id="architecture-test-heading">Architecture Topology</h2>
+            <p id="architecture-summary">Tests have not run.</p>
+            <ol id="architecture-results"></ol>
+        </section>
         <section aria-labelledby="ui-heading">
             <h2 id="ui-heading">Application UI Contract</h2>
             <p id="ui-summary">Tests have not run.</p>
@@ -66,6 +71,7 @@
                 <button id="load-default" type="button">Load</button>
                 <button id="reset-scenario" type="button">Reset</button>
                 <button id="run-experiment" type="button">Run</button>
+                <button id="compare-architectures" type="button">Compare</button>
                 <button id="run-replay" type="button">Replay</button>
                 <button id="apply-controls" type="button">Apply</button>
 
@@ -120,12 +126,19 @@
                 <pre id="replay-output"></pre>
                 <pre id="authority-history-output"></pre>
                 <pre id="event-log-output"></pre>
+                <pre id="same-layer-comparison-output"></pre>
+                <pre id="separated-comparison-output"></pre>
+                <pre id="architecture-comparison-summary"></pre>
+                <pre id="authority-explain-output"></pre>
+                <pre id="boundary-explain-output"></pre>
+                <pre id="execution-explain-output"></pre>
             </div>
         </section>
     </main>
 
     <script src="../js/validation-engine.js"></script>
     <script src="../js/state-machine.js"></script>
+    <script src="../js/architecture-engine.js"></script>
     <script src="../js/authority-engine.js"></script>
     <script src="../js/boundary-engine.js"></script>
     <script src="../js/execution-engine.js"></script>
@@ -148,6 +161,7 @@
     <script src="governance-control-tests.js"></script>
     <script src="run-evidence-tests.js"></script>
     <script src="replay-tests.js"></script>
+    <script src="architecture-tests.js"></script>
     <script src="ui-smoke-tests.js"></script>
 </body>
 </html>
