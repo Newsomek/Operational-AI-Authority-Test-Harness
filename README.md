@@ -383,3 +383,34 @@ Read `LICENSE` before use or redistribution.
 - `docs/TESTING.md` - automated verification and manual experiments
 - `docs/ROADMAP.md` - capabilities deliberately deferred beyond V1
 - `docs/V1-READINESS.md` - verification and release-readiness record
+## External Review
+
+The V1 release is intended to be challenged, not merely demonstrated.
+
+Reviewers are invited to attack the authority-to-execution dependency,
+materiality behavior, reauthorization logic, boundary enforcement, evidence
+requirements, replay determinism, state model, architecture comparison, test
+design, and the claims made from the experiment.
+
+Start with
+[`docs/EXTERNAL-REVIEW-PROTOCOL.md`](docs/EXTERNAL-REVIEW-PROTOCOL.md).
+
+The protocol explains what to test, how to report a reproducible finding, and
+how findings are distinguished among implementation defects, test defects,
+specification contradictions, invalid assumptions, expected experimental
+results, user prediction errors, control-assertion failures, and findings
+requiring further investigation.
+
+GitHub issue templates are provided for:
+
+- experimental findings;
+- implementation defects;
+- conceptual challenges.
+
+A successful attack on the experiment is useful evidence. A failed attack can
+also be useful when the attempted challenge and observed result are documented
+accurately.
+
+`v1.0.0` remains the fixed first public experimental baseline. Findings
+against that release should be preserved as findings against that historical
+version rather than rewriting or moving the tag.

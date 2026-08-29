@@ -1,0 +1,95 @@
+name: Implementation Defect
+description: Report behavior that appears to violate an intended V1 rule or documented behavior.
+title: "[Defect] "
+labels:
+  - implementation
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this template when the implementation appears to violate the documented experimental model.
+
+        If you are unsure whether the observation is an implementation defect, use the Experimental Finding template instead.
+
+  - type: input
+    id: version
+    attributes:
+      label: Version or commit tested
+      placeholder: "v1.0.0"
+    validations:
+      required: true
+
+  - type: textarea
+    id: rule
+    attributes:
+      label: Intended rule or behavior
+      description: Identify the documented rule or behavior you believe is being violated.
+    validations:
+      required: true
+
+  - type: textarea
+    id: configuration
+    attributes:
+      label: Scenario configuration
+      description: Include relevant authority, boundary, materiality, actors, evidence, recommendation, and technical-validity state.
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Exact reproduction steps
+      placeholder: |
+        1. Load...
+        2. Configure...
+        3. Change...
+        4. Execute...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+
+  - type: dropdown
+    id: reproducible
+    attributes:
+      label: Reproducibility
+      options:
+        - Every time
+        - Intermittently
+        - Once
+        - Not yet reproduced
+    validations:
+      required: true
+
+  - type: textarea
+    id: control
+    attributes:
+      label: Authority-to-execution impact
+      description: Does this permit, block, alter, or bypass an execution consequence? Explain.
+
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Supporting evidence
+      description: Include non-sensitive logs, exported JSON, screenshots, or test references.
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Reporter checks
+      options:
+        - label: I tested the behavior against the version or commit identified above.
+          required: true
+        - label: I have not assumed that recommendation, confidence, or technical validity independently grants authority.

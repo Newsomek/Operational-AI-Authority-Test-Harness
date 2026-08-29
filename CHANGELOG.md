@@ -351,3 +351,11 @@ This file records material implementation changes to the Operational AI Authorit
 - Confirmed strict UTF-8 integrity and `git diff --cached --check`.
 - Finalized `docs/V1-READINESS.md` as V1 READY for publication.
 - No claim is made that the passing software suite proves the broader governance hypothesis.
+## 2026-08-28 - External review infrastructure
+
+- Added `docs/EXTERNAL-REVIEW-PROTOCOL.md` for structured independent review of the fixed V1 experimental baseline.
+- Added GitHub issue templates for experimental findings, implementation defects, and conceptual challenges.
+- Added GitHub issue-template configuration linking reviewers to the external review protocol.
+- Added a README invitation for structured criticism and reproducible attack testing.
+- Preserved `v1.0.0` as the fixed first public experimental baseline.
+- No V1 experimental implementation, authority rule, execution rule, state model, or test behavior was changed by this documentation and review-infrastructure update.

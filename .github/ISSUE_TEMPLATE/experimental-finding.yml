@@ -1,0 +1,97 @@
+name: Experimental Finding
+description: Report a reproducible observation or unexpected experimental result.
+title: "[Finding] "
+labels:
+  - external-review
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for testing the Operational AI Authority Test Harness.
+
+        Please report what you observed before trying to establish a root cause. A reproducible unexplained result is useful evidence.
+
+  - type: input
+    id: version
+    attributes:
+      label: Version or commit tested
+      description: Identify the release, tag, or commit.
+      placeholder: "v1.0.0"
+    validations:
+      required: true
+
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: Browser and operating system where relevant.
+      placeholder: "Chrome on Windows 11"
+
+  - type: textarea
+    id: scenario
+    attributes:
+      label: Scenario and configuration
+      description: Describe the scenario, authority, materiality, actors, evidence, and other relevant configuration.
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Reproduction steps
+      description: Provide the exact sequence needed to reproduce the observation.
+      placeholder: |
+        1. Load...
+        2. Change...
+        3. Select...
+        4. Run...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected result
+      description: What did you expect the harness to do?
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual result
+      description: What did the harness actually do?
+    validations:
+      required: true
+
+  - type: dropdown
+    id: reproducible
+    attributes:
+      label: Reproducibility
+      options:
+        - Every time
+        - Intermittently
+        - Once
+        - Not yet reproduced
+    validations:
+      required: true
+
+  - type: textarea
+    id: significance
+    attributes:
+      label: Why this matters
+      description: Explain why the observation may matter to the authority-to-execution experiment.
+
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Additional evidence
+      description: Add relevant exported JSON, screenshots, logs, or other non-sensitive evidence.
+
+  - type: checkboxes
+    id: acknowledgement
+    attributes:
+      label: Review acknowledgement
+      options:
+        - label: I understand that MATCH/MISMATCH and control-assertion PASS/FAIL are distinct concepts.
+        - label: I understand that a surprising result is not automatically an implementation defect.

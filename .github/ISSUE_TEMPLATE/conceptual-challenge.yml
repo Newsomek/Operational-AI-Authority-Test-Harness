@@ -1,0 +1,86 @@
+name: Conceptual Challenge
+description: Challenge an assumption, distinction, state model, architecture, or inference in the experiment.
+title: "[Conceptual Challenge] "
+labels:
+  - conceptual-review
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Conceptual criticism is explicitly welcome.
+
+        This template is for challenges to the model or experimental reasoning even when the software behaves exactly as designed.
+
+  - type: input
+    id: version
+    attributes:
+      label: Version or documentation reviewed
+      placeholder: "v1.0.0"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area being challenged
+      options:
+        - Authority versus capability
+        - Recommendation versus authority
+        - Technical validity versus authority
+        - Organizational decision versus authority record
+        - Authority record versus enforceable boundary
+        - Revalidation versus reauthorization
+        - Materiality
+        - Evidence
+        - State model
+        - Architecture comparison
+        - Human control
+        - Expected versus actual
+        - Control assertions
+        - Determinism or replay
+        - Claims or inference
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposition
+    attributes:
+      label: Proposition being challenged
+      description: State as precisely as possible the assumption, distinction, rule, or inference you are challenging.
+    validations:
+      required: true
+
+  - type: textarea
+    id: challenge
+    attributes:
+      label: Challenge
+      description: Explain why the proposition may be incomplete, invalid, ambiguous, or insufficient.
+    validations:
+      required: true
+
+  - type: textarea
+    id: counterexample
+    attributes:
+      label: Counterexample or alternative
+      description: Provide a counterexample, alternative model, or competing interpretation if available.
+
+  - type: textarea
+    id: consequence
+    attributes:
+      label: Consequence for the experiment
+      description: What would follow if this challenge is correct?
+
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Supporting reasoning or evidence
+      description: Add references, examples, research, or other relevant support.
+
+  - type: checkboxes
+    id: acknowledgement
+    attributes:
+      label: Scope acknowledgement
+      options:
+        - label: I understand that this template can be used even when the V1 software is functioning exactly as implemented.
+          required: true
