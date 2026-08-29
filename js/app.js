@@ -33,6 +33,8 @@
             document.getElementById("reset-scenario"),
         run:
             document.getElementById("run-experiment"),
+        compareArchitectures:
+            document.getElementById("compare-architectures"),
         replay:
             document.getElementById("run-replay"),
         applyControls:

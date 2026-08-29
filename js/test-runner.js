@@ -516,7 +516,9 @@
                 priorConditions:
                     input.priorConditions,
                 currentConditions:
-                    input.currentConditions
+                    input.currentConditions,
+                invalidationEventId:
+                    input.invalidationEventId
             },
             input.priorConditions,
             input.currentConditions,

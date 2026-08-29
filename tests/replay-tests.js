@@ -97,6 +97,27 @@
             revalidationActorId:
                 "ACTOR-TECH",
 
+            initialTechnicalValidity: {
+                status:
+                    "PASS",
+                reason:
+                    "Initial technical validation passed before material change.",
+                evidenceReferences: [
+                    "E-TECH-INITIAL"
+                ]
+            },
+
+            controlExpectedResult: {
+                expectedExecutionResult:
+                    "ALLOW",
+                declaredBeforeExecution:
+                    true,
+                scenarioVersion:
+                    "SCENARIO-1",
+                policyVersion:
+                    "POLICY-1"
+            },
+
             technicalRevalidation: {
                 status: "PASS",
                 reason: "Technical validation remains successful.",
@@ -115,6 +136,32 @@
                 customerRisk: "MEDIUM",
                 transactionAgeDays: 20
             },
+
+            reauthorizationArchitecture:
+                "SAME_LAYER_REAUTHORIZATION",
+
+            operationalActor: {
+                actorId:
+                    "ACTOR-RISK",
+                name:
+                    "Risk Officer",
+                capabilities: [
+                    "REAUTHORIZE"
+                ]
+            },
+
+            designatedAuthorityOwner: {
+                actorId:
+                    "ACTOR-SEPARATED",
+                name:
+                    "Separated Authority Owner",
+                capabilities: [
+                    "REAUTHORIZE"
+                ]
+            },
+
+            separationReason:
+                "Fixture uses same-layer reauthorization unless explicitly changed.",
 
             decisionActor: {
                 actorId: "ACTOR-RISK",

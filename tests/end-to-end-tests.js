@@ -55,6 +55,24 @@
 
     function defaultInput(disposition) {
         return {
+            runId:
+                "END-TO-END-RUN-1",
+
+            scenarioVersion:
+                "SCENARIO-1",
+
+            policyVersion:
+                "POLICY-1",
+
+            scenarioSnapshot: {
+                scenarioId:
+                    "REFUND-END-TO-END",
+                scenarioVersion:
+                    "SCENARIO-1",
+                name:
+                    "End-to-End Authority Test"
+            },
+
             priorConditions: {
                 customerRisk: "LOW",
                 refundAmountCents: 40000,
@@ -84,10 +102,40 @@
             invalidationEventId:
                 "EVENT-17",
 
+            materialityActorId:
+                "ACTOR-OPERATIONS",
+
+            revalidationActorId:
+                "ACTOR-TECH",
+
+            initialTechnicalValidity: {
+                status:
+                    "PASS",
+                reason:
+                    "Initial technical validation passed before material change.",
+                evidenceReferences: [
+                    "E-TECH-INITIAL"
+                ]
+            },
+
+            controlExpectedResult: {
+                expectedExecutionResult:
+                    "ALLOW",
+                declaredBeforeExecution:
+                    true,
+                scenarioVersion:
+                    "SCENARIO-1",
+                policyVersion:
+                    "POLICY-1"
+            },
+
             technicalRevalidation: {
                 status: "PASS",
                 reason:
-                    "Technical behavior remains valid."
+                    "Technical behavior remains valid.",
+                evidenceReferences: [
+                    "E-TECH"
+                ]
             },
 
             technicalCapability: {
@@ -103,15 +151,110 @@
                 transactionAgeDays: 20
             },
 
+            decisionActor: {
+                actorId:
+                    "ACTOR-OPERATIONS",
+                name:
+                    "Operations Decision Owner",
+                capabilities: [
+                    "REAUTHORIZE"
+                ]
+            },
+
+            operationalActor: {
+                actorId:
+                    "ACTOR-OPERATIONS",
+                name:
+                    "Operations Decision Owner",
+                capabilities: [
+                    "REAUTHORIZE"
+                ]
+            },
+
+            designatedAuthorityOwner: {
+                actorId:
+                    "ACTOR-RISK",
+                name:
+                    "Risk Authority Owner",
+                capabilities: [
+                    "REAUTHORIZE"
+                ]
+            },
+
+            reauthorizationArchitecture:
+                "SAME_LAYER_REAUTHORIZATION",
+
+            separationReason:
+                "Not used for same-layer end-to-end tests.",
+
+            evidenceItems: [
+                {
+                    evidenceId:
+                        "E-POLICY",
+                    type:
+                        "POLICY",
+                    description:
+                        "Refund policy",
+                    available:
+                        true,
+                    reviewed:
+                        true
+                },
+                {
+                    evidenceId:
+                        "E-RISK",
+                    type:
+                        "RISK_CHANGE",
+                    description:
+                        "Customer risk changed to MEDIUM",
+                    available:
+                        true,
+                    reviewed:
+                        true
+                }
+            ],
+
+            requiredEvidenceIds: [
+                "E-POLICY",
+                "E-RISK"
+            ],
+
+            allowedDispositions: [
+                "RENEW",
+                "NARROW",
+                "CONDITION",
+                "TRANSFER",
+                "SUSPEND",
+                "REFUSE"
+            ],
+
             decision: {
-                decisionId: "DECISION-3",
+                decisionId:
+                    "DECISION-3",
                 disposition:
                     disposition || "RENEW",
+                evidenceReviewed: [
+                    "E-POLICY",
+                    "E-RISK"
+                ],
                 scenarioVersion:
                     "SCENARIO-1",
                 policyVersion:
                     "POLICY-1"
-            }
+            },
+
+            expectedResult: {
+                expectedExecutionResult:
+                    "BLOCK",
+                declaredBeforeExecution:
+                    true,
+                scenarioVersion:
+                    "SCENARIO-1",
+                policyVersion:
+                    "POLICY-1"
+            },
+
+            controlAssertions: []
         };
     }
 
@@ -175,27 +318,27 @@
     );
 
     test(
-        "RENEW restores a 500 dollar authority and permits 400 dollar refund",
+        "RENEW restores a 500 dollar authority but blocks MEDIUM-risk action outside unchanged scope",
         function () {
             const result =
-                runner.runCoreExperiment(
+                runner.runGovernedExperiment(
                     defaultInput("RENEW")
                 );
 
             assertEqual(
-                result.reauthorization.translation.authority.status,
+                result.governedResult.decisionResult.translation.authority.status,
                 "ACTIVE",
                 "Renewed authority should be ACTIVE."
             );
 
             assertEqual(
-                result.reauthorization.boundaryResult.boundary.scope.maximumAmountCents,
+                result.governedResult.boundaryResult.boundary.scope.maximumAmountCents,
                 50000,
                 "Expected renewed 500 dollar boundary."
             );
 
             assertEqual(
-                result.reauthorization.executionResult.result,
+                result.governedResult.executionResult.result,
                 "BLOCK",
                 "Medium risk remains outside unchanged renewed LOW-risk scope."
             );
@@ -218,18 +361,18 @@
             };
 
             const result =
-                runner.runCoreExperiment(
+                runner.runGovernedExperiment(
                     input
                 );
 
             assertEqual(
-                result.reauthorization.translation.authority.scope.maximumAmountCents,
+                result.governedResult.decisionResult.translation.authority.scope.maximumAmountCents,
                 25000,
                 "Expected manually specified narrowed scope."
             );
 
             assertEqual(
-                result.reauthorization.executionResult.result,
+                result.governedResult.executionResult.result,
                 "BLOCK",
                 "400 dollar request must be blocked by 250 dollar boundary."
             );
@@ -252,12 +395,12 @@
             };
 
             const result =
-                runner.runCoreExperiment(
+                runner.runGovernedExperiment(
                     input
                 );
 
             assertEqual(
-                result.reauthorization.executionResult.result,
+                result.governedResult.executionResult.result,
                 "ALLOW",
                 "Same action should be allowed when new boundary explicitly covers it."
             );
@@ -268,24 +411,24 @@
         "SUSPEND creates no executable boundary and remains blocked",
         function () {
             const result =
-                runner.runCoreExperiment(
+                runner.runGovernedExperiment(
                     defaultInput("SUSPEND")
                 );
 
             assertEqual(
-                result.reauthorization.translation.authority.status,
+                result.governedResult.decisionResult.translation.authority.status,
                 "SUSPENDED",
                 "Expected suspended authority."
             );
 
             assertEqual(
-                result.reauthorization.boundaryResult.boundaryCreated,
+                result.governedResult.boundaryResult.boundaryCreated,
                 false,
                 "Suspended authority must create no executable boundary."
             );
 
             assertEqual(
-                result.reauthorization.executionResult.result,
+                result.governedResult.executionResult.result,
                 "BLOCK",
                 "Suspension must leave execution blocked."
             );
@@ -296,18 +439,18 @@
         "REFUSE creates no new authority and execution remains blocked",
         function () {
             const result =
-                runner.runCoreExperiment(
+                runner.runGovernedExperiment(
                     defaultInput("REFUSE")
                 );
 
             assertEqual(
-                result.reauthorization.translation.authorityCreated,
+                result.governedResult.decisionResult.translation.authorityCreated,
                 false,
                 "REFUSE must create no authority."
             );
 
             assertEqual(
-                result.reauthorization.executionResult.result,
+                result.governedResult.executionResult.result,
                 "BLOCK",
                 "REFUSE must leave execution blocked."
             );
@@ -324,24 +467,24 @@
                 "Risk Officer";
 
             const result =
-                runner.runCoreExperiment(
+                runner.runGovernedExperiment(
                     input
                 );
 
             assertEqual(
-                result.reauthorization.translation.authorityCreated,
+                result.governedResult.decisionResult.translation.authorityCreated,
                 false,
                 "TRANSFER must not create executable authority."
             );
 
             assertEqual(
-                result.reauthorization.translation.transferredDecisionOwner,
+                result.governedResult.decisionResult.translation.transferredDecisionOwner,
                 "Risk Officer",
                 "Expected transferred decision owner."
             );
 
             assertEqual(
-                result.reauthorization.executionResult.result,
+                result.governedResult.executionResult.result,
                 "BLOCK",
                 "TRANSFER must remain blocked until another governance decision."
             );

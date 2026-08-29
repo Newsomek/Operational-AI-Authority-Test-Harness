@@ -103,6 +103,27 @@
             revalidationActorId:
                 "ACTOR-TECH",
 
+            initialTechnicalValidity: {
+                status:
+                    "PASS",
+                reason:
+                    "Initial technical validation passed before material change.",
+                evidenceReferences: [
+                    "E-TECH-INITIAL"
+                ]
+            },
+
+            controlExpectedResult: {
+                expectedExecutionResult:
+                    "ALLOW",
+                declaredBeforeExecution:
+                    true,
+                scenarioVersion:
+                    "SCENARIO-1",
+                policyVersion:
+                    "POLICY-1"
+            },
+
             technicalRevalidation: {
                 status: "PASS",
                 reason:
@@ -124,6 +145,32 @@
                 customerRisk: "MEDIUM",
                 transactionAgeDays: 20
             },
+
+            reauthorizationArchitecture:
+                "SAME_LAYER_REAUTHORIZATION",
+
+            operationalActor: {
+                actorId:
+                    "ACTOR-RISK",
+                name:
+                    "Risk Officer",
+                capabilities: [
+                    "REAUTHORIZE"
+                ]
+            },
+
+            designatedAuthorityOwner: {
+                actorId:
+                    "ACTOR-SEPARATED",
+                name:
+                    "Separated Authority Owner",
+                capabilities: [
+                    "REAUTHORIZE"
+                ]
+            },
+
+            separationReason:
+                "Fixture uses same-layer reauthorization unless explicitly changed.",
 
             decisionActor: {
                 actorId: "ACTOR-RISK",
@@ -530,6 +577,10 @@
                 baseInput();
 
             input.decisionActor.capabilities = [
+                "OPERATE_SYSTEM"
+            ];
+
+            input.operationalActor.capabilities = [
                 "OPERATE_SYSTEM"
             ];
 

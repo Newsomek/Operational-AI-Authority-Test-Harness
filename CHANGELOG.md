@@ -359,3 +359,24 @@ This file records material implementation changes to the Operational AI Authorit
 - Added a README invitation for structured criticism and reproducible attack testing.
 - Preserved `v1.0.0` as the fixed first public experimental baseline.
 - No V1 experimental implementation, authority rule, execution rule, state model, or test behavior was changed by this documentation and review-infrastructure update.
+## 2026-08-28 - V1.0.1 initialization defect correction
+
+- During direct use of the public V1 application, discovered that `js/app.js` registered an event listener through `elements.compareArchitectures` without binding that property to the existing `compare-architectures` DOM control.
+- The resulting startup exception occurred before `window.OAATH.App` was exported, preventing the normal `index.html` application controller from completing initialization.
+- Added the missing `compareArchitectures` DOM binding.
+- Classified as an implementation defect affecting the V1 application initialization path.
+- The fixed historical `v1.0.0` tag is not moved or rewritten.
+- The correction is intended for patch release `v1.0.1`.
+- Full ordinary-application initialization and complete browser-suite verification are required before release.
+### Final v1.0.1 browser verification
+
+- Corrected the application startup failure caused by the missing `compareArchitectures` DOM binding.
+- Restored four existing test suites that were present in the repository but omitted from the browser test runner.
+- Migrated stale end-to-end tests from the removed `runCoreExperiment` interface to the current governed-run contract.
+- Corrected current governed-result assertion paths without weakening behavioral expectations.
+- Corrected same-layer unauthorized-actor test setup so the actual decision owner lacks reauthorization authority.
+- Preserved `invalidationEventId` as a causal replay input so authority history recomputes deterministically.
+- Loaded negative-test fixture support before baseline control-run tests that consume it.
+- Removed the duplicate page-level test-runner heading.
+- Independently verified normal application initialization.
+- Verified the complete browser suite as 182/182 PASS with zero failed tests and zero unexecuted suites.
