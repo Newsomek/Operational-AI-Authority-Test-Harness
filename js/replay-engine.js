@@ -59,6 +59,14 @@
                 deepClone(
                     input.controlExpectedResult
                 ),
+            controlRequestedAction:
+                deepClone(
+                    input.controlRequestedAction || null
+                ),
+            controlAssertion:
+                deepClone(
+                    input.controlAssertion || null
+                ),
             reauthorizationArchitecture:
                 input.reauthorizationArchitecture ||
                 "SAME_LAYER_REAUTHORIZATION",
@@ -273,6 +281,14 @@
             controlExpectedResult:
                 deepClone(
                     snapshot.controlExpectedResult
+                ),
+            controlRequestedAction:
+                deepClone(
+                    snapshot.controlRequestedAction || null
+                ),
+            controlAssertion:
+                deepClone(
+                    snapshot.controlAssertion || null
                 ),
             requestedAction:
                 deepClone(

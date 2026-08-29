@@ -1,0 +1,357 @@
+{
+  "scenarioId": "ACCESS-V2",
+  "scenarioType": "PRIVILEGED_SYSTEM_ACCESS",
+  "scenarioVersion": "SCENARIO-V2-ACCESS",
+  "policyVersion": "POLICY-V2-1",
+  "schemaVersion": "2.0",
+  "name": "Privileged System Access",
+  "description": "Tests whether a role/context change invalidates privileged production access authority even when authentication and security checks still pass.",
+  "priorConditions": {
+    "person": "Jordan Lee",
+    "organizationalContext": "PRODUCTION_OPERATIONS",
+    "approvedChangeTicket": false
+  },
+  "currentConditions": {
+    "person": "Jordan Lee",
+    "organizationalContext": "BUSINESS_ANALYTICS",
+    "approvedChangeTicket": false
+  },
+  "recommendation": {
+    "recommendationId": "REC-ACCESS",
+    "actionType": "GRANT_PRODUCTION_DB_ACCESS",
+    "accessLevel": "PRODUCTION_ADMIN",
+    "confidence": 0.94,
+    "source": "Configured recommendation"
+  },
+  "technicalCapability": {
+    "supported": true,
+    "actionType": "GRANT_PRODUCTION_DB_ACCESS",
+    "authenticationValid": true,
+    "deviceSecurityValid": true
+  },
+  "initialTechnicalValidity": {
+    "status": "PASS",
+    "reason": "Initial technical validation passed before the material change.",
+    "evidenceReferences": [
+      "E-TECH-INITIAL"
+    ]
+  },
+  "technicalRevalidation": {
+    "status": "PASS",
+    "reason": "Technical behavior remains valid under changed conditions.",
+    "evidenceReferences": [
+      "E-TECH"
+    ]
+  },
+  "requestedAction": {
+    "actionType": "GRANT_PRODUCTION_DB_ACCESS",
+    "accessLevel": "PRODUCTION_ADMIN",
+    "organizationalContext": "BUSINESS_ANALYTICS"
+  },
+  "controlRequestedAction": {
+    "actionType": "GRANT_PRODUCTION_DB_ACCESS",
+    "accessLevel": "PRODUCTION_ADMIN",
+    "organizationalContext": "PRODUCTION_OPERATIONS"
+  },
+  "materialityRules": [
+    {
+      "ruleId": "ROLE-PROD-ANALYTICS",
+      "type": "FIELD_TRANSITION",
+      "field": "organizationalContext",
+      "from": "PRODUCTION_OPERATIONS",
+      "to": "BUSINESS_ANALYTICS",
+      "result": "MATERIAL"
+    }
+  ],
+  "priorAuthority": {
+    "authorityId": "AUTH-ACCESS-20",
+    "authorityVersion": 20,
+    "actionType": "GRANT_PRODUCTION_DB_ACCESS",
+    "purpose": "PRODUCTION_DATABASE_ACCESS",
+    "status": "ACTIVE",
+    "owner": "Production Operations",
+    "scope": {
+      "constraints": [
+        {
+          "field": "accessLevel",
+          "operator": "IN",
+          "comparisonValue": [
+            "PRODUCTION_ADMIN",
+            "READ_ONLY"
+          ],
+          "valueType": "string",
+          "failureReason": "Requested access level is outside the current authority scope."
+        },
+        {
+          "field": "organizationalContext",
+          "operator": "IN",
+          "comparisonValue": [
+            "PRODUCTION_OPERATIONS"
+          ],
+          "valueType": "string",
+          "failureReason": "Current organizational context is outside the current authority scope."
+        }
+      ]
+    },
+    "conditions": [],
+    "createdByDecisionId": "DECISION-ACCESS-1",
+    "replacesAuthorityId": "AUTH-ACCESS-19",
+    "invalidatedByEventId": null,
+    "scenarioVersion": "SCENARIO-V2-ACCESS",
+    "policyVersion": "POLICY-V2-1"
+  },
+  "operationalActor": {
+    "actorId": "ACTOR-ACCESS-OPS",
+    "name": "Production Operations Authority Owner",
+    "capabilities": [
+      "OPERATE_SYSTEM",
+      "REAUTHORIZE"
+    ]
+  },
+  "designatedAuthorityOwner": {
+    "actorId": "ACTOR-DATA-SECURITY",
+    "name": "Data Security Authority",
+    "capabilities": [
+      "REAUTHORIZE"
+    ]
+  },
+  "decisionActor": {
+    "actorId": "ACTOR-ACCESS-OPS",
+    "name": "Production Operations Authority Owner",
+    "capabilities": [
+      "OPERATE_SYSTEM",
+      "REAUTHORIZE"
+    ]
+  },
+  "evidenceItems": [
+    {
+      "evidenceId": "E-ACCESS-POLICY",
+      "type": "POLICY",
+      "description": "Privileged production access policy",
+      "available": true,
+      "reviewed": true
+    },
+    {
+      "evidenceId": "E-ROLE-CHANGE",
+      "type": "ROLE_CHANGE",
+      "description": "Jordan Lee moved from Production Operations to Business Analytics",
+      "available": true,
+      "reviewed": true
+    }
+  ],
+  "requiredEvidenceIds": [
+    "E-ACCESS-POLICY",
+    "E-ROLE-CHANGE"
+  ],
+  "allowedDispositions": [
+    "RENEW",
+    "NARROW",
+    "CONDITION",
+    "TRANSFER",
+    "SUSPEND",
+    "REFUSE"
+  ],
+  "decision": {
+    "decisionId": "DECISION-ACCESS-2",
+    "disposition": "CONDITION",
+    "evidenceReviewed": [
+      "E-ACCESS-POLICY",
+      "E-ROLE-CHANGE"
+    ],
+    "newScope": {
+      "constraints": [
+        {
+          "field": "accessLevel",
+          "operator": "IN",
+          "comparisonValue": [
+            "PRODUCTION_ADMIN"
+          ],
+          "valueType": "string",
+          "failureReason": "Requested access level is outside the reauthorized scope."
+        },
+        {
+          "field": "organizationalContext",
+          "operator": "IN",
+          "comparisonValue": [
+            "BUSINESS_ANALYTICS"
+          ],
+          "valueType": "string",
+          "failureReason": "Current organizational context is outside the reauthorized scope."
+        }
+      ]
+    },
+    "conditions": [
+      {
+        "required": true,
+        "predicate": {
+          "field": "approvedChangeTicket",
+          "operator": "EQ",
+          "comparisonValue": true,
+          "valueType": "boolean"
+        }
+      }
+    ],
+    "scenarioVersion": "SCENARIO-V2-ACCESS",
+    "policyVersion": "POLICY-V2-1"
+  },
+  "expectedResult": {
+    "expectedExecutionResult": "BLOCK",
+    "declaredBeforeExecution": true,
+    "scenarioVersion": "SCENARIO-V2-ACCESS",
+    "policyVersion": "POLICY-V2-1"
+  },
+  "controlExpectedResult": {
+    "expectedExecutionResult": "ALLOW",
+    "declaredBeforeExecution": true,
+    "scenarioVersion": "SCENARIO-V2-ACCESS",
+    "policyVersion": "POLICY-V2-1"
+  },
+  "controlAssertion": {
+    "assertionId": "CONTROL-ACCESS-CONTEXT",
+    "ruleReference": "ACTIVE_BOUNDARY_CONSTRAINT",
+    "assertionVersion": "1",
+    "parameters": {
+      "field": "organizationalContext",
+      "operator": "IN",
+      "comparisonValue": [
+        "PRODUCTION_OPERATIONS"
+      ]
+    }
+  },
+  "controlAssertions": [
+    {
+      "assertionId": "ASSERT-MATERIAL-INVALIDATES",
+      "ruleReference": "INVALID_AUTHORITY_BLOCKS",
+      "assertionVersion": "1",
+      "description": "A configured material change invalidates the prior authority and blocks before reauthorization."
+    }
+  ],
+  "reauthorizationArchitecture": "SAME_LAYER_REAUTHORIZATION",
+  "separationReason": "Configured policy requires the reauthorization decision to move outside the operational layer.",
+  "presentation": {
+    "situation": "Jordan Lee previously worked in Production Operations and requests Production Database administrator access.",
+    "change": "Jordan moves from Production Operations to Business Analytics.",
+    "materiality": "The organizational-context change is MATERIAL because the basis for privileged production access changed.",
+    "capability": "Authentication, device checks, and system capability can all remain valid.",
+    "recommendation": "The configured recommendation remains GRANT ACCESS.",
+    "priorAuthority": "Jordan previously operated under ACTIVE privileged-access authority tied to the Production Operations context.",
+    "authorityQuestion": "Can the current organizational authority still permit this consequence after the material change?",
+    "consequence": "Execution controls whether Production administrator access can be granted.",
+    "evidence": "Operational governance is demonstrated when access is allowed or blocked from the current enforceable authority rather than authentication, recommendation, or technical capability alone.",
+    "block": "Production administrator access not authorized.",
+    "allow": "Production administrator access authorized."
+  },
+  "ui": {
+    "controls": [
+      {
+        "id": "access-context",
+        "label": "Current organizational context",
+        "kind": "select",
+        "path": "currentConditions.organizationalContext",
+        "syncPaths": [
+          "requestedAction.organizationalContext"
+        ],
+        "options": [
+          "PRODUCTION_OPERATIONS",
+          "BUSINESS_ANALYTICS"
+        ],
+        "help": "The organizational context after the role change."
+      },
+      {
+        "id": "access-ticket",
+        "label": "Approved change ticket",
+        "kind": "boolean",
+        "path": "currentConditions.approvedChangeTicket",
+        "help": "Typed CONDITION evidence for privileged access when CONDITION is selected."
+      }
+    ],
+    "dispositionTemplates": {
+      "RENEW": {
+        "newScope": {
+          "constraints": [
+            {
+              "field": "accessLevel",
+              "operator": "IN",
+              "comparisonValue": [
+                "PRODUCTION_ADMIN"
+              ],
+              "valueType": "string",
+              "failureReason": "Requested access level is outside the reauthorized scope."
+            },
+            {
+              "field": "organizationalContext",
+              "operator": "IN",
+              "comparisonValue": [
+                "BUSINESS_ANALYTICS"
+              ],
+              "valueType": "string",
+              "failureReason": "Current organizational context is outside the reauthorized scope."
+            }
+          ]
+        }
+      },
+      "NARROW": {
+        "newScope": {
+          "constraints": [
+            {
+              "field": "accessLevel",
+              "operator": "IN",
+              "comparisonValue": [
+                "READ_ONLY"
+              ],
+              "valueType": "string",
+              "failureReason": "Requested access level is outside the narrowed authority."
+            },
+            {
+              "field": "organizationalContext",
+              "operator": "IN",
+              "comparisonValue": [
+                "PRODUCTION_OPERATIONS"
+              ],
+              "valueType": "string",
+              "failureReason": "Current organizational context is outside the narrowed authority."
+            }
+          ]
+        }
+      },
+      "CONDITION": {
+        "newScope": {
+          "constraints": [
+            {
+              "field": "accessLevel",
+              "operator": "IN",
+              "comparisonValue": [
+                "PRODUCTION_ADMIN"
+              ],
+              "valueType": "string",
+              "failureReason": "Requested access level is outside the reauthorized scope."
+            },
+            {
+              "field": "organizationalContext",
+              "operator": "IN",
+              "comparisonValue": [
+                "BUSINESS_ANALYTICS"
+              ],
+              "valueType": "string",
+              "failureReason": "Current organizational context is outside the reauthorized scope."
+            }
+          ]
+        },
+        "conditions": [
+          {
+            "required": true,
+            "predicate": {
+              "field": "approvedChangeTicket",
+              "operator": "EQ",
+              "comparisonValue": true,
+              "valueType": "boolean"
+            }
+          }
+        ]
+      },
+      "TRANSFER": {
+        "newDecisionOwner": "ACTOR-DATA-SECURITY"
+      }
+    }
+  }
+}

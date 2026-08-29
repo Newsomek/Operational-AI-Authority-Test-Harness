@@ -229,3 +229,27 @@ Consequences:
 
 Date:
 2026-08-29
+
+## V2-D04 — Five-scenario catalog uses one shared authority-to-execution model
+
+**Date:** 2026-08-29
+**Version:** Version 2 development
+
+**Question**
+How should Version 2 add materially different organizational domains without turning the harness into five separately hard-coded governance applications?
+
+**Decision**
+Version 2 uses one scenario catalog containing exactly five approved scenarios: Automated Refund, Privileged System Access, Workforce Shift Assignment, Procurement / Total Acquisition Cost, and Customer Account Restriction. Scenario configuration supplies domain facts, typed authority constraints, materiality rules, actors, evidence, default dispositions, presentation text, and domain-specific controls. The shared materiality, authority, boundary, execution, evidence, replay, and architecture engines remain common.
+
+The procurement metric change from `equipmentPriceCents` to `totalAcquisitionCostCents` is represented as a replacement scope created through reauthorization, not falsely classified as NARROW. Strict NARROW remains limited to demonstrable subset/restriction relationships on comparable authority dimensions.
+
+**Reason**
+The Version 2 research question is whether the authority model generalizes. A scenario-specific execution engine would hide failure to generalize. Configuration-driven domain variation makes scenario-specific assumptions inspectable and makes any genuinely missing general-purpose authority primitive visible as a research finding.
+
+**Alternatives considered**
+- Five independent scenario implementations — rejected because this would not test model generalization.
+- Force procurement basis change into NARROW — rejected because changing the governed metric is not necessarily a subset relationship.
+- Keep only the refund UI and change raw JSON manually — rejected because Version 2 explicitly requires a first-class scenario selector and scenario-specific controls.
+
+**Consequences**
+Scenario switching must clear derived run state, preserve scenario identity in evidence/replay, and never leave stale labels, controls, actors, conditions, or boundaries from another scenario. The five-scenario set is closed for Version 2.

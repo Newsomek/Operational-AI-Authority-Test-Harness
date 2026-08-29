@@ -1,0 +1,329 @@
+{
+  "scenarioId": "PROCUREMENT-V2",
+  "scenarioType": "PROCUREMENT_TOTAL_ACQUISITION_COST",
+  "scenarioVersion": "SCENARIO-V2-PROCUREMENT",
+  "policyVersion": "POLICY-V2-1",
+  "schemaVersion": "2.0",
+  "name": "Procurement / Total Acquisition Cost",
+  "description": "Tests what happens when a deterministic authority system faithfully enforces the wrong economic metric and the governed basis itself changes.",
+  "priorConditions": {
+    "governedMetric": "equipmentPriceCents",
+    "vendor": "Vendor C",
+    "equipmentPriceCents": 14500000,
+    "shippingHandlingCents": 5500000,
+    "totalAcquisitionCostCents": 20000000,
+    "financeApproval": false
+  },
+  "currentConditions": {
+    "governedMetric": "totalAcquisitionCostCents",
+    "vendor": "Vendor C",
+    "equipmentPriceCents": 14500000,
+    "shippingHandlingCents": 5500000,
+    "totalAcquisitionCostCents": 20000000,
+    "financeApproval": false
+  },
+  "recommendation": {
+    "recommendationId": "REC-PROC",
+    "actionType": "APPROVE_VENDOR_PURCHASE",
+    "vendor": "Vendor C",
+    "confidence": 0.92,
+    "source": "Configured recommendation"
+  },
+  "technicalCapability": {
+    "supported": true,
+    "actionType": "APPROVE_VENDOR_PURCHASE"
+  },
+  "initialTechnicalValidity": {
+    "status": "PASS",
+    "reason": "Initial technical validation passed before the material change.",
+    "evidenceReferences": [
+      "E-TECH-INITIAL"
+    ]
+  },
+  "technicalRevalidation": {
+    "status": "PASS",
+    "reason": "Technical behavior remains valid under changed conditions.",
+    "evidenceReferences": [
+      "E-TECH"
+    ]
+  },
+  "requestedAction": {
+    "actionType": "APPROVE_VENDOR_PURCHASE",
+    "vendor": "Vendor C",
+    "equipmentPriceCents": 14500000,
+    "shippingHandlingCents": 5500000,
+    "totalAcquisitionCostCents": 20000000
+  },
+  "controlRequestedAction": {
+    "actionType": "APPROVE_VENDOR_PURCHASE",
+    "vendor": "Vendor C",
+    "equipmentPriceCents": 14500000,
+    "shippingHandlingCents": 5500000,
+    "totalAcquisitionCostCents": 20000000
+  },
+  "materialityRules": [
+    {
+      "ruleId": "PROCUREMENT-BASIS-CHANGE",
+      "type": "FIELD_TRANSITION",
+      "field": "governedMetric",
+      "from": "equipmentPriceCents",
+      "to": "totalAcquisitionCostCents",
+      "result": "MATERIAL"
+    }
+  ],
+  "priorAuthority": {
+    "authorityId": "AUTH-PROC-40",
+    "authorityVersion": 40,
+    "actionType": "APPROVE_VENDOR_PURCHASE",
+    "purpose": "EQUIPMENT_PROCUREMENT",
+    "status": "ACTIVE",
+    "owner": "Procurement",
+    "scope": {
+      "constraints": [
+        {
+          "field": "equipmentPriceCents",
+          "operator": "LTE",
+          "comparisonValue": 17500000,
+          "valueType": "integer",
+          "failureReason": "Equipment line-item price exceeds the configured purchasing boundary."
+        }
+      ]
+    },
+    "conditions": [],
+    "createdByDecisionId": "DECISION-PROC-1",
+    "replacesAuthorityId": "AUTH-PROC-39",
+    "invalidatedByEventId": null,
+    "scenarioVersion": "SCENARIO-V2-PROCUREMENT",
+    "policyVersion": "POLICY-V2-1"
+  },
+  "operationalActor": {
+    "actorId": "ACTOR-PROCUREMENT",
+    "name": "Procurement Authority Owner",
+    "capabilities": [
+      "OPERATE_SYSTEM",
+      "REAUTHORIZE"
+    ]
+  },
+  "designatedAuthorityOwner": {
+    "actorId": "ACTOR-FINANCE-PROCUREMENT",
+    "name": "Finance and Procurement Authority",
+    "capabilities": [
+      "REAUTHORIZE"
+    ]
+  },
+  "decisionActor": {
+    "actorId": "ACTOR-PROCUREMENT",
+    "name": "Procurement Authority Owner",
+    "capabilities": [
+      "OPERATE_SYSTEM",
+      "REAUTHORIZE"
+    ]
+  },
+  "evidenceItems": [
+    {
+      "evidenceId": "E-PROC-POLICY",
+      "type": "POLICY",
+      "description": "Configured procurement authority rule",
+      "available": true,
+      "reviewed": true
+    },
+    {
+      "evidenceId": "E-COST-DISCOVERY",
+      "type": "CONTROL_DISCOVERY",
+      "description": "Equipment price alone does not represent total acquisition cost",
+      "available": true,
+      "reviewed": true
+    }
+  ],
+  "requiredEvidenceIds": [
+    "E-PROC-POLICY",
+    "E-COST-DISCOVERY"
+  ],
+  "allowedDispositions": [
+    "RENEW",
+    "NARROW",
+    "CONDITION",
+    "TRANSFER",
+    "SUSPEND",
+    "REFUSE"
+  ],
+  "decision": {
+    "decisionId": "DECISION-PROC-2",
+    "disposition": "RENEW",
+    "evidenceReviewed": [
+      "E-PROC-POLICY",
+      "E-COST-DISCOVERY"
+    ],
+    "newScope": {
+      "constraints": [
+        {
+          "field": "totalAcquisitionCostCents",
+          "operator": "LTE",
+          "comparisonValue": 17500000,
+          "valueType": "integer",
+          "failureReason": "Total acquisition cost exceeds the configured purchasing boundary."
+        }
+      ]
+    },
+    "scenarioVersion": "SCENARIO-V2-PROCUREMENT",
+    "policyVersion": "POLICY-V2-1"
+  },
+  "expectedResult": {
+    "expectedExecutionResult": "BLOCK",
+    "declaredBeforeExecution": true,
+    "scenarioVersion": "SCENARIO-V2-PROCUREMENT",
+    "policyVersion": "POLICY-V2-1"
+  },
+  "controlExpectedResult": {
+    "expectedExecutionResult": "ALLOW",
+    "declaredBeforeExecution": true,
+    "scenarioVersion": "SCENARIO-V2-PROCUREMENT",
+    "policyVersion": "POLICY-V2-1"
+  },
+  "controlAssertion": {
+    "assertionId": "CONTROL-PROC-OLD-METRIC",
+    "ruleReference": "ACTIVE_BOUNDARY_CONSTRAINT",
+    "assertionVersion": "1",
+    "parameters": {
+      "field": "equipmentPriceCents",
+      "operator": "LTE",
+      "comparisonValue": 17500000
+    }
+  },
+  "controlAssertions": [
+    {
+      "assertionId": "ASSERT-MATERIAL-INVALIDATES",
+      "ruleReference": "INVALID_AUTHORITY_BLOCKS",
+      "assertionVersion": "1",
+      "description": "A configured material change invalidates the prior authority and blocks before reauthorization."
+    }
+  ],
+  "reauthorizationArchitecture": "SAME_LAYER_REAUTHORIZATION",
+  "separationReason": "Configured policy requires the reauthorization decision to move outside the operational layer.",
+  "presentation": {
+    "situation": "Vendor C offers equipment for 145,000 dollars plus 55,000 dollars shipping, for a 200,000 dollar total acquisition cost.",
+    "change": "The organization discovers that equipment price alone does not represent the actual financial commitment and changes the governed metric to total acquisition cost.",
+    "materiality": "The basis/metric change is MATERIAL because the quantity over which purchasing authority is defined has changed.",
+    "capability": "The purchasing system can be technically correct and deterministic under either configured metric.",
+    "recommendation": "The configured vendor recommendation can remain unchanged while authority is reconsidered.",
+    "priorAuthority": "The old authority boundary evaluated equipmentPriceCents <= 175,000 dollars, under which Vendor C passed despite the higher delivered cost.",
+    "authorityQuestion": "Can the current organizational authority still permit this consequence after the material change?",
+    "consequence": "Execution controls whether the purchase/vendor action can proceed under the currently configured authority basis.",
+    "evidence": "This scenario demonstrates the difference between faithfully enforcing a boundary and having the right organizational boundary. The harness does not declare which procurement policy is economically correct.",
+    "block": "Purchase/vendor action not authorized.",
+    "allow": "Purchase/vendor action authorized."
+  },
+  "ui": {
+    "controls": [
+      {
+        "id": "proc-metric",
+        "label": "Governed procurement metric",
+        "kind": "select",
+        "path": "currentConditions.governedMetric",
+        "options": [
+          "equipmentPriceCents",
+          "totalAcquisitionCostCents"
+        ],
+        "help": "Which economic quantity the current organizational authority is defined over."
+      },
+      {
+        "id": "proc-equipment",
+        "label": "Vendor C equipment price ($)",
+        "kind": "number",
+        "path": "requestedAction.equipmentPriceCents",
+        "syncPaths": [
+          "currentConditions.equipmentPriceCents"
+        ],
+        "unit": "dollars",
+        "step": "1",
+        "help": "Equipment line-item price."
+      },
+      {
+        "id": "proc-shipping",
+        "label": "Vendor C shipping and handling ($)",
+        "kind": "number",
+        "path": "requestedAction.shippingHandlingCents",
+        "syncPaths": [
+          "currentConditions.shippingHandlingCents"
+        ],
+        "unit": "dollars",
+        "step": "1",
+        "help": "Shipping and handling charge."
+      },
+      {
+        "id": "proc-total",
+        "label": "Vendor C total acquisition cost ($)",
+        "kind": "number",
+        "path": "requestedAction.totalAcquisitionCostCents",
+        "syncPaths": [
+          "currentConditions.totalAcquisitionCostCents"
+        ],
+        "unit": "dollars",
+        "step": "1",
+        "help": "Total delivered financial commitment used by the renewed authority boundary."
+      },
+      {
+        "id": "proc-finance-approval",
+        "label": "Finance approval",
+        "kind": "boolean",
+        "path": "currentConditions.financeApproval",
+        "help": "Typed CONDITION evidence if a conditioned procurement authority is selected."
+      }
+    ],
+    "dispositionTemplates": {
+      "RENEW": {
+        "newScope": {
+          "constraints": [
+            {
+              "field": "totalAcquisitionCostCents",
+              "operator": "LTE",
+              "comparisonValue": 17500000,
+              "valueType": "integer",
+              "failureReason": "Total acquisition cost exceeds the configured purchasing boundary."
+            }
+          ]
+        }
+      },
+      "NARROW": {
+        "newScope": {
+          "constraints": [
+            {
+              "field": "equipmentPriceCents",
+              "operator": "LTE",
+              "comparisonValue": 15000000,
+              "valueType": "integer",
+              "failureReason": "Equipment price exceeds the narrowed purchasing boundary."
+            }
+          ]
+        }
+      },
+      "CONDITION": {
+        "newScope": {
+          "constraints": [
+            {
+              "field": "totalAcquisitionCostCents",
+              "operator": "LTE",
+              "comparisonValue": 17500000,
+              "valueType": "integer",
+              "failureReason": "Total acquisition cost exceeds the configured purchasing boundary."
+            }
+          ]
+        },
+        "conditions": [
+          {
+            "required": true,
+            "predicate": {
+              "field": "financeApproval",
+              "operator": "EQ",
+              "comparisonValue": true,
+              "valueType": "boolean"
+            }
+          }
+        ]
+      },
+      "TRANSFER": {
+        "newDecisionOwner": "ACTOR-FINANCE-PROCUREMENT"
+      }
+    }
+  }
+}

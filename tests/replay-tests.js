@@ -431,6 +431,57 @@
     );
 
     test(
+        "Replay preserves explicit baseline control action and generic control assertion",
+        function () {
+            const input =
+                baseInput();
+
+            input.controlRequestedAction = {
+                actionType: "AUTO_REFUND",
+                amountCents: 40000,
+                customerRisk: "LOW",
+                transactionAgeDays: 20
+            };
+
+            input.controlAssertion = {
+                assertionId: "CONTROL-REFUND-AMOUNT",
+                ruleReference: "ACTIVE_BOUNDARY_CONSTRAINT",
+                assertionVersion: "1",
+                parameters: {
+                    field: "amountCents",
+                    operator: "LTE",
+                    comparisonValue: 50000
+                }
+            };
+
+            const original =
+                runner.runGovernedExperiment(
+                    input
+                );
+
+            const result =
+                replay.replay(
+                    original.runRecord
+                );
+
+            assertTrue(
+                result.comparison.comparisons.controlRun,
+                "Explicit baseline control run should recompute equivalently."
+            );
+
+            assertTrue(
+                result.comparison.comparisons.controlAssertionResults,
+                "Explicit generic control assertion should recompute equivalently."
+            );
+
+            assertTrue(
+                result.comparison.equivalent,
+                "Replay should remain fully equivalent when explicit baseline control inputs are present."
+            );
+        }
+    );
+
+    test(
         "Recorded control result is not used to force replay assertion result",
         function () {
             const original =

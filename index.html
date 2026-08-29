@@ -19,7 +19,7 @@
 
     <header class="app-header">
         <div class="app-title-block">
-            <h1>Operational AI Authority Test Harness</h1>
+            <h1>Operational AI Authority Test Harness <span class="version-badge">Version 2</span></h1>
             <p class="app-purpose">
                 This is a deterministic laboratory for testing how organizational authority changes when conditions change — and whether an AI-enabled system is still permitted to act.
             </p>
@@ -61,34 +61,17 @@
                     Controls edit scenario data only. Deterministic engines remain authoritative.
                 </p>
             </div>
+            <div class="scenario-selector-block">
+                <label for="scenario-selector">
+                    Select scenario
+                    <select id="scenario-selector" aria-describedby="scenario-selector-help"></select>
+                </label>
+                <p id="scenario-selector-help" class="field-help">Version 2 holds one authority-to-execution model constant while changing the organizational domain.</p>
+            </div>
+
             <div id="scenario-explanation" class="scenario-explanation" aria-labelledby="scenario-explanation-heading">
                 <h3 id="scenario-explanation-heading">Scenario: what are we testing?</h3>
-
-                <p>
-                    <strong>Default scenario:</strong>
-                    An automated refund system is being asked to issue a customer refund. Before conditions change, Operations has active authority to approve refunds up to &#36;500 for LOW-risk customers.
-                </p>
-
-                <p>
-                    <strong>Customer risk is the experimental variable, not the point of the experiment.</strong>
-                    To make the change concrete, imagine the customer has crossed a configured return-frequency threshold, such as a third return within 30 days. That trigger changes the customer's risk classification. The harness is not evaluating whether that risk rule is fair, accurate, or desirable; it simply uses the selected risk level as a controlled condition.
-                </p>
-
-                <p>
-                    For this scenario, a change from the prior customer-risk classification to a different selected risk classification is treated as <strong>MATERIAL</strong>. That lets the experiment test what happens to organizational authority after a material condition changes.
-                </p>
-
-                <p>
-                    <strong>What the experiment is testing:</strong>
-                    after the material change, what organizational authority — if any — exists, who is permitted to make the reauthorization decision, what execution boundary results, and whether the automated system is permitted to perform the requested refund.
-                </p>
-
-                <p>
-                    <strong>What the experiment is not deciding:</strong>
-                    a BLOCK result does not mean the customer's refund is ultimately denied. It means only that this automated execution is not authorized under the authority currently in force. A real organization might escalate the request to another person, process, or authority level. That downstream decision is outside this experiment.
-                </p>
-
-
+                <div id="scenario-narrative">Loading selected Version 2 scenario...</div>
             </div>
 
             <fieldset>
@@ -126,8 +109,10 @@
                 </div>
             </fieldset>
 
+            <div id="scenario-specific-controls" class="form-grid" aria-live="polite"></div>
+
             <div class="form-grid">
-                <label>
+                <label id="refund-risk-control">
                     Current customer risk
                     <select id="current-risk">
                         <option value="LOW">LOW</option>
@@ -137,7 +122,7 @@
                     <span id="current-risk-explanation" class="field-explanation">The customer's risk level after the condition change. Changing this can trigger the configured materiality rules and invalidate prior authority.</span>
                 </label>
 
-                <label>
+                <label id="refund-amount-control">
                     Requested refund amount ($)
                     <input id="requested-amount" type="number" min="0" step="0.01" inputmode="decimal" aria-describedby="requested-amount-help">
                     <span id="requested-amount-explanation" class="field-explanation">The dollar amount the automated system is being asked to refund in this execution attempt.</span>
@@ -218,7 +203,7 @@
                     <button
                     id="apply-controls"
                     type="button"
-                    title="Apply the visible structured controls to the scenario JSON. Use this after changing architecture, risk, amounts, disposition, or technical validity and before inspecting the raw scenario."
+                    title="Apply the visible structured controls to the scenario JSON. Use this after changing scenario-specific facts, architecture, disposition, or technical validity and before inspecting the raw scenario."
                     aria-describedby="help-apply-controls"
                     >
                     Apply controls to JSON
@@ -566,6 +551,7 @@
     <script src="js/test-runner.js"></script>
     <script src="js/replay-engine.js"></script>
     <script src="js/import-export.js"></script>
+    <script src="js/scenario-catalog.js"></script>
     <script src="js/app.js"></script>
 </body>
 </html>

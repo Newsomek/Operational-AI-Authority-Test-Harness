@@ -564,3 +564,13 @@ This file records material implementation changes to the Operational AI Authorit
 - Recorded the procurement equipmentPrice -> totalAcquisitionCost metric change as replacement authority scope rather than NARROW.
 - Moved three existing strict-NARROW regression tests ahead of the authority test runner so they are actually executed and counted.
 - Added generic validator, authority, and execution regression cases while retaining the V1 refund data shape.
+
+## Version 2 development — five-scenario catalog and selector
+
+- Added the fixed five-scenario Version 2 catalog: Automated Refund, Privileged System Access, Workforce Shift Assignment, Procurement / Total Acquisition Cost, and Customer Account Restriction.
+- Added a first-class scenario selector and dynamic “Scenario: what are we testing?” explanation.
+- Added scenario-specific structured controls while retaining one shared authority-to-execution engine.
+- Added scenario identity to run snapshots and explicit baseline control inputs for selected scenarios.
+- Added cross-domain catalog tests across both reauthorization architectures.
+- Added procurement evidence that distinguishes faithful enforcement of an old equipment-price boundary from a renewed total-acquisition-cost boundary.
+- Added account-restriction evidence in which recommendation confidence remains 97 percent while authority can still block execution.

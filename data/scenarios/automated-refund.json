@@ -1,0 +1,255 @@
+{
+  "scenarioId": "REFUND-V2",
+  "scenarioType": "AUTOMATED_REFUND",
+  "scenarioVersion": "SCENARIO-V2-REFUND",
+  "policyVersion": "POLICY-V2-1",
+  "schemaVersion": "2.0",
+  "name": "Automated Refund",
+  "description": "Tests whether a material risk change invalidates prior automated-refund authority.",
+  "priorConditions": {
+    "customerRisk": "LOW",
+    "refundAmountCents": 40000,
+    "transactionAgeDays": 20
+  },
+  "currentConditions": {
+    "customerRisk": "MEDIUM",
+    "refundAmountCents": 40000,
+    "transactionAgeDays": 20
+  },
+  "recommendation": {
+    "recommendationId": "REC-REFUND",
+    "actionType": "AUTO_REFUND",
+    "amountCents": 40000,
+    "confidence": 0.91,
+    "source": "Configured recommendation"
+  },
+  "technicalCapability": {
+    "supported": true,
+    "actionType": "AUTO_REFUND",
+    "technicalLimitCents": 500000
+  },
+  "initialTechnicalValidity": {
+    "status": "PASS",
+    "reason": "Initial technical validation passed before the material change.",
+    "evidenceReferences": [
+      "E-TECH-INITIAL"
+    ]
+  },
+  "technicalRevalidation": {
+    "status": "PASS",
+    "reason": "Technical behavior remains valid under changed conditions.",
+    "evidenceReferences": [
+      "E-TECH"
+    ]
+  },
+  "requestedAction": {
+    "actionType": "AUTO_REFUND",
+    "amountCents": 40000,
+    "customerRisk": "MEDIUM",
+    "transactionAgeDays": 20
+  },
+  "controlRequestedAction": {
+    "actionType": "AUTO_REFUND",
+    "amountCents": 40000,
+    "customerRisk": "LOW",
+    "transactionAgeDays": 20
+  },
+  "materialityRules": [
+    {
+      "ruleId": "RISK-LOW-MEDIUM",
+      "type": "FIELD_TRANSITION",
+      "field": "customerRisk",
+      "from": "LOW",
+      "to": "MEDIUM",
+      "result": "MATERIAL"
+    }
+  ],
+  "priorAuthority": {
+    "authorityId": "AUTH-REFUND-104",
+    "authorityVersion": 104,
+    "actionType": "AUTO_REFUND",
+    "purpose": "CUSTOMER_REFUND",
+    "status": "ACTIVE",
+    "owner": "Operations",
+    "scope": {
+      "constraints": [
+        {
+          "field": "amountCents",
+          "operator": "LTE",
+          "comparisonValue": 50000,
+          "valueType": "integer",
+          "failureReason": "Requested refund exceeds the current authorized maximum."
+        },
+        {
+          "field": "customerRisk",
+          "operator": "IN",
+          "comparisonValue": [
+            "LOW"
+          ],
+          "valueType": "string",
+          "failureReason": "Requested customer risk is outside the current authority scope."
+        },
+        {
+          "field": "transactionAgeDays",
+          "operator": "LTE",
+          "comparisonValue": 30,
+          "valueType": "integer",
+          "failureReason": "Transaction age exceeds the current authority scope."
+        }
+      ],
+      "maximumAmountCents": 50000,
+      "allowedRiskLevels": [
+        "LOW"
+      ],
+      "maximumTransactionAgeDays": 30
+    },
+    "conditions": [],
+    "createdByDecisionId": "DECISION-REFUND-2",
+    "replacesAuthorityId": "AUTH-REFUND-103",
+    "invalidatedByEventId": null,
+    "scenarioVersion": "SCENARIO-V2-REFUND",
+    "policyVersion": "POLICY-V2-1"
+  },
+  "operationalActor": {
+    "actorId": "ACTOR-OPERATIONS",
+    "name": "Operations Authority Owner",
+    "capabilities": [
+      "OPERATE_SYSTEM",
+      "REAUTHORIZE"
+    ]
+  },
+  "designatedAuthorityOwner": {
+    "actorId": "ACTOR-GOVERNANCE",
+    "name": "Designated Governance Authority Owner",
+    "capabilities": [
+      "REAUTHORIZE"
+    ]
+  },
+  "decisionActor": {
+    "actorId": "ACTOR-OPERATIONS",
+    "name": "Operations Authority Owner",
+    "capabilities": [
+      "OPERATE_SYSTEM",
+      "REAUTHORIZE"
+    ]
+  },
+  "evidenceItems": [
+    {
+      "evidenceId": "E-POLICY",
+      "type": "POLICY",
+      "description": "Applicable refund authority policy",
+      "available": true,
+      "reviewed": true
+    },
+    {
+      "evidenceId": "E-RISK",
+      "type": "RISK_CHANGE",
+      "description": "Customer risk changed from LOW to MEDIUM",
+      "available": true,
+      "reviewed": true
+    }
+  ],
+  "requiredEvidenceIds": [
+    "E-POLICY",
+    "E-RISK"
+  ],
+  "allowedDispositions": [
+    "RENEW",
+    "NARROW",
+    "CONDITION",
+    "TRANSFER",
+    "SUSPEND",
+    "REFUSE"
+  ],
+  "decision": {
+    "decisionId": "DECISION-REFUND-3",
+    "disposition": "NARROW",
+    "evidenceReviewed": [
+      "E-POLICY",
+      "E-RISK"
+    ],
+    "newScope": {
+      "constraints": [
+        {
+          "field": "amountCents",
+          "operator": "LTE",
+          "comparisonValue": 25000,
+          "valueType": "integer",
+          "failureReason": "Requested refund exceeds the current authorized maximum."
+        },
+        {
+          "field": "customerRisk",
+          "operator": "IN",
+          "comparisonValue": [
+            "LOW"
+          ],
+          "valueType": "string",
+          "failureReason": "Requested customer risk is outside the current authority scope."
+        },
+        {
+          "field": "transactionAgeDays",
+          "operator": "LTE",
+          "comparisonValue": 30,
+          "valueType": "integer",
+          "failureReason": "Transaction age exceeds the current authority scope."
+        }
+      ],
+      "maximumAmountCents": 25000,
+      "allowedRiskLevels": [
+        "LOW"
+      ],
+      "maximumTransactionAgeDays": 30
+    },
+    "scenarioVersion": "SCENARIO-V2-REFUND",
+    "policyVersion": "POLICY-V2-1"
+  },
+  "expectedResult": {
+    "expectedExecutionResult": "BLOCK",
+    "declaredBeforeExecution": true,
+    "scenarioVersion": "SCENARIO-V2-REFUND",
+    "policyVersion": "POLICY-V2-1"
+  },
+  "controlExpectedResult": {
+    "expectedExecutionResult": "ALLOW",
+    "declaredBeforeExecution": true,
+    "scenarioVersion": "SCENARIO-V2-REFUND",
+    "policyVersion": "POLICY-V2-1"
+  },
+  "controlAssertion": {
+    "assertionId": "CONTROL-REFUND-AMOUNT",
+    "ruleReference": "ACTIVE_BOUNDARY_CONSTRAINT",
+    "assertionVersion": "1",
+    "parameters": {
+      "field": "amountCents",
+      "operator": "LTE",
+      "comparisonValue": 50000
+    }
+  },
+  "controlAssertions": [
+    {
+      "assertionId": "ASSERT-MATERIAL-INVALIDATES",
+      "ruleReference": "INVALID_AUTHORITY_BLOCKS",
+      "assertionVersion": "1",
+      "description": "A configured material change invalidates the prior authority and blocks before reauthorization."
+    }
+  ],
+  "reauthorizationArchitecture": "SAME_LAYER_REAUTHORIZATION",
+  "separationReason": "Configured policy requires the reauthorization decision to move outside the operational layer.",
+  "presentation": {
+    "situation": "An automated refund system is being asked to issue a 400 dollar refund.",
+    "change": "Customer risk changes from LOW to MEDIUM.",
+    "materiality": "The configured risk transition is MATERIAL because the organizational basis for the prior automated-refund authority changed.",
+    "capability": "The system remains technically capable of issuing refunds up to 5,000 dollars.",
+    "recommendation": "The configured recommendation remains REFUND 400.",
+    "priorAuthority": "Operations previously held ACTIVE authority for refunds up to 500 dollars for LOW-risk customers within the configured age limit.",
+    "authorityQuestion": "Can the current organizational authority still permit this consequence after the material change?",
+    "consequence": "Execution controls whether the automated system may issue the refund.",
+    "evidence": "Operational governance is demonstrated when the changed authority produces an enforceable boundary that actually controls execution.",
+    "block": "Automated refund not authorized.",
+    "allow": "Automated refund authorized."
+  },
+  "ui": {
+    "controls": [],
+    "dispositionTemplates": {}
+  }
+}

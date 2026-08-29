@@ -1,0 +1,349 @@
+{
+  "scenarioId": "ACCOUNT-RESTRICTION-V2",
+  "scenarioType": "CUSTOMER_ACCOUNT_RESTRICTION",
+  "scenarioVersion": "SCENARIO-V2-ACCOUNT",
+  "policyVersion": "POLICY-V2-1",
+  "schemaVersion": "2.0",
+  "name": "Customer Account Restriction",
+  "description": "Tests whether high model confidence or technical validity can preserve authority after a material customer-account fact changes.",
+  "priorConditions": {
+    "identityVerificationSucceeded": false,
+    "secondReviewApproved": false
+  },
+  "currentConditions": {
+    "identityVerificationSucceeded": true,
+    "secondReviewApproved": false
+  },
+  "recommendation": {
+    "recommendationId": "REC-ACCOUNT",
+    "actionType": "RESTRICT_ACCOUNT",
+    "restrictionLevel": "TEMPORARY_RESTRICTION",
+    "confidence": 0.97,
+    "source": "Configured risk recommendation"
+  },
+  "technicalCapability": {
+    "supported": true,
+    "actionType": "RESTRICT_ACCOUNT"
+  },
+  "initialTechnicalValidity": {
+    "status": "PASS",
+    "reason": "Initial technical validation passed before the material change.",
+    "evidenceReferences": [
+      "E-TECH-INITIAL"
+    ]
+  },
+  "technicalRevalidation": {
+    "status": "PASS",
+    "reason": "Technical behavior remains valid under changed conditions.",
+    "evidenceReferences": [
+      "E-TECH"
+    ]
+  },
+  "requestedAction": {
+    "actionType": "RESTRICT_ACCOUNT",
+    "restrictionLevel": "TEMPORARY_RESTRICTION",
+    "identityVerificationSucceeded": true
+  },
+  "controlRequestedAction": {
+    "actionType": "RESTRICT_ACCOUNT",
+    "restrictionLevel": "TEMPORARY_RESTRICTION",
+    "identityVerificationSucceeded": false
+  },
+  "materialityRules": [
+    {
+      "ruleId": "IDENTITY-VERIFIED",
+      "type": "FIELD_TRANSITION",
+      "field": "identityVerificationSucceeded",
+      "from": false,
+      "to": true,
+      "result": "MATERIAL"
+    }
+  ],
+  "priorAuthority": {
+    "authorityId": "AUTH-ACCOUNT-50",
+    "authorityVersion": 50,
+    "actionType": "RESTRICT_ACCOUNT",
+    "purpose": "TEMPORARY_ACCOUNT_RISK_CONTROL",
+    "status": "ACTIVE",
+    "owner": "Account Risk Operations",
+    "scope": {
+      "constraints": [
+        {
+          "field": "restrictionLevel",
+          "operator": "IN",
+          "comparisonValue": [
+            "TEMPORARY_RESTRICTION",
+            "MONITOR_ONLY"
+          ],
+          "valueType": "string",
+          "failureReason": "Requested restriction level is outside current authority."
+        },
+        {
+          "field": "identityVerificationSucceeded",
+          "operator": "IN",
+          "comparisonValue": [
+            false
+          ],
+          "valueType": "boolean",
+          "failureReason": "Identity-verification state is outside current restriction authority."
+        }
+      ]
+    },
+    "conditions": [],
+    "createdByDecisionId": "DECISION-ACCOUNT-1",
+    "replacesAuthorityId": "AUTH-ACCOUNT-49",
+    "invalidatedByEventId": null,
+    "scenarioVersion": "SCENARIO-V2-ACCOUNT",
+    "policyVersion": "POLICY-V2-1"
+  },
+  "operationalActor": {
+    "actorId": "ACTOR-ACCOUNT-RISK",
+    "name": "Account Risk Operations",
+    "capabilities": [
+      "OPERATE_SYSTEM",
+      "REAUTHORIZE"
+    ]
+  },
+  "designatedAuthorityOwner": {
+    "actorId": "ACTOR-ACCOUNT-REVIEW",
+    "name": "Account Risk Review",
+    "capabilities": [
+      "REAUTHORIZE"
+    ]
+  },
+  "decisionActor": {
+    "actorId": "ACTOR-ACCOUNT-RISK",
+    "name": "Account Risk Operations",
+    "capabilities": [
+      "OPERATE_SYSTEM",
+      "REAUTHORIZE"
+    ]
+  },
+  "evidenceItems": [
+    {
+      "evidenceId": "E-ACCOUNT-POLICY",
+      "type": "POLICY",
+      "description": "Temporary account restriction authority policy",
+      "available": true,
+      "reviewed": true
+    },
+    {
+      "evidenceId": "E-IDENTITY-VERIFIED",
+      "type": "IDENTITY_VERIFICATION",
+      "description": "Identity verification succeeded after the original risk recommendation",
+      "available": true,
+      "reviewed": true
+    }
+  ],
+  "requiredEvidenceIds": [
+    "E-ACCOUNT-POLICY",
+    "E-IDENTITY-VERIFIED"
+  ],
+  "allowedDispositions": [
+    "RENEW",
+    "NARROW",
+    "CONDITION",
+    "TRANSFER",
+    "SUSPEND",
+    "REFUSE"
+  ],
+  "decision": {
+    "decisionId": "DECISION-ACCOUNT-2",
+    "disposition": "CONDITION",
+    "evidenceReviewed": [
+      "E-ACCOUNT-POLICY",
+      "E-IDENTITY-VERIFIED"
+    ],
+    "newScope": {
+      "constraints": [
+        {
+          "field": "restrictionLevel",
+          "operator": "IN",
+          "comparisonValue": [
+            "TEMPORARY_RESTRICTION"
+          ],
+          "valueType": "string",
+          "failureReason": "Requested restriction level is outside reauthorized scope."
+        },
+        {
+          "field": "identityVerificationSucceeded",
+          "operator": "IN",
+          "comparisonValue": [
+            true
+          ],
+          "valueType": "boolean",
+          "failureReason": "Identity-verification state is outside reauthorized scope."
+        }
+      ]
+    },
+    "conditions": [
+      {
+        "required": true,
+        "predicate": {
+          "field": "secondReviewApproved",
+          "operator": "EQ",
+          "comparisonValue": true,
+          "valueType": "boolean"
+        }
+      }
+    ],
+    "scenarioVersion": "SCENARIO-V2-ACCOUNT",
+    "policyVersion": "POLICY-V2-1"
+  },
+  "expectedResult": {
+    "expectedExecutionResult": "BLOCK",
+    "declaredBeforeExecution": true,
+    "scenarioVersion": "SCENARIO-V2-ACCOUNT",
+    "policyVersion": "POLICY-V2-1"
+  },
+  "controlExpectedResult": {
+    "expectedExecutionResult": "ALLOW",
+    "declaredBeforeExecution": true,
+    "scenarioVersion": "SCENARIO-V2-ACCOUNT",
+    "policyVersion": "POLICY-V2-1"
+  },
+  "controlAssertion": {
+    "assertionId": "CONTROL-ACCOUNT-IDENTITY",
+    "ruleReference": "ACTIVE_BOUNDARY_CONSTRAINT",
+    "assertionVersion": "1",
+    "parameters": {
+      "field": "identityVerificationSucceeded",
+      "operator": "IN",
+      "comparisonValue": [
+        false
+      ]
+    }
+  },
+  "controlAssertions": [
+    {
+      "assertionId": "ASSERT-MATERIAL-INVALIDATES",
+      "ruleReference": "INVALID_AUTHORITY_BLOCKS",
+      "assertionVersion": "1",
+      "description": "A configured material change invalidates the prior authority and blocks before reauthorization."
+    }
+  ],
+  "reauthorizationArchitecture": "SAME_LAYER_REAUTHORIZATION",
+  "separationReason": "Configured policy requires the reauthorization decision to move outside the operational layer.",
+  "presentation": {
+    "situation": "The system recommends a temporary account restriction with 97 percent confidence.",
+    "change": "Identity verification succeeds after the original recommendation.",
+    "materiality": "The identity-verification change is configured as MATERIAL because an escalation-relevant customer fact changed.",
+    "capability": "The system remains technically capable of restricting the account and technical validity remains PASS.",
+    "recommendation": "The recommendation and confidence intentionally remain RESTRICT ACCOUNT at 97 percent.",
+    "priorAuthority": "The initial authority permitted a temporary restriction under the pre-verification facts.",
+    "authorityQuestion": "Can the current organizational authority still permit this consequence after the material change?",
+    "consequence": "Execution controls whether the automated system may impose the temporary account restriction.",
+    "evidence": "Operational governance is demonstrated when confidence and technical validity remain high but execution still follows current authority and typed evidence conditions.",
+    "block": "Account restriction not authorized.",
+    "allow": "Account restriction authorized."
+  },
+  "ui": {
+    "controls": [
+      {
+        "id": "account-identity",
+        "label": "Identity verification succeeded",
+        "kind": "boolean",
+        "path": "currentConditions.identityVerificationSucceeded",
+        "syncPaths": [
+          "requestedAction.identityVerificationSucceeded"
+        ],
+        "help": "The material account fact that changes after the recommendation."
+      },
+      {
+        "id": "account-second-review",
+        "label": "Second review approved",
+        "kind": "boolean",
+        "path": "currentConditions.secondReviewApproved",
+        "help": "Typed CONDITION evidence required by the default reauthorization decision."
+      }
+    ],
+    "dispositionTemplates": {
+      "RENEW": {
+        "newScope": {
+          "constraints": [
+            {
+              "field": "restrictionLevel",
+              "operator": "IN",
+              "comparisonValue": [
+                "TEMPORARY_RESTRICTION"
+              ],
+              "valueType": "string",
+              "failureReason": "Requested restriction level is outside reauthorized scope."
+            },
+            {
+              "field": "identityVerificationSucceeded",
+              "operator": "IN",
+              "comparisonValue": [
+                true
+              ],
+              "valueType": "boolean",
+              "failureReason": "Identity-verification state is outside reauthorized scope."
+            }
+          ]
+        }
+      },
+      "NARROW": {
+        "newScope": {
+          "constraints": [
+            {
+              "field": "restrictionLevel",
+              "operator": "IN",
+              "comparisonValue": [
+                "MONITOR_ONLY"
+              ],
+              "valueType": "string",
+              "failureReason": "Requested restriction level is outside the narrowed authority."
+            },
+            {
+              "field": "identityVerificationSucceeded",
+              "operator": "IN",
+              "comparisonValue": [
+                false
+              ],
+              "valueType": "boolean",
+              "failureReason": "Identity-verification state is outside the narrowed authority."
+            }
+          ]
+        }
+      },
+      "CONDITION": {
+        "newScope": {
+          "constraints": [
+            {
+              "field": "restrictionLevel",
+              "operator": "IN",
+              "comparisonValue": [
+                "TEMPORARY_RESTRICTION"
+              ],
+              "valueType": "string",
+              "failureReason": "Requested restriction level is outside reauthorized scope."
+            },
+            {
+              "field": "identityVerificationSucceeded",
+              "operator": "IN",
+              "comparisonValue": [
+                true
+              ],
+              "valueType": "boolean",
+              "failureReason": "Identity-verification state is outside reauthorized scope."
+            }
+          ]
+        },
+        "conditions": [
+          {
+            "required": true,
+            "predicate": {
+              "field": "secondReviewApproved",
+              "operator": "EQ",
+              "comparisonValue": true,
+              "valueType": "boolean"
+            }
+          }
+        ]
+      },
+      "TRANSFER": {
+        "newDecisionOwner": "ACTOR-ACCOUNT-REVIEW"
+      }
+    }
+  }
+}

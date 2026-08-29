@@ -1,0 +1,299 @@
+{
+  "scenarioId": "WORKFORCE-V2",
+  "scenarioType": "WORKFORCE_SHIFT_ASSIGNMENT",
+  "scenarioVersion": "SCENARIO-V2-WORKFORCE",
+  "policyVersion": "POLICY-V2-1",
+  "schemaVersion": "2.0",
+  "name": "Workforce Shift Assignment",
+  "description": "Tests whether crossing an overtime threshold changes automated scheduling authority while availability and recommendation remain valid.",
+  "priorConditions": {
+    "person": "Taylor Morgan",
+    "effectiveWeeklyHours": 32,
+    "proposedShiftHours": 8,
+    "resultingWeeklyHours": 40,
+    "overtimeApproval": false
+  },
+  "currentConditions": {
+    "person": "Taylor Morgan",
+    "effectiveWeeklyHours": 40,
+    "proposedShiftHours": 8,
+    "resultingWeeklyHours": 48,
+    "overtimeApproval": false
+  },
+  "recommendation": {
+    "recommendationId": "REC-WORK",
+    "actionType": "ASSIGN_ADDITIONAL_SHIFT",
+    "shiftHours": 8,
+    "confidence": 0.93,
+    "source": "Configured recommendation"
+  },
+  "technicalCapability": {
+    "supported": true,
+    "actionType": "ASSIGN_ADDITIONAL_SHIFT",
+    "employeeAvailable": true
+  },
+  "initialTechnicalValidity": {
+    "status": "PASS",
+    "reason": "Initial technical validation passed before the material change.",
+    "evidenceReferences": [
+      "E-TECH-INITIAL"
+    ]
+  },
+  "technicalRevalidation": {
+    "status": "PASS",
+    "reason": "Technical behavior remains valid under changed conditions.",
+    "evidenceReferences": [
+      "E-TECH"
+    ]
+  },
+  "requestedAction": {
+    "actionType": "ASSIGN_ADDITIONAL_SHIFT",
+    "shiftHours": 8,
+    "resultingWeeklyHours": 48
+  },
+  "controlRequestedAction": {
+    "actionType": "ASSIGN_ADDITIONAL_SHIFT",
+    "shiftHours": 8,
+    "resultingWeeklyHours": 40
+  },
+  "materialityRules": [
+    {
+      "ruleId": "OVERTIME-THRESHOLD",
+      "type": "NUMERIC_THRESHOLD_CROSSING",
+      "field": "resultingWeeklyHours",
+      "threshold": 40,
+      "direction": "ABOVE",
+      "result": "MATERIAL"
+    }
+  ],
+  "priorAuthority": {
+    "authorityId": "AUTH-WORK-30",
+    "authorityVersion": 30,
+    "actionType": "ASSIGN_ADDITIONAL_SHIFT",
+    "purpose": "WORKFORCE_SCHEDULING",
+    "status": "ACTIVE",
+    "owner": "Workforce Scheduling",
+    "scope": {
+      "constraints": [
+        {
+          "field": "resultingWeeklyHours",
+          "operator": "LTE",
+          "comparisonValue": 40,
+          "valueType": "integer",
+          "failureReason": "Resulting weekly hours exceed the current assignment authority."
+        }
+      ]
+    },
+    "conditions": [],
+    "createdByDecisionId": "DECISION-WORK-1",
+    "replacesAuthorityId": "AUTH-WORK-29",
+    "invalidatedByEventId": null,
+    "scenarioVersion": "SCENARIO-V2-WORKFORCE",
+    "policyVersion": "POLICY-V2-1"
+  },
+  "operationalActor": {
+    "actorId": "ACTOR-WORKFORCE-SCHEDULING",
+    "name": "Workforce Scheduling Authority",
+    "capabilities": [
+      "OPERATE_SYSTEM",
+      "REAUTHORIZE"
+    ]
+  },
+  "designatedAuthorityOwner": {
+    "actorId": "ACTOR-WORKFORCE-OPS",
+    "name": "Workforce Operations",
+    "capabilities": [
+      "REAUTHORIZE"
+    ]
+  },
+  "decisionActor": {
+    "actorId": "ACTOR-WORKFORCE-SCHEDULING",
+    "name": "Workforce Scheduling Authority",
+    "capabilities": [
+      "OPERATE_SYSTEM",
+      "REAUTHORIZE"
+    ]
+  },
+  "evidenceItems": [
+    {
+      "evidenceId": "E-WORK-POLICY",
+      "type": "POLICY",
+      "description": "Workforce assignment authority policy",
+      "available": true,
+      "reviewed": true
+    },
+    {
+      "evidenceId": "E-HOURS-CHANGE",
+      "type": "HOURS_CHANGE",
+      "description": "Another assignment changes Taylor Morgan's effective weekly hours",
+      "available": true,
+      "reviewed": true
+    }
+  ],
+  "requiredEvidenceIds": [
+    "E-WORK-POLICY",
+    "E-HOURS-CHANGE"
+  ],
+  "allowedDispositions": [
+    "RENEW",
+    "NARROW",
+    "CONDITION",
+    "TRANSFER",
+    "SUSPEND",
+    "REFUSE"
+  ],
+  "decision": {
+    "decisionId": "DECISION-WORK-2",
+    "disposition": "CONDITION",
+    "evidenceReviewed": [
+      "E-WORK-POLICY",
+      "E-HOURS-CHANGE"
+    ],
+    "newScope": {
+      "constraints": [
+        {
+          "field": "resultingWeeklyHours",
+          "operator": "LTE",
+          "comparisonValue": 48,
+          "valueType": "integer",
+          "failureReason": "Resulting weekly hours exceed the reauthorized assignment authority."
+        }
+      ]
+    },
+    "conditions": [
+      {
+        "required": true,
+        "predicate": {
+          "field": "overtimeApproval",
+          "operator": "EQ",
+          "comparisonValue": true,
+          "valueType": "boolean"
+        }
+      }
+    ],
+    "scenarioVersion": "SCENARIO-V2-WORKFORCE",
+    "policyVersion": "POLICY-V2-1"
+  },
+  "expectedResult": {
+    "expectedExecutionResult": "BLOCK",
+    "declaredBeforeExecution": true,
+    "scenarioVersion": "SCENARIO-V2-WORKFORCE",
+    "policyVersion": "POLICY-V2-1"
+  },
+  "controlExpectedResult": {
+    "expectedExecutionResult": "ALLOW",
+    "declaredBeforeExecution": true,
+    "scenarioVersion": "SCENARIO-V2-WORKFORCE",
+    "policyVersion": "POLICY-V2-1"
+  },
+  "controlAssertion": {
+    "assertionId": "CONTROL-WORK-HOURS",
+    "ruleReference": "ACTIVE_BOUNDARY_CONSTRAINT",
+    "assertionVersion": "1",
+    "parameters": {
+      "field": "resultingWeeklyHours",
+      "operator": "LTE",
+      "comparisonValue": 40
+    }
+  },
+  "controlAssertions": [
+    {
+      "assertionId": "ASSERT-MATERIAL-INVALIDATES",
+      "ruleReference": "INVALID_AUTHORITY_BLOCKS",
+      "assertionVersion": "1",
+      "description": "A configured material change invalidates the prior authority and blocks before reauthorization."
+    }
+  ],
+  "reauthorizationArchitecture": "SAME_LAYER_REAUTHORIZATION",
+  "separationReason": "Configured policy requires the reauthorization decision to move outside the operational layer.",
+  "presentation": {
+    "situation": "Taylor Morgan is scheduled for 32 hours and the system proposes an additional 8-hour shift, producing 40 hours.",
+    "change": "Another assignment raises Taylor's effective hours so the proposed shift would now produce 48 hours.",
+    "materiality": "Crossing the configured 40-hour overtime threshold is MATERIAL because the organization's authority to assign the additional work changed.",
+    "capability": "The scheduling system can remain technically capable and Taylor can remain available.",
+    "recommendation": "The configured recommendation can remain ASSIGN SHIFT.",
+    "priorAuthority": "The initial authority permitted an assignment resulting in no more than 40 weekly hours.",
+    "authorityQuestion": "Can the current organizational authority still permit this consequence after the material change?",
+    "consequence": "Execution controls whether the additional shift can be assigned automatically.",
+    "evidence": "Operational governance is demonstrated when the effective authority boundary and any overtime condition determine execution rather than availability or recommendation alone.",
+    "block": "Additional shift assignment not authorized.",
+    "allow": "Additional shift assignment authorized."
+  },
+  "ui": {
+    "controls": [
+      {
+        "id": "work-resulting-hours",
+        "label": "Resulting weekly hours if shift executes",
+        "kind": "number",
+        "path": "currentConditions.resultingWeeklyHours",
+        "syncPaths": [
+          "requestedAction.resultingWeeklyHours"
+        ],
+        "step": "1",
+        "help": "The resulting weekly hours after the proposed additional shift."
+      },
+      {
+        "id": "work-overtime-approval",
+        "label": "Overtime approval",
+        "kind": "boolean",
+        "path": "currentConditions.overtimeApproval",
+        "help": "Typed CONDITION evidence for overtime authority."
+      }
+    ],
+    "dispositionTemplates": {
+      "RENEW": {
+        "newScope": {
+          "constraints": [
+            {
+              "field": "resultingWeeklyHours",
+              "operator": "LTE",
+              "comparisonValue": 48,
+              "valueType": "integer",
+              "failureReason": "Resulting weekly hours exceed the reauthorized assignment authority."
+            }
+          ]
+        }
+      },
+      "NARROW": {
+        "newScope": {
+          "constraints": [
+            {
+              "field": "resultingWeeklyHours",
+              "operator": "LTE",
+              "comparisonValue": 36,
+              "valueType": "integer",
+              "failureReason": "Resulting weekly hours exceed the narrowed assignment authority."
+            }
+          ]
+        }
+      },
+      "CONDITION": {
+        "newScope": {
+          "constraints": [
+            {
+              "field": "resultingWeeklyHours",
+              "operator": "LTE",
+              "comparisonValue": 48,
+              "valueType": "integer",
+              "failureReason": "Resulting weekly hours exceed the reauthorized assignment authority."
+            }
+          ]
+        },
+        "conditions": [
+          {
+            "required": true,
+            "predicate": {
+              "field": "overtimeApproval",
+              "operator": "EQ",
+              "comparisonValue": true,
+              "valueType": "boolean"
+            }
+          }
+        ]
+      },
+      "TRANSFER": {
+        "newDecisionOwner": "ACTOR-WORKFORCE-OPS"
+      }
+    }
+  }
+}
