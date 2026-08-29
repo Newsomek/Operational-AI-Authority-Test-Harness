@@ -552,3 +552,15 @@ This file records material implementation changes to the Operational AI Authorit
 - Confirmed from source inspection that the application contains no setTimeout or setInterval idle-reset behavior; persistence is therefore verified as a browser regression rather than changed speculatively.
 - Confirmed that normal renderRun already renders the current run's authorityHistory and eventLog directly; browser regression verification is required before any additional history/event-log mutation.
 - Preserved the research result that separated reauthorization is not required to produce a different execution outcome; no outcome difference is manufactured by the remediation.
+
+## 2026-08-29 - Version 2 generic authority-boundary foundation
+
+- Began Version 2 on v2/generalized-authority-boundaries from the preserved V1.0.3 evidence baseline.
+- Added canonical typed authority-scope constraints and a backward-compatible adapter for the V1 refund scope shape.
+- Changed execution scope evaluation to consume canonical constraints rather than refund-specific field names.
+- Corrected typed IN predicate validation so array membership can be used by generic scope constraints.
+- Generalized strict NARROW comparison for deterministic comparable constraints while rejecting broadening and incomparable metric/operator changes.
+- Allowed RENEW to create a new authority version with an explicitly supplied replacement scope.
+- Recorded the procurement equipmentPrice -> totalAcquisitionCost metric change as replacement authority scope rather than NARROW.
+- Moved three existing strict-NARROW regression tests ahead of the authority test runner so they are actually executed and counted.
+- Added generic validator, authority, and execution regression cases while retaining the V1 refund data shape.

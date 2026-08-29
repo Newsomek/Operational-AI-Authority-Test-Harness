@@ -193,3 +193,39 @@ Consequences:
 
 Date:
 2026-08-29
+
+## D-021 - Version 2 canonical typed authority scope
+
+Question:
+How should Version 2 represent authority boundaries across materially different domains without building scenario-specific execution engines?
+
+Decision:
+Represent executable authority scope canonically as typed field/operator/value constraints. Preserve the V1 refund scope shape as a backward-compatible input form that is normalized into those constraints before boundary enforcement.
+
+Reason:
+The V1 conceptual model is general, but its execution scope implementation directly recognizes refund-specific fields. Version 2 is intended to test whether the authority model generalizes. Domain-specific branches in the execution engine would hide rather than test that question.
+
+Consequences:
+- The execution engine evaluates canonical typed constraints rather than refund-specific scope properties.
+- Existing V1 refund scope remains accepted and is adapted into canonical constraints.
+- New scenarios should primarily add configuration and domain facts, not execution-engine branches.
+- Generic set membership requires typed IN predicates to validate arrays whose elements match valueType.
+
+## D-022 - Procurement metric changes are replacement scope, not NARROW
+
+Question:
+Can changing procurement authority from equipmentPrice to totalAcquisitionCost be represented as NARROW?
+
+Decision:
+No. A change in the governed metric is not demonstrably a subset relationship. Version 2 permits RENEW to create a new authority version with an explicit replacement scope. NARROW remains limited to deterministic, comparable subset relationships.
+
+Reason:
+Calling a metric/basis replacement NARROW would weaken strict NARROW semantics and manufacture comparability that the model has not established.
+
+Consequences:
+- equipmentPrice -> totalAcquisitionCost is represented as a replacement authority scope under reauthorization.
+- The harness does not claim that either procurement metric is economically correct.
+- The experiment can observe the consequence of enforcing either configured basis without procurement-specific execution logic.
+
+Date:
+2026-08-29

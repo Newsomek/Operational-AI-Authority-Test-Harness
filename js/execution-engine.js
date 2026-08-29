@@ -226,18 +226,12 @@
         };
     }
 
-    function evaluateScope(requestedAction, boundary) {
-        const scope = boundary.scope;
+    function evaluateScope(
+        requestedAction,
+        boundary,
+        conditionValues
+    ) {
         const reasons = [];
-
-        if (!isPlainObject(scope)) {
-            return {
-                satisfied: false,
-                reasons: [
-                    "Boundary scope is missing or malformed."
-                ]
-            };
-        }
 
         if (
             typeof boundary.actionType !== "string" ||
@@ -256,73 +250,45 @@
             );
         }
 
-        if (
-            Object.prototype.hasOwnProperty.call(
-                scope,
-                "maximumAmountCents"
-            )
-        ) {
-            if (!Number.isInteger(requestedAction.amountCents)) {
-                reasons.push(
-                    "Requested amount must be represented as integer cents."
-                );
-            }
-            else if (
-                requestedAction.amountCents >
-                scope.maximumAmountCents
-            ) {
-                reasons.push(
-                    "Requested amount exceeds the current authorized maximum."
-                );
-            }
+        const scopeCheck =
+            validation.normalizeAuthorityScope(
+                boundary.scope
+            );
+
+        if (!scopeCheck.valid) {
+            reasons.push(
+                "Boundary scope is missing, malformed, or not enforceable: " +
+                scopeCheck.errors.join(" ")
+            );
+
+            return {
+                satisfied: false,
+                reasons: reasons
+            };
         }
 
-        if (
-            Object.prototype.hasOwnProperty.call(
-                scope,
-                "allowedRiskLevels"
-            )
-        ) {
-            if (!Array.isArray(scope.allowedRiskLevels)) {
-                reasons.push(
-                    "Allowed risk levels are malformed."
-                );
-            }
-            else if (
-                !scope.allowedRiskLevels.includes(
-                    requestedAction.customerRisk
-                )
-            ) {
-                reasons.push(
-                    "Requested customer risk is outside the current authority scope."
-                );
-            }
-        }
+        scopeCheck.constraints.forEach(function (constraint) {
+            const result = evaluatePredicate(
+                constraint,
+                requestedAction,
+                conditionValues
+            );
 
-        if (
-            Object.prototype.hasOwnProperty.call(
-                scope,
-                "maximumTransactionAgeDays"
-            )
-        ) {
-            if (
-                !Number.isInteger(
-                    requestedAction.transactionAgeDays
-                )
-            ) {
+            if (!result.evaluable) {
+                reasons.push(result.reason);
+                return;
+            }
+
+            if (!result.satisfied) {
                 reasons.push(
-                    "Transaction age must be an integer number of days."
+                    typeof constraint.failureReason === "string" &&
+                    constraint.failureReason.length > 0
+                        ? constraint.failureReason
+                        : "Scope constraint was not satisfied: " +
+                            constraint.field
                 );
             }
-            else if (
-                requestedAction.transactionAgeDays >
-                scope.maximumTransactionAgeDays
-            ) {
-                reasons.push(
-                    "Transaction age exceeds the current authority scope."
-                );
-            }
-        }
+        });
 
         return {
             satisfied: reasons.length === 0,
@@ -402,7 +368,8 @@
         const scopeResult =
             evaluateScope(
                 requestedAction,
-                boundary
+                boundary,
+                conditionValues
             );
 
         const conditionResult =

@@ -72,11 +72,11 @@ REFUSED is not an authority status.
 
 RENEW creates a new authority version.
 
-It does not reactivate the previous invalid authority.
+It does not reactivate the previous invalid authority. A RENEW decision may explicitly provide a replacement scope when the organizational authority basis has changed; the replacement remains a new authority version and is evaluated through the common boundary engine.
 
 ## Rule G-008: NARROW changes scope
 
-NARROW creates a new authority version whose enforceable scope is more restrictive than the authority it replaces.
+NARROW creates a new authority version whose enforceable scope is more restrictive than the authority it replaces. Version 2 requires the narrowing relationship to be deterministically comparable. Removing an existing constraint, broadening a range or allowed set, or replacing a governed field/operator with an incomparable basis is not NARROW.
 
 NARROW does not itself mean BLOCK.
 

@@ -101,6 +101,91 @@
         return result(errors.length === 0, errors);
     }
 
+    function validateComparisonValue(predicate, errors) {
+        if (
+            !Object.prototype.hasOwnProperty.call(
+                predicate,
+                "comparisonValue"
+            )
+        ) {
+            errors.push(
+                "predicate.comparisonValue is required."
+            );
+            return;
+        }
+
+        const comparisonValue = predicate.comparisonValue;
+
+        if (predicate.operator === "IN") {
+            if (!Array.isArray(comparisonValue)) {
+                errors.push(
+                    "predicate.comparisonValue must be an array when operator is IN."
+                );
+                return;
+            }
+
+            comparisonValue.forEach(function (value, index) {
+                if (
+                    predicate.valueType === "integer" &&
+                    !Number.isInteger(value)
+                ) {
+                    errors.push(
+                        "predicate.comparisonValue[" +
+                        index +
+                        "] must be an integer."
+                    );
+                }
+                else if (
+                    predicate.valueType === "string" &&
+                    typeof value !== "string"
+                ) {
+                    errors.push(
+                        "predicate.comparisonValue[" +
+                        index +
+                        "] must be a string."
+                    );
+                }
+                else if (
+                    predicate.valueType === "boolean" &&
+                    typeof value !== "boolean"
+                ) {
+                    errors.push(
+                        "predicate.comparisonValue[" +
+                        index +
+                        "] must be a boolean."
+                    );
+                }
+            });
+
+            return;
+        }
+
+        if (
+            predicate.valueType === "integer" &&
+            !Number.isInteger(comparisonValue)
+        ) {
+            errors.push(
+                "predicate.comparisonValue must be an integer."
+            );
+        }
+        else if (
+            predicate.valueType === "string" &&
+            typeof comparisonValue !== "string"
+        ) {
+            errors.push(
+                "predicate.comparisonValue must be a string."
+            );
+        }
+        else if (
+            predicate.valueType === "boolean" &&
+            typeof comparisonValue !== "boolean"
+        ) {
+            errors.push(
+                "predicate.comparisonValue must be a boolean."
+            );
+        }
+    }
+
     function validateTypedPredicate(predicate) {
         const errors = [];
 
@@ -148,48 +233,132 @@
             errors.push.apply(errors, groupCheck.errors);
         }
 
-        if (
-            !Object.prototype.hasOwnProperty.call(
-                predicate,
-                "comparisonValue"
-            )
-        ) {
-            errors.push(
-                "predicate.comparisonValue is required."
-            );
-        }
-        else if (predicate.valueType === "integer") {
-            if (!Number.isInteger(predicate.comparisonValue)) {
-                errors.push(
-                    "predicate.comparisonValue must be an integer."
-                );
-            }
-        }
-        else if (predicate.valueType === "string") {
-            if (typeof predicate.comparisonValue !== "string") {
-                errors.push(
-                    "predicate.comparisonValue must be a string."
-                );
-            }
-        }
-        else if (predicate.valueType === "boolean") {
-            if (typeof predicate.comparisonValue !== "boolean") {
-                errors.push(
-                    "predicate.comparisonValue must be a boolean."
-                );
-            }
-        }
-
-        if (
-            predicate.operator === "IN" &&
-            !Array.isArray(predicate.comparisonValue)
-        ) {
-            errors.push(
-                "predicate.comparisonValue must be an array when operator is IN."
-            );
-        }
+        validateComparisonValue(predicate, errors);
 
         return result(errors.length === 0, errors);
+    }
+
+    function legacyScopeConstraints(scope) {
+        const constraints = [];
+
+        if (
+            Object.prototype.hasOwnProperty.call(
+                scope,
+                "maximumAmountCents"
+            )
+        ) {
+            constraints.push({
+                field: "amountCents",
+                operator: "LTE",
+                comparisonValue: scope.maximumAmountCents,
+                valueType: "integer",
+                legacyField: "maximumAmountCents",
+                failureReason:
+                    "Requested amount exceeds the current authorized maximum."
+            });
+        }
+
+        if (
+            Object.prototype.hasOwnProperty.call(
+                scope,
+                "allowedRiskLevels"
+            )
+        ) {
+            constraints.push({
+                field: "customerRisk",
+                operator: "IN",
+                comparisonValue:
+                    Array.isArray(scope.allowedRiskLevels)
+                        ? scope.allowedRiskLevels.slice()
+                        : scope.allowedRiskLevels,
+                valueType: "string",
+                legacyField: "allowedRiskLevels",
+                failureReason:
+                    "Requested customer risk is outside the current authority scope."
+            });
+        }
+
+        if (
+            Object.prototype.hasOwnProperty.call(
+                scope,
+                "maximumTransactionAgeDays"
+            )
+        ) {
+            constraints.push({
+                field: "transactionAgeDays",
+                operator: "LTE",
+                comparisonValue:
+                    scope.maximumTransactionAgeDays,
+                valueType: "integer",
+                legacyField: "maximumTransactionAgeDays",
+                failureReason:
+                    "Transaction age exceeds the current authority scope."
+            });
+        }
+
+        return constraints;
+    }
+
+    function normalizeAuthorityScope(scope) {
+        const errors = [];
+
+        if (!isPlainObject(scope)) {
+            return Object.freeze({
+                valid: false,
+                errors: Object.freeze([
+                    "Authority scope must be a plain object."
+                ]),
+                constraints: Object.freeze([])
+            });
+        }
+
+        let constraints;
+
+        if (
+            Object.prototype.hasOwnProperty.call(
+                scope,
+                "constraints"
+            )
+        ) {
+            if (!Array.isArray(scope.constraints)) {
+                return Object.freeze({
+                    valid: false,
+                    errors: Object.freeze([
+                        "scope.constraints must be an array."
+                    ]),
+                    constraints: Object.freeze([])
+                });
+            }
+
+            constraints = scope.constraints.map(function (constraint) {
+                return Object.assign({}, constraint);
+            });
+        }
+        else {
+            constraints = legacyScopeConstraints(scope);
+        }
+
+        constraints.forEach(function (constraint, index) {
+            const check = validateTypedPredicate(constraint);
+
+            check.errors.forEach(function (error) {
+                errors.push(
+                    "scope.constraints[" + index + "]: " + error
+                );
+            });
+        });
+
+        return Object.freeze({
+            valid: errors.length === 0,
+            errors: Object.freeze(errors.slice()),
+            constraints: Object.freeze(
+                constraints.map(function (constraint) {
+                    return Object.freeze(
+                        Object.assign({}, constraint)
+                    );
+                })
+            )
+        });
     }
 
     root.ValidationEngine = Object.freeze({
@@ -200,6 +369,7 @@
         validateNonEmptyString: validateNonEmptyString,
         validateInteger: validateInteger,
         validateEnum: validateEnum,
-        validateTypedPredicate: validateTypedPredicate
+        validateTypedPredicate: validateTypedPredicate,
+        normalizeAuthorityScope: normalizeAuthorityScope
     });
 }(window));

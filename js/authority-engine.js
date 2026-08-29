@@ -70,6 +70,103 @@
         }
     }
 
+    function normalizeScopeConstraints(scope) {
+        requirePlainObject(scope, "authority scope");
+
+        if (Array.isArray(scope.constraints)) {
+            return scope.constraints.map(function (constraint) {
+                return deepClone(constraint);
+            });
+        }
+
+        const constraints = [];
+
+        if (Object.prototype.hasOwnProperty.call(scope, "maximumAmountCents")) {
+            constraints.push({
+                field: "amountCents",
+                operator: "LTE",
+                comparisonValue: scope.maximumAmountCents,
+                valueType: "integer"
+            });
+        }
+
+        if (Object.prototype.hasOwnProperty.call(scope, "allowedRiskLevels")) {
+            constraints.push({
+                field: "customerRisk",
+                operator: "IN",
+                comparisonValue: Array.isArray(scope.allowedRiskLevels)
+                    ? scope.allowedRiskLevels.slice()
+                    : scope.allowedRiskLevels,
+                valueType: "string"
+            });
+        }
+
+        if (Object.prototype.hasOwnProperty.call(scope, "maximumTransactionAgeDays")) {
+            constraints.push({
+                field: "transactionAgeDays",
+                operator: "LTE",
+                comparisonValue: scope.maximumTransactionAgeDays,
+                valueType: "integer"
+            });
+        }
+
+        return constraints;
+    }
+
+    function constraintKey(constraint) {
+        return [
+            constraint.field,
+            constraint.operator,
+            constraint.valueType
+        ].join("|");
+    }
+
+    function compareConstraintNarrowing(priorConstraint, newConstraint) {
+        const operator = priorConstraint.operator;
+        const priorValue = priorConstraint.comparisonValue;
+        const newValue = newConstraint.comparisonValue;
+
+        if (operator === "LTE" || operator === "LT") {
+            if (newValue > priorValue) {
+                return "BROADEN";
+            }
+            return newValue < priorValue ? "STRICTER" : "SAME";
+        }
+
+        if (operator === "GTE" || operator === "GT") {
+            if (newValue < priorValue) {
+                return "BROADEN";
+            }
+            return newValue > priorValue ? "STRICTER" : "SAME";
+        }
+
+        if (operator === "IN") {
+            if (!Array.isArray(priorValue) || !Array.isArray(newValue)) {
+                return "INCOMPARABLE";
+            }
+
+            const added = newValue.filter(function (value) {
+                return !priorValue.includes(value);
+            });
+
+            if (added.length > 0) {
+                return "BROADEN";
+            }
+
+            return newValue.length < priorValue.length
+                ? "STRICTER"
+                : "SAME";
+        }
+
+        if (operator === "EQ" || operator === "NEQ") {
+            return JSON.stringify(newValue) === JSON.stringify(priorValue)
+                ? "SAME"
+                : "INCOMPARABLE";
+        }
+
+        return "INCOMPARABLE";
+    }
+
     function createAuthorityId(priorAuthority, decision) {
         requireString(decision.decisionId, "decision.decisionId");
 
@@ -113,10 +210,22 @@
     }
 
     function applyRenew(priorAuthority, decision) {
-        return createBaseAuthority(
+        const authority = createBaseAuthority(
             priorAuthority,
             decision
         );
+
+        if (decision.newScope) {
+            requirePlainObject(
+                decision.newScope,
+                "decision.newScope"
+            );
+            authority.scope = deepClone(
+                decision.newScope
+            );
+        }
+
+        return authority;
     }
 
     function validateNarrowScope(
@@ -126,62 +235,89 @@
         requirePlainObject(priorScope, "priorAuthority.scope");
         requirePlainObject(newScope, "decision.newScope");
 
+        const priorConstraints = normalizeScopeConstraints(priorScope);
+        const newConstraints = normalizeScopeConstraints(newScope);
+        const priorByKey = Object.create(null);
+        const newByKey = Object.create(null);
         let stricter = false;
 
-        if (
-            Number.isInteger(priorScope.maximumAmountCents) &&
-            Number.isInteger(newScope.maximumAmountCents)
-        ) {
-            if (newScope.maximumAmountCents > priorScope.maximumAmountCents) {
-                throw new Error(
-                    "NARROW may not broaden maximumAmountCents."
-                );
-            }
-            if (newScope.maximumAmountCents < priorScope.maximumAmountCents) {
-                stricter = true;
-            }
-        }
+        priorConstraints.forEach(function (constraint) {
+            priorByKey[constraintKey(constraint)] = constraint;
+        });
 
-        if (
-            Number.isInteger(priorScope.maximumTransactionAgeDays) &&
-            Number.isInteger(newScope.maximumTransactionAgeDays)
-        ) {
-            if (newScope.maximumTransactionAgeDays > priorScope.maximumTransactionAgeDays) {
-                throw new Error(
-                    "NARROW may not broaden maximumTransactionAgeDays."
-                );
-            }
-            if (newScope.maximumTransactionAgeDays < priorScope.maximumTransactionAgeDays) {
-                stricter = true;
-            }
-        }
+        newConstraints.forEach(function (constraint) {
+            newByKey[constraintKey(constraint)] = constraint;
+        });
 
-        if (
-            Array.isArray(priorScope.allowedRiskLevels) &&
-            Array.isArray(newScope.allowedRiskLevels)
-        ) {
-            const addedRisks = newScope.allowedRiskLevels.filter(
-                function (risk) {
-                    return !priorScope.allowedRiskLevels.includes(risk);
+        priorConstraints.forEach(function (priorConstraint) {
+            const key = constraintKey(priorConstraint);
+            const comparable = newByKey[key];
+
+            if (!comparable) {
+                const sameField = newConstraints.some(function (constraint) {
+                    return constraint.field === priorConstraint.field;
+                });
+
+                if (sameField) {
+                    throw new Error(
+                        "NARROW may not change the governed operator or value type for field " +
+                        priorConstraint.field +
+                        "; that change is not demonstrably a narrowing."
+                    );
                 }
+
+                throw new Error(
+                    "NARROW may not remove an existing enforceable constraint for field " +
+                    priorConstraint.field +
+                    "."
+                );
+            }
+
+            const relationship = compareConstraintNarrowing(
+                priorConstraint,
+                comparable
             );
 
-            if (addedRisks.length > 0) {
+            if (relationship === "BROADEN") {
                 throw new Error(
-                    "NARROW may not broaden allowedRiskLevels."
+                    "NARROW may not broaden the enforceable constraint for field " +
+                    priorConstraint.field +
+                    "."
                 );
             }
 
-            const removedRisks = priorScope.allowedRiskLevels.filter(
-                function (risk) {
-                    return !newScope.allowedRiskLevels.includes(risk);
-                }
-            );
+            if (relationship === "INCOMPARABLE") {
+                throw new Error(
+                    "NARROW cannot prove that the replacement constraint is narrower for field " +
+                    priorConstraint.field +
+                    "."
+                );
+            }
 
-            if (removedRisks.length > 0) {
+            if (relationship === "STRICTER") {
                 stricter = true;
             }
-        }
+        });
+
+        newConstraints.forEach(function (newConstraint) {
+            const key = constraintKey(newConstraint);
+
+            if (!priorByKey[key]) {
+                const sameField = priorConstraints.some(function (constraint) {
+                    return constraint.field === newConstraint.field;
+                });
+
+                if (sameField) {
+                    throw new Error(
+                        "NARROW may not replace an existing constraint with an incomparable constraint for field " +
+                        newConstraint.field +
+                        "."
+                    );
+                }
+
+                stricter = true;
+            }
+        });
 
         if (!stricter) {
             throw new Error(

@@ -282,11 +282,20 @@ A prior authority version must never be overwritten or reactivated.
 
 Authority scope is testable data defining what consequence is permitted.
 
-For the default refund scenario, scope should include at least:
+Version 2 introduces a canonical typed-constraint representation so the execution engine does not need domain-specific knowledge of refund, access, workforce, procurement, or account-risk fields. Each canonical scope constraint uses:
+
+- field
+- operator
+- comparisonValue
+- valueType
+
+The V1 refund shape remains accepted as a backward-compatible input representation:
 
 - maximumAmountCents
 - allowedRiskLevels
 - maximumTransactionAgeDays
+
+Before execution, that legacy representation is normalized into the same canonical typed constraints consumed by Version 2 scenarios. The legacy field names do not grant permission by themselves.
 
 Scope must not exist only as descriptive prose.
 

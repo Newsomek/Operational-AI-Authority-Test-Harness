@@ -354,8 +354,7 @@
             input.decision.newScope = {
                 maximumAmountCents: 25000,
                 allowedRiskLevels: [
-                    "LOW",
-                    "MEDIUM"
+                    "LOW"
                 ],
                 maximumTransactionAgeDays: 30
             };
@@ -383,7 +382,7 @@
         "RENEW with changed authority covering MEDIUM risk permits same 400 dollar action",
         function () {
             const input =
-                defaultInput("NARROW");
+                defaultInput("RENEW");
 
             input.decision.newScope = {
                 maximumAmountCents: 50000,

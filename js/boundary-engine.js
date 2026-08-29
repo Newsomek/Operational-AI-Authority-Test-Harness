@@ -104,16 +104,18 @@
             });
         }
 
-        if (
-            authority.scope === null ||
-            typeof authority.scope !== "object" ||
-            Array.isArray(authority.scope)
-        ) {
+        const scopeCheck =
+            validation.normalizeAuthorityScope(
+                authority.scope
+            );
+
+        if (!scopeCheck.valid) {
             return deepFreeze({
                 boundaryCreated: false,
                 boundary: null,
                 reason:
-                    "Active authority scope is missing or malformed."
+                    "Active authority scope is not enforceable: " +
+                    scopeCheck.errors.join(" ")
             });
         }
 
@@ -138,7 +140,13 @@
             actionType:
                 authority.actionType,
             scope:
-                deepClone(authority.scope),
+                Object.assign(
+                    deepClone(authority.scope),
+                    {
+                        constraints:
+                            deepClone(scopeCheck.constraints)
+                    }
+                ),
             enforceableConditions:
                 deepClone(authority.conditions || []),
             status:

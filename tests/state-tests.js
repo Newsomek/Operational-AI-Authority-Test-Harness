@@ -288,6 +288,45 @@
         }
     );
 
+    test(
+        "Typed IN predicate accepts an array of matching string values",
+        function () {
+            const check = validation.validateTypedPredicate({
+                field: "accessLevel",
+                operator: "IN",
+                comparisonValue: ["READ_ONLY", "PRODUCTION_ADMIN"],
+                valueType: "string"
+            });
+
+            assertTrue(
+                check.valid,
+                "Typed IN predicates should accept arrays whose elements match valueType."
+            );
+        }
+    );
+
+    test(
+        "Authority scope normalization adapts the V1 refund scope",
+        function () {
+            const check = validation.normalizeAuthorityScope({
+                maximumAmountCents: 50000,
+                allowedRiskLevels: ["LOW"],
+                maximumTransactionAgeDays: 30
+            });
+
+            assertTrue(
+                check.valid,
+                "Legacy V1 scope should normalize successfully."
+            );
+
+            assertEqual(
+                check.constraints.length,
+                3,
+                "Legacy V1 scope should produce three canonical constraints."
+            );
+        }
+    );
+
     const results = [];
     let passed = 0;
 

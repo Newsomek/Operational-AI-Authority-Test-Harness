@@ -688,62 +688,6 @@
     const resultList =
         document.getElementById("authority-results");
 
-    const summary =
-        document.getElementById("authority-summary");
-
-    let passed = 0;
-
-    tests.forEach(function (item) {
-        const row = document.createElement("li");
-
-        try {
-            item.fn();
-
-            row.textContent =
-                item.name + ": PASS";
-
-            row.setAttribute(
-                "data-authority-test-status",
-                "PASS"
-            );
-
-            passed += 1;
-        }
-        catch (error) {
-            row.textContent =
-                item.name +
-                ": " +
-                error.message;
-
-            row.setAttribute(
-                "data-authority-test-status",
-                "FAIL"
-            );
-        }
-
-        resultList.appendChild(row);
-    });
-
-    summary.textContent =
-        passed +
-        "/" +
-        tests.length +
-        " authority/boundary tests passed.";
-
-    summary.setAttribute(
-        "data-authority-passed",
-        String(passed)
-    );
-
-    summary.setAttribute(
-        "data-authority-total",
-        String(tests.length)
-    );
-
-    summary.setAttribute(
-        "data-authority-status",
-        passed === tests.length ? "PASS" : "FAIL"
-    );
     test(
         "NARROW rejects scope broadening even when another dimension is stricter",
         function () {
@@ -823,5 +767,179 @@
     );
 
     /* Strict NARROW semantics regression marker */
+
+    test(
+        "RENEW may replace authority scope with a new governed metric",
+        function () {
+            const prior = basePriorAuthority();
+            const result = authorityEngine.translateDecision(
+                prior,
+                {
+                    decisionId: "DECISION-RENEW-METRIC",
+                    disposition: "RENEW",
+                    newScope: {
+                        constraints: [
+                            {
+                                field: "totalAcquisitionCostCents",
+                                operator: "LTE",
+                                comparisonValue: 17500000,
+                                valueType: "integer"
+                            }
+                        ]
+                    }
+                }
+            );
+
+            assertEqual(
+                result.authority.scope.constraints[0].field,
+                "totalAcquisitionCostCents",
+                "RENEW should be able to replace the governed scope basis."
+            );
+
+            assertEqual(
+                prior.scope.maximumAmountCents,
+                50000,
+                "RENEW replacement scope must not mutate prior authority."
+            );
+        }
+    );
+
+    test(
+        "Generic NARROW accepts a stricter comparable constraint",
+        function () {
+            const prior = basePriorAuthority();
+            prior.scope = {
+                constraints: [
+                    {
+                        field: "resultingWeeklyHours",
+                        operator: "LTE",
+                        comparisonValue: 40,
+                        valueType: "integer"
+                    }
+                ]
+            };
+
+            const result = authorityEngine.translateDecision(
+                prior,
+                {
+                    decisionId: "DECISION-NARROW-HOURS",
+                    disposition: "NARROW",
+                    newScope: {
+                        constraints: [
+                            {
+                                field: "resultingWeeklyHours",
+                                operator: "LTE",
+                                comparisonValue: 36,
+                                valueType: "integer"
+                            }
+                        ]
+                    }
+                }
+            );
+
+            assertEqual(
+                result.authority.scope.constraints[0].comparisonValue,
+                36,
+                "Generic NARROW should preserve the stricter comparable constraint."
+            );
+        }
+    );
+
+    test(
+        "Generic NARROW rejects a governed metric change as incomparable",
+        function () {
+            const prior = basePriorAuthority();
+            prior.scope = {
+                constraints: [
+                    {
+                        field: "equipmentPriceCents",
+                        operator: "LTE",
+                        comparisonValue: 17500000,
+                        valueType: "integer"
+                    }
+                ]
+            };
+
+            assertThrows(
+                function () {
+                    authorityEngine.translateDecision(
+                        prior,
+                        {
+                            decisionId: "DECISION-NARROW-METRIC-SWAP",
+                            disposition: "NARROW",
+                            newScope: {
+                                constraints: [
+                                    {
+                                        field: "totalAcquisitionCostCents",
+                                        operator: "LTE",
+                                        comparisonValue: 17500000,
+                                        valueType: "integer"
+                                    }
+                                ]
+                            }
+                        }
+                    );
+                },
+                "NARROW must reject a change to a different governed metric."
+            );
+        }
+    );
+
+    const summary =
+        document.getElementById("authority-summary");
+
+    let passed = 0;
+
+    tests.forEach(function (item) {
+        const row = document.createElement("li");
+
+        try {
+            item.fn();
+
+            row.textContent =
+                item.name + ": PASS";
+
+            row.setAttribute(
+                "data-authority-test-status",
+                "PASS"
+            );
+
+            passed += 1;
+        }
+        catch (error) {
+            row.textContent =
+                item.name +
+                ": " +
+                error.message;
+
+            row.setAttribute(
+                "data-authority-test-status",
+                "FAIL"
+            );
+        }
+
+        resultList.appendChild(row);
+    });
+
+    summary.textContent =
+        passed +
+        "/" +
+        tests.length +
+        " authority/boundary tests passed.";
+
+    summary.setAttribute(
+        "data-authority-passed",
+        String(passed)
+    );
+
+    summary.setAttribute(
+        "data-authority-total",
+        String(tests.length)
+    );
+
+    summary.setAttribute(
+        "data-authority-status",
+        passed === tests.length ? "PASS" : "FAIL"
+    );
 
 }());

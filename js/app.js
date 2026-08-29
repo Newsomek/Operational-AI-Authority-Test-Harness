@@ -10,6 +10,15 @@
     const importExport =
         window.OAATH.ImportExport;
 
+    const appScriptUrl =
+        new URL(document.currentScript.src);
+
+    const defaultScenarioUrl =
+        new URL(
+            "../data/default-scenario.json",
+            appScriptUrl
+        ).href;
+
     if (!runner || !replay || !importExport) {
         throw new Error(
             "TestRunner, ReplayEngine, and ImportExport must load before app.js."
@@ -1660,7 +1669,7 @@
 
     function loadDefaultScenario() {
         fetch(
-            "data/default-scenario.json",
+            defaultScenarioUrl,
             {
                 cache: "no-store"
             }

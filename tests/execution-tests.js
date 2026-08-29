@@ -528,6 +528,107 @@
         }
     );
 
+    test(
+        "Generic integer scope constraint allows an in-bound action",
+        function () {
+            const boundary = baseBoundary(50000);
+            boundary.scope = {
+                constraints: [
+                    {
+                        field: "resultingWeeklyHours",
+                        operator: "LTE",
+                        comparisonValue: 40,
+                        valueType: "integer"
+                    }
+                ]
+            };
+            boundary.actionType = "ASSIGN_SHIFT";
+
+            const result = evaluateWith({
+                requestedAction: {
+                    actionType: "ASSIGN_SHIFT",
+                    resultingWeeklyHours: 40
+                },
+                boundary: boundary
+            });
+
+            assertEqual(
+                result.result,
+                "ALLOW",
+                "A generic in-bound integer constraint should allow execution."
+            );
+        }
+    );
+
+    test(
+        "Generic integer scope constraint blocks an out-of-bound action",
+        function () {
+            const boundary = baseBoundary(50000);
+            boundary.scope = {
+                constraints: [
+                    {
+                        field: "resultingWeeklyHours",
+                        operator: "LTE",
+                        comparisonValue: 40,
+                        valueType: "integer"
+                    }
+                ]
+            };
+            boundary.actionType = "ASSIGN_SHIFT";
+
+            const result = evaluateWith({
+                requestedAction: {
+                    actionType: "ASSIGN_SHIFT",
+                    resultingWeeklyHours: 48
+                },
+                boundary: boundary
+            });
+
+            assertEqual(
+                result.result,
+                "BLOCK",
+                "A generic out-of-bound integer constraint should block execution."
+            );
+
+            assertTrue(
+                result.reason.includes("resultingWeeklyHours"),
+                "Generic block evidence should identify the violated field."
+            );
+        }
+    );
+
+    test(
+        "Generic IN scope constraint evaluates string membership",
+        function () {
+            const boundary = baseBoundary(50000);
+            boundary.scope = {
+                constraints: [
+                    {
+                        field: "accessLevel",
+                        operator: "IN",
+                        comparisonValue: ["READ_ONLY"],
+                        valueType: "string"
+                    }
+                ]
+            };
+            boundary.actionType = "GRANT_ACCESS";
+
+            const result = evaluateWith({
+                requestedAction: {
+                    actionType: "GRANT_ACCESS",
+                    accessLevel: "PRODUCTION_ADMIN"
+                },
+                boundary: boundary
+            });
+
+            assertEqual(
+                result.result,
+                "BLOCK",
+                "A value outside a generic IN constraint should block execution."
+            );
+        }
+    );
+
     const summary =
         document.getElementById(
             "execution-summary"
