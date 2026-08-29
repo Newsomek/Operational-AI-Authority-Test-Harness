@@ -817,3 +817,19 @@ input:focus-visible {
     opacity: 0.7;
     cursor: not-allowed;
 }
+/* POST-V1.0.2 DISPOSITION FLEX-COLUMN HOTFIX
+   Applicable disposition-specific controls are flex containers.
+   Stack label text, control, explanation, and help vertically so the
+   form control retains normal width and height inside the grid cell. */
+.form-grid label.disposition-specific.is-applicable {
+    flex-direction: column;
+    align-items: stretch;
+    min-width: 0;
+}
+
+.form-grid label.disposition-specific.is-applicable input,
+.form-grid label.disposition-specific.is-applicable select {
+    width: 100%;
+    box-sizing: border-box;
+    flex: 0 0 auto;
+}

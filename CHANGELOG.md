@@ -528,3 +528,12 @@ This file records material implementation changes to the Operational AI Authorit
 - Made architecture-comparison rendering tolerate dispositions such as REFUSE that intentionally produce no boundary.
 - Added authority and UI regression coverage for the approved NARROW rule, CONDITION typed predicates, TRANSFER ownership, and disposition-aware control visibility.
 - No commit, tag, or push is created by this correction pass.
+## 2026-08-29 - Post-V1.0.2 disposition-specific control layout hotfix
+
+- Corrected the public layout of disposition-specific experiment controls.
+- Rendered-browser evidence showed the applicable field container was correctly occupying its full grid column but was using display: flex in the default row direction.
+- That row layout compressed the input/select to roughly 100-115 pixels wide and stretched it to roughly 150 pixels tall as the label, control, explanation, and help content competed horizontally.
+- Applicable disposition-specific labels now use column-direction flex layout with stretched, full-width controls.
+- Hidden non-applicable disposition fields remain hidden.
+- No conceptual-model, authority, governance, materiality, execution, evidence, replay, scenario, policy, or experimental logic changed.
+- The published 1.0.2 tag and GitHub Release remain unchanged.
