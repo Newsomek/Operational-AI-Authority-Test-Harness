@@ -303,7 +303,7 @@
             {
               "field": "totalAcquisitionCostCents",
               "operator": "LTE",
-              "comparisonValue": 17500000,
+              "comparisonValue": 20000000,
               "valueType": "integer",
               "failureReason": "Total acquisition cost exceeds the configured purchasing boundary."
             }

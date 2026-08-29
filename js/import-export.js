@@ -4,6 +4,10 @@
     const root = global.OAATH = global.OAATH || {};
 
     const SCHEMA_VERSION = "1.0";
+    const SUPPORTED_SCENARIO_SCHEMA_VERSIONS = Object.freeze([
+        "1.0",
+        "2.0"
+    ]);
 
     function deepClone(value) {
         return JSON.parse(JSON.stringify(value));
@@ -74,8 +78,9 @@
 
         if (
             scenario.schemaVersion &&
-            scenario.schemaVersion !==
-                SCHEMA_VERSION
+            !SUPPORTED_SCENARIO_SCHEMA_VERSIONS.includes(
+                scenario.schemaVersion
+            )
         ) {
             throw new Error(
                 "Unsupported scenario schema version: " +
@@ -205,6 +210,7 @@
                         scenario,
                         {
                             schemaVersion:
+                                scenario.schemaVersion ||
                                 SCHEMA_VERSION
                         }
                     )
@@ -282,6 +288,7 @@
             );
 
         normalized.schemaVersion =
+            normalized.schemaVersion ||
             SCHEMA_VERSION;
 
         return deepFreeze(
@@ -455,6 +462,8 @@
     root.ImportExport = Object.freeze({
         SCHEMA_VERSION:
             SCHEMA_VERSION,
+        SUPPORTED_SCENARIO_SCHEMA_VERSIONS:
+            SUPPORTED_SCENARIO_SCHEMA_VERSIONS,
         requireScenario:
             requireScenario,
         scenarioExportObject:

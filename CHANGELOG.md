@@ -574,3 +574,11 @@ This file records material implementation changes to the Operational AI Authorit
 - Added cross-domain catalog tests across both reauthorization architectures.
 - Added procurement evidence that distinguishes faithful enforcement of an old equipment-price boundary from a renewed total-acquisition-cost boundary.
 - Added account-restriction evidence in which recommendation confidence remains 97 percent while authority can still block execution.
+
+## Version 2 comprehensive internal matrix - 2026-08-29
+
+- Added a deterministic cross-domain matrix spanning all five Version 2 scenarios, both architectures, all six dispositions, technical PASS/FAIL, material/non-material behavior, typed CONDITION causality, boundary relationships, prediction independence, confidence independence, replay, import/export, and architecture attribution.
+- Added an explicit procurement research case showing that a valid NARROW decision can faithfully enforce a stricter version of the wrong economic metric.
+- Made the procurement CONDITION template causally testable by allowing the configured total acquisition cost while requiring typed finance approval.
+- Extended scenario import/export compatibility so Version 2 scenario schema `2.0` is accepted and preserved while retaining the `1.0` export-envelope schema for backward compatibility.
+- Added Version 2 matrix documentation and preserved the requirement for independent external review before release/tag creation.

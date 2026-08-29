@@ -253,3 +253,33 @@ The Version 2 research question is whether the authority model generalizes. A sc
 
 **Consequences**
 Scenario switching must clear derived run state, preserve scenario identity in evidence/replay, and never leave stale labels, controls, actors, conditions, or boundaries from another scenario. The five-scenario set is closed for Version 2.
+
+## Decision: Version 2 comprehensive matrix and scenario-schema compatibility
+
+**Date:** 2026-08-29
+
+**Question**
+
+How should Version 2 validate cross-domain generalization before independent external review?
+
+**Decision**
+
+Add a deterministic internal matrix that exercises the same shared authority-to-execution model across all five scenarios, both architectures, all six dispositions where representable, technical PASS/FAIL, material/non-material behavior, typed condition causality, boundary relationships, prediction/confidence independence, replay, import/export, and architecture attribution.
+
+Keep the export envelope at schema version `1.0` for backward compatibility, while accepting and preserving scenario payload schema versions `1.0` and `2.0`.
+
+Make the procurement CONDITION template causally operational by configuring a total-acquisition-cost boundary that includes the example Vendor C total and requiring `financeApproval == true` as the decisive condition.
+
+**Reason**
+
+A five-scenario UI is not sufficient evidence of model generalization. Version 2 needs deterministic cross-domain tests that can distinguish implementation defects, non-causal controls, architecture favoritism, stale state, replay failures, and cases where the system correctly enforces a badly specified authority boundary.
+
+**Alternatives considered**
+
+- Proceed directly to independent review after the five-scenario selector checkpoint.
+- Treat the existing scenario-catalog smoke tests as sufficient cross-domain evidence.
+- Change the procurement threshold rather than test the governed-metric distinction explicitly.
+
+**Consequences**
+
+Version 2 receives a larger internal evidence base before independent review. The matrix also makes the procurement wrong-boundary result explicit rather than treating every ALLOW under a material change as an implementation defect.

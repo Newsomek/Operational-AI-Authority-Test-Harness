@@ -289,6 +289,60 @@
     );
 
     test(
+        "Version 2 scenario schema survives export/import without downgrade",
+        function () {
+            const v2 =
+                scenario();
+
+            v2.schemaVersion =
+                "2.0";
+            v2.scenarioId =
+                "V2-SCENARIO";
+
+            const imported =
+                io.importScenario(
+                    io.exportScenario(
+                        v2
+                    )
+                );
+
+            assertEqual(
+                imported.schemaVersion,
+                "2.0",
+                "V2 scenario schema should be preserved."
+            );
+
+            assertEqual(
+                imported.scenarioId,
+                "V2-SCENARIO",
+                "V2 scenario identity should survive round trip."
+            );
+        }
+    );
+
+    test(
+        "Version 2 raw scenario JSON is accepted",
+        function () {
+            const v2 =
+                scenario();
+
+            v2.schemaVersion =
+                "2.0";
+
+            const imported =
+                io.importScenario(
+                    JSON.stringify(v2)
+                );
+
+            assertEqual(
+                imported.schemaVersion,
+                "2.0",
+                "Raw V2 scenario schema should remain 2.0."
+            );
+        }
+    );
+
+    test(
         "Malformed JSON import is rejected",
         function () {
             assertThrows(
