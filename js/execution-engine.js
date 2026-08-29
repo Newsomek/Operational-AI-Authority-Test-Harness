@@ -179,23 +179,17 @@
         if (!Array.isArray(conditions)) {
             return {
                 satisfied: false,
-                reason:
+                reasons: [
                     "Boundary conditions are malformed."
+                ]
             };
         }
 
-        for (
-            let index = 0;
-            index < conditions.length;
-            index += 1
-        ) {
-            const condition = conditions[index];
+        const reasons = [];
 
-            if (
-                condition &&
-                condition.required === false
-            ) {
-                continue;
+        conditions.forEach(function (condition) {
+            if (condition && condition.required === false) {
+                return;
             }
 
             const predicate =
@@ -207,44 +201,41 @@
                     ? condition.predicate
                     : condition;
 
-            const result =
-                evaluatePredicate(
-                    predicate,
-                    requestedAction,
-                    conditionValues
-                );
+            const result = evaluatePredicate(
+                predicate,
+                requestedAction,
+                conditionValues
+            );
 
             if (!result.evaluable) {
-                return {
-                    satisfied: false,
-                    reason: result.reason
-                };
+                reasons.push(result.reason);
+                return;
             }
 
             if (!result.satisfied) {
-                return {
-                    satisfied: false,
-                    reason:
-                        "Required condition was not satisfied: " +
-                        predicate.field
-                };
+                reasons.push(
+                    "Required condition was not satisfied: " +
+                    predicate.field
+                );
             }
-        }
+        });
 
         return {
-            satisfied: true,
-            reason: null
+            satisfied: reasons.length === 0,
+            reasons: reasons
         };
     }
 
     function evaluateScope(requestedAction, boundary) {
         const scope = boundary.scope;
+        const reasons = [];
 
         if (!isPlainObject(scope)) {
             return {
                 satisfied: false,
-                reason:
+                reasons: [
                     "Boundary scope is missing or malformed."
+                ]
             };
         }
 
@@ -252,22 +243,17 @@
             typeof boundary.actionType !== "string" ||
             boundary.actionType.length === 0
         ) {
-            return {
-                satisfied: false,
-                reason:
-                    "Boundary action type is missing."
-            };
+            reasons.push(
+                "Boundary action type is missing."
+            );
         }
-
-        if (
+        else if (
             requestedAction.actionType !==
             boundary.actionType
         ) {
-            return {
-                satisfied: false,
-                reason:
-                    "Requested action type is outside the current boundary."
-            };
+            reasons.push(
+                "Requested action type is outside the current boundary."
+            );
         }
 
         if (
@@ -277,22 +263,17 @@
             )
         ) {
             if (!Number.isInteger(requestedAction.amountCents)) {
-                return {
-                    satisfied: false,
-                    reason:
-                        "Requested amount must be represented as integer cents."
-                };
+                reasons.push(
+                    "Requested amount must be represented as integer cents."
+                );
             }
-
-            if (
+            else if (
                 requestedAction.amountCents >
                 scope.maximumAmountCents
             ) {
-                return {
-                    satisfied: false,
-                    reason:
-                        "Requested amount exceeds the current authorized maximum."
-                };
+                reasons.push(
+                    "Requested amount exceeds the current authorized maximum."
+                );
             }
         }
 
@@ -303,23 +284,18 @@
             )
         ) {
             if (!Array.isArray(scope.allowedRiskLevels)) {
-                return {
-                    satisfied: false,
-                    reason:
-                        "Allowed risk levels are malformed."
-                };
+                reasons.push(
+                    "Allowed risk levels are malformed."
+                );
             }
-
-            if (
+            else if (
                 !scope.allowedRiskLevels.includes(
                     requestedAction.customerRisk
                 )
             ) {
-                return {
-                    satisfied: false,
-                    reason:
-                        "Requested customer risk is outside the current authority scope."
-                };
+                reasons.push(
+                    "Requested customer risk is outside the current authority scope."
+                );
             }
         }
 
@@ -334,28 +310,23 @@
                     requestedAction.transactionAgeDays
                 )
             ) {
-                return {
-                    satisfied: false,
-                    reason:
-                        "Transaction age must be an integer number of days."
-                };
+                reasons.push(
+                    "Transaction age must be an integer number of days."
+                );
             }
-
-            if (
+            else if (
                 requestedAction.transactionAgeDays >
                 scope.maximumTransactionAgeDays
             ) {
-                return {
-                    satisfied: false,
-                    reason:
-                        "Transaction age exceeds the current authority scope."
-                };
+                reasons.push(
+                    "Transaction age exceeds the current authority scope."
+                );
             }
         }
 
         return {
-            satisfied: true,
-            reason: null
+            satisfied: reasons.length === 0,
+            reasons: reasons
         };
     }
 
@@ -434,13 +405,6 @@
                 boundary
             );
 
-        if (!scopeResult.satisfied) {
-            return block(
-                scopeResult.reason,
-                boundary.boundaryId
-            );
-        }
-
         const conditionResult =
             evaluateConditions(
                 boundary.enforceableConditions || [],
@@ -448,9 +412,14 @@
                 conditionValues
             );
 
-        if (!conditionResult.satisfied) {
+        const boundaryViolations =
+            scopeResult.reasons.concat(
+                conditionResult.reasons
+            );
+
+        if (boundaryViolations.length > 0) {
             return block(
-                conditionResult.reason,
+                boundaryViolations.join(" "),
                 boundary.boundaryId
             );
         }

@@ -185,12 +185,9 @@
                     {
                         decisionId: "DECISION-4",
                         disposition: "NARROW",
-                        reauthorizedScopeDimensions: [
-                            "allowedRiskLevels"
-                        ],
                         newScope: {
                             maximumAmountCents: 25000,
-                            allowedRiskLevels: ["LOW", "MEDIUM"],
+                            allowedRiskLevels: ["LOW"],
                             maximumTransactionAgeDays: 30
                         }
                     }
@@ -226,12 +223,9 @@
                     {
                         decisionId: "DECISION-4",
                         disposition: "NARROW",
-                        reauthorizedScopeDimensions: [
-                            "allowedRiskLevels"
-                        ],
                         newScope: {
                             maximumAmountCents: 25000,
-                            allowedRiskLevels: ["LOW", "MEDIUM"],
+                            allowedRiskLevels: ["LOW"],
                             maximumTransactionAgeDays: 30
                         }
                     }
@@ -298,6 +292,54 @@
                 result.authority.conditions.length,
                 1,
                 "Expected one manually specified condition."
+            );
+        }
+    );
+
+    test(
+        "CONDITION may explicitly reauthorize changed scope while adding a typed condition",
+        function () {
+            const prior = basePriorAuthority();
+
+            const result =
+                authorityEngine.translateDecision(
+                    prior,
+                    {
+                        decisionId: "DECISION-CONDITION-SCOPE",
+                        disposition: "CONDITION",
+                        newScope: {
+                            maximumAmountCents: 50000,
+                            allowedRiskLevels: [
+                                "LOW",
+                                "MEDIUM"
+                            ],
+                            maximumTransactionAgeDays: 30
+                        },
+                        conditions: [
+                            {
+                                required: true,
+                                predicate: {
+                                    field: "supervisorConfirmation",
+                                    operator: "EQ",
+                                    comparisonValue: true,
+                                    valueType: "boolean"
+                                }
+                            }
+                        ]
+                    }
+                );
+
+            assertTrue(
+                result.authority.scope.allowedRiskLevels.includes(
+                    "MEDIUM"
+                ),
+                "CONDITION should carry explicitly reauthorized changed scope."
+            );
+
+            assertEqual(
+                result.authority.conditions.length,
+                1,
+                "CONDITION should retain its typed predicate."
             );
         }
     );
@@ -703,7 +745,35 @@
         passed === tests.length ? "PASS" : "FAIL"
     );
     test(
-        "NARROW rejects adapted scope with no stricter enforceable boundary",
+        "NARROW rejects scope broadening even when another dimension is stricter",
+        function () {
+            const prior = basePriorAuthority();
+
+            assertThrows(
+                function () {
+                    authorityEngine.translateDecision(
+                        prior,
+                        {
+                            decisionId: "DECISION-NARROW-MIXED",
+                            disposition: "NARROW",
+                            newScope: {
+                                maximumAmountCents: 25000,
+                                allowedRiskLevels: [
+                                    "LOW",
+                                    "MEDIUM"
+                                ],
+                                maximumTransactionAgeDays: 30
+                            }
+                        }
+                    );
+                },
+                "NARROW must reject mixed narrow-plus-broaden scope changes."
+            );
+        }
+    );
+
+    test(
+        "NARROW rejects scope with no stricter enforceable boundary",
         function () {
             const prior = basePriorAuthority();
 
@@ -714,27 +784,21 @@
                         {
                             decisionId: "DECISION-NARROW-NO-STRICTER",
                             disposition: "NARROW",
-                            reauthorizedScopeDimensions: [
-                                "allowedRiskLevels"
-                            ],
                             newScope: {
                                 maximumAmountCents: 50000,
-                                allowedRiskLevels: [
-                                    "LOW",
-                                    "MEDIUM"
-                                ],
+                                allowedRiskLevels: ["LOW"],
                                 maximumTransactionAgeDays: 30
                             }
                         }
                     );
                 },
-                "NARROW must reject an adapted scope that adds no stricter boundary."
+                "NARROW must reject an unchanged scope."
             );
         }
     );
 
     test(
-        "NARROW rejects broadening of an unrelated scope dimension",
+        "NARROW rejects broadening of amount",
         function () {
             const prior = basePriorAuthority();
 
@@ -743,64 +807,21 @@
                     authorityEngine.translateDecision(
                         prior,
                         {
-                            decisionId: "DECISION-NARROW-UNRELATED-BROADENING",
+                            decisionId: "DECISION-NARROW-AMOUNT-BROADENING",
                             disposition: "NARROW",
-                            reauthorizedScopeDimensions: [
-                                "allowedRiskLevels"
-                            ],
                             newScope: {
                                 maximumAmountCents: 60000,
-                                allowedRiskLevels: [
-                                    "LOW",
-                                    "MEDIUM"
-                                ],
+                                allowedRiskLevels: ["LOW"],
                                 maximumTransactionAgeDays: 30
                             }
                         }
                     );
                 },
-                "NARROW must reject unrelated amount broadening."
+                "NARROW must reject amount broadening."
             );
         }
     );
 
-    test(
-        "Approved NARROW adaptation permits changed risk only when another boundary is stricter",
-        function () {
-            const prior = basePriorAuthority();
-            const result =
-                authorityEngine.translateDecision(
-                    prior,
-                    {
-                        decisionId: "DECISION-NARROW-APPROVED-ADAPTATION",
-                        disposition: "NARROW",
-                        reauthorizedScopeDimensions: [
-                            "allowedRiskLevels"
-                        ],
-                        newScope: {
-                            maximumAmountCents: 25000,
-                            allowedRiskLevels: [
-                                "LOW",
-                                "MEDIUM"
-                            ],
-                            maximumTransactionAgeDays: 30
-                        }
-                    }
-                );
-
-            assertTrue(
-                result.authorityCreated,
-                "Approved NARROW adaptation must create authority."
-            );
-
-            assertEqual(
-                result.authority.scope.maximumAmountCents,
-                25000,
-                "Approved adaptation must retain the stricter amount boundary."
-            );
-        }
-    );
-
-    /* V1.0.2 approved NARROW semantics regression marker */
+    /* Strict NARROW semantics regression marker */
 
 }());

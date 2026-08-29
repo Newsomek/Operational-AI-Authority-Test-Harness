@@ -214,9 +214,6 @@
             decision: {
                 decisionId: "DECISION-3",
                 disposition: "NARROW",
-                reauthorizedScopeDimensions: [
-                "allowedRiskLevels"
-            ],
             evidenceReviewed: [
                     "E-POLICY",
                     "E-RISK"
@@ -224,8 +221,7 @@
                 newScope: {
                     maximumAmountCents: 25000,
                     allowedRiskLevels: [
-                        "LOW",
-                        "MEDIUM"
+                        "LOW"
                     ],
                     maximumTransactionAgeDays: 30
                 },

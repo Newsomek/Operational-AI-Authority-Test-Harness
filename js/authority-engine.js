@@ -121,31 +121,10 @@
 
     function validateNarrowScope(
         priorScope,
-        newScope,
-        reauthorizedScopeDimensions
+        newScope
     ) {
         requirePlainObject(priorScope, "priorAuthority.scope");
         requirePlainObject(newScope, "decision.newScope");
-
-        const adaptations =
-            Array.isArray(reauthorizedScopeDimensions)
-                ? reauthorizedScopeDimensions
-                : [];
-
-        const supportedDimensions = [
-            "maximumAmountCents",
-            "allowedRiskLevels",
-            "maximumTransactionAgeDays"
-        ];
-
-        adaptations.forEach(function (dimension) {
-            if (!supportedDimensions.includes(dimension)) {
-                throw new Error(
-                    "Unsupported NARROW reauthorized scope dimension: " +
-                    String(dimension)
-                );
-            }
-        });
 
         let stricter = false;
 
@@ -153,48 +132,26 @@
             Number.isInteger(priorScope.maximumAmountCents) &&
             Number.isInteger(newScope.maximumAmountCents)
         ) {
-            if (
-                newScope.maximumAmountCents >
-                    priorScope.maximumAmountCents &&
-                !adaptations.includes("maximumAmountCents")
-            ) {
+            if (newScope.maximumAmountCents > priorScope.maximumAmountCents) {
                 throw new Error(
-                    "NARROW may not broaden unrelated maximumAmountCents."
+                    "NARROW may not broaden maximumAmountCents."
                 );
             }
-
-            if (
-                newScope.maximumAmountCents <
-                priorScope.maximumAmountCents
-            ) {
+            if (newScope.maximumAmountCents < priorScope.maximumAmountCents) {
                 stricter = true;
             }
         }
 
         if (
-            Number.isInteger(
-                priorScope.maximumTransactionAgeDays
-            ) &&
-            Number.isInteger(
-                newScope.maximumTransactionAgeDays
-            )
+            Number.isInteger(priorScope.maximumTransactionAgeDays) &&
+            Number.isInteger(newScope.maximumTransactionAgeDays)
         ) {
-            if (
-                newScope.maximumTransactionAgeDays >
-                    priorScope.maximumTransactionAgeDays &&
-                !adaptations.includes(
-                    "maximumTransactionAgeDays"
-                )
-            ) {
+            if (newScope.maximumTransactionAgeDays > priorScope.maximumTransactionAgeDays) {
                 throw new Error(
-                    "NARROW may not broaden unrelated maximumTransactionAgeDays."
+                    "NARROW may not broaden maximumTransactionAgeDays."
                 );
             }
-
-            if (
-                newScope.maximumTransactionAgeDays <
-                priorScope.maximumTransactionAgeDays
-            ) {
+            if (newScope.maximumTransactionAgeDays < priorScope.maximumTransactionAgeDays) {
                 stricter = true;
             }
         }
@@ -203,32 +160,23 @@
             Array.isArray(priorScope.allowedRiskLevels) &&
             Array.isArray(newScope.allowedRiskLevels)
         ) {
-            const addedRisks =
-                newScope.allowedRiskLevels.filter(
-                    function (risk) {
-                        return !priorScope.allowedRiskLevels.includes(
-                            risk
-                        );
-                    }
-                );
+            const addedRisks = newScope.allowedRiskLevels.filter(
+                function (risk) {
+                    return !priorScope.allowedRiskLevels.includes(risk);
+                }
+            );
 
-            if (
-                addedRisks.length > 0 &&
-                !adaptations.includes("allowedRiskLevels")
-            ) {
+            if (addedRisks.length > 0) {
                 throw new Error(
-                    "NARROW may not broaden unrelated allowedRiskLevels."
+                    "NARROW may not broaden allowedRiskLevels."
                 );
             }
 
-            const removedRisks =
-                priorScope.allowedRiskLevels.filter(
-                    function (risk) {
-                        return !newScope.allowedRiskLevels.includes(
-                            risk
-                        );
-                    }
-                );
+            const removedRisks = priorScope.allowedRiskLevels.filter(
+                function (risk) {
+                    return !newScope.allowedRiskLevels.includes(risk);
+                }
+            );
 
             if (removedRisks.length > 0) {
                 stricter = true;
@@ -241,6 +189,7 @@
             );
         }
     }
+
     function applyNarrow(priorAuthority, decision) {
         requirePlainObject(
             decision.newScope,
@@ -249,8 +198,7 @@
 
         validateNarrowScope(
             priorAuthority.scope,
-            decision.newScope,
-            decision.reauthorizedScopeDimensions
+            decision.newScope
         );
 
         const authority = createBaseAuthority(
@@ -280,6 +228,16 @@
         authority.conditions = deepClone(
             decision.conditions
         );
+
+        if (decision.newScope) {
+            requirePlainObject(
+                decision.newScope,
+                "decision.newScope"
+            );
+            authority.scope = deepClone(
+                decision.newScope
+            );
+        }
 
         return authority;
     }

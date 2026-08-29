@@ -164,3 +164,32 @@ Date:
 **Alternatives considered:** Treat any reduction in one dimension as NARROW regardless of broadening elsewhere; prohibit every form of scope expansion even when the expanded dimension is the material condition being explicitly reauthorized; or leave NARROW undefined across multidimensional scope. These alternatives were rejected because they either permit misleading broadening, prevent the default material-change experiment from representing reauthorization of the changed condition, or leave the experimental semantics ambiguous.
 
 **Consequences:** NARROW decisions must identify any scope dimension intentionally adapted by reauthorization. Broadening an unrelated scope dimension is invalid. At least one enforceable boundary must become stricter. A changed risk set plus an unchanged $500 maximum is not NARROW; changed risk plus a $250 maximum is. Tests must verify this distinction.
+
+## D-020 - Strict multidimensional NARROW semantics
+
+Question:
+Can a NARROW decision broaden one authority dimension when another authority dimension becomes stricter?
+
+Decision:
+No. NARROW retains its strict meaning: the resulting permissible authority must be a true subset of the authority it replaces. A NARROW decision may make one or more enforceable dimensions stricter, but it may not broaden any enforceable authority dimension.
+
+Reason:
+A scope that lowers the monetary maximum while adding a previously unauthorized risk level is not purely narrower. It blocks some actions that were previously permitted while permitting other actions that were previously outside authority. Calling that mixed change NARROW would obscure the actual authority change and weaken the experimental distinction between disposition and enforceable scope.
+
+Alternatives considered:
+- Preserve DECISION-V1.0.2-NARROW-SCOPE-ADAPTATION and allow the materially changed dimension to broaden when another dimension narrows.
+- Treat any net or intuitively tighter multidimensional scope as NARROW.
+- Preserve strict subset semantics and require a different disposition or future authority primitive for mixed broaden-and-restrict changes.
+
+Decision:
+Preserve strict subset semantics.
+
+Consequences:
+- DECISION-V1.0.2-NARROW-SCOPE-ADAPTATION is superseded by this decision.
+- NARROW rejects any new risk level, larger amount ceiling, longer transaction-age ceiling, or other supported scope broadening even when another dimension becomes stricter.
+- The default LOW-to-MEDIUM material-change scenario can use NARROW to reduce the amount ceiling while retaining LOW-only risk authority, which means the changed MEDIUM request remains outside that NARROW authority.
+- CONDITION may explicitly reauthorize the changed risk scope while adding an enforceable typed predicate; this is not represented as NARROW.
+- Tests must include a mixed narrow-plus-broaden rejection case.
+
+Date:
+2026-08-29

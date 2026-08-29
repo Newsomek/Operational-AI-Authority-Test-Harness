@@ -483,6 +483,51 @@
         }
     );
 
+    test(
+        "Execution reports all simultaneous enforceable-boundary violations",
+        function () {
+            const boundary = baseBoundary(25000);
+            boundary.scope.allowedRiskLevels = ["LOW"];
+            boundary.enforceableConditions = [
+                {
+                    required: true,
+                    predicate: {
+                        field: "supervisorConfirmation",
+                        operator: "EQ",
+                        comparisonValue: true,
+                        valueType: "boolean"
+                    }
+                }
+            ];
+
+            const result = evaluateWith({
+                boundary: boundary,
+                conditionValues: {
+                    supervisorConfirmation: false
+                }
+            });
+
+            assertEqual(
+                result.result,
+                "BLOCK",
+                "Multiple violations must still block."
+            );
+
+            assertTrue(
+                result.reason.includes(
+                    "Requested amount exceeds"
+                ) &&
+                result.reason.includes(
+                    "customer risk"
+                ) &&
+                result.reason.includes(
+                    "supervisorConfirmation"
+                ),
+                "Execution reason should identify every simultaneous boundary violation."
+            );
+        }
+    );
+
     const summary =
         document.getElementById(
             "execution-summary"

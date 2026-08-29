@@ -537,3 +537,18 @@ This file records material implementation changes to the Operational AI Authorit
 - Hidden non-applicable disposition fields remain hidden.
 - No conceptual-model, authority, governance, materiality, execution, evidence, replay, scenario, policy, or experimental logic changed.
 - The published 1.0.2 tag and GitHub Release remain unchanged.
+
+## 2026-08-29 - Independent-review remediation
+
+- Preserved the independent Claude V1.0.2 review as immutable project evidence before remediation.
+- Superseded the earlier multidimensional NARROW adaptation decision with strict subset semantics: NARROW may not broaden any enforceable authority dimension.
+- Changed NARROW UI translation so the selected post-change risk is no longer silently added to the new authority scope.
+- Added fail-closed NARROW regression coverage for mixed narrow-plus-broaden scope changes.
+- Made CONDITION capable of explicitly reauthorizing the changed risk scope while adding the typed supervisor-confirmation predicate, so the predicate can become causally decisive.
+- Synchronized the scenario decision actor with the selected reauthorization architecture while retaining the operational actor separately.
+- Removed disposition-inapplicable ACTIVE_BOUNDARY_MAXIMUM assertions from generated scenario inputs and synchronize the NARROW assertion maximum with the configured NARROW boundary.
+- Synchronized technical-revalidation reason text with PASS/FAIL selections.
+- Expanded execution explanations to report all simultaneously violated enforceable scope and condition predicates in deterministic order.
+- Confirmed from source inspection that the application contains no setTimeout or setInterval idle-reset behavior; persistence is therefore verified as a browser regression rather than changed speculatively.
+- Confirmed that normal renderRun already renders the current run's authorityHistory and eventLog directly; browser regression verification is required before any additional history/event-log mutation.
+- Preserved the research result that separated reauthorization is not required to produce a different execution outcome; no outcome difference is manufactured by the remediation.

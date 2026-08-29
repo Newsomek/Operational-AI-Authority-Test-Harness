@@ -65,14 +65,10 @@
             allowedDispositions: [],
             decision: {
                 disposition: "NARROW",
-                reauthorizedScopeDimensions: [
-                    "allowedRiskLevels"
-                ],
                 newScope: {
                     maximumAmountCents: 25000,
                     allowedRiskLevels: [
-                        "LOW",
-                        "MEDIUM"
+                        "LOW"
                     ],
                     maximumTransactionAgeDays: 30
                 }
@@ -833,6 +829,18 @@
             const scenario = {
                 reauthorizationArchitecture:
                     "SAME_LAYER_REAUTHORIZATION",
+                operationalActor: {
+                    actorId:
+                        "ACTOR-OPERATIONS",
+                    name:
+                        "Operations Authority Owner"
+                },
+                designatedAuthorityOwner: {
+                    actorId:
+                        "ACTOR-GOVERNANCE",
+                    name:
+                        "Governance Authority Owner"
+                },
                 priorConditions: {
                     customerRisk:
                         "LOW"
@@ -856,8 +864,7 @@
                         maximumAmountCents:
                             25000,
                         allowedRiskLevels: [
-                            "LOW",
-                            "MEDIUM"
+                            "LOW"
                         ],
                         maximumTransactionAgeDays:
                             30

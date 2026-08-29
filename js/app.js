@@ -355,6 +355,25 @@
         scenario.reauthorizationArchitecture =
             selectedArchitecture();
 
+        if (
+            scenario.reauthorizationArchitecture ===
+            "SEPARATED_REAUTHORIZATION"
+        ) {
+            scenario.decisionActor = JSON.parse(
+                JSON.stringify(
+                    scenario.designatedAuthorityOwner
+                )
+            );
+        }
+        else {
+            scenario.decisionActor = JSON.parse(
+                JSON.stringify(
+                    scenario.operationalActor ||
+                    scenario.decisionActor
+                )
+            );
+        }
+
         scenario.currentConditions.customerRisk =
             elements.currentRisk.value;
 
@@ -429,6 +448,11 @@
         scenario.technicalRevalidation.status =
             elements.technicalValidity.value;
 
+        scenario.technicalRevalidation.reason =
+            elements.technicalValidity.value === "PASS"
+                ? "Technical behavior remains valid under changed conditions."
+                : "Technical revalidation failed under changed conditions.";
+
         delete scenario.decision.newScope;
         delete scenario.decision.conditions;
         delete scenario.decision.newDecisionOwner;
@@ -467,20 +491,13 @@
                     )
                     : {};
 
-            const allowedRiskLevels =
-                Array.isArray(priorScope.allowedRiskLevels)
-                    ? priorScope.allowedRiskLevels.slice()
-                    : [];
-
-            if (!allowedRiskLevels.includes(selectedRisk)) {
-                allowedRiskLevels.push(selectedRisk);
-            }
-
             scenario.decision.newScope = {
                 maximumAmountCents:
                     Math.round(maximumDollars * 100),
                 allowedRiskLevels:
-                    allowedRiskLevels,
+                    Array.isArray(priorScope.allowedRiskLevels)
+                        ? priorScope.allowedRiskLevels.slice()
+                        : [],
                 maximumTransactionAgeDays:
                     Number.isInteger(
                         priorScope.maximumTransactionAgeDays
@@ -488,11 +505,6 @@
                         ? priorScope.maximumTransactionAgeDays
                         : 30
             };
-
-            scenario.decision.reauthorizedScopeDimensions =
-                priorRisk && selectedRisk !== priorRisk
-                    ? ["allowedRiskLevels"]
-                    : [];
         }
         else if (
             scenario.decision.disposition === "CONDITION"
@@ -512,6 +524,34 @@
             scenario.currentConditions.supervisorConfirmation =
                 elements.conditionSupervisorConfirmation.value ===
                 "true";
+
+            const priorScope =
+                scenario.priorAuthority &&
+                scenario.priorAuthority.scope
+                    ? JSON.parse(
+                        JSON.stringify(
+                            scenario.priorAuthority.scope
+                        )
+                    )
+                    : {};
+
+            const conditionRiskLevels =
+                Array.isArray(priorScope.allowedRiskLevels)
+                    ? priorScope.allowedRiskLevels.slice()
+                    : [];
+
+            if (!conditionRiskLevels.includes(selectedRisk)) {
+                conditionRiskLevels.push(selectedRisk);
+            }
+
+            scenario.decision.newScope = {
+                maximumAmountCents:
+                    priorScope.maximumAmountCents,
+                allowedRiskLevels:
+                    conditionRiskLevels,
+                maximumTransactionAgeDays:
+                    priorScope.maximumTransactionAgeDays
+            };
         }
         else if (
             scenario.decision.disposition === "TRANSFER"
@@ -527,6 +567,35 @@
 
             scenario.decision.newDecisionOwner =
                 newDecisionOwner;
+        }
+
+        if (Array.isArray(scenario.controlAssertions)) {
+            scenario.controlAssertions =
+                scenario.controlAssertions.filter(
+                    function (assertion) {
+                        return (
+                            assertion.ruleReference !==
+                                "ACTIVE_BOUNDARY_MAXIMUM" ||
+                            scenario.decision.disposition ===
+                                "NARROW"
+                        );
+                    }
+                );
+
+            scenario.controlAssertions.forEach(
+                function (assertion) {
+                    if (
+                        assertion.ruleReference ===
+                            "ACTIVE_BOUNDARY_MAXIMUM" &&
+                        scenario.decision.newScope
+                    ) {
+                        assertion.parameters =
+                            assertion.parameters || {};
+                        assertion.parameters.maximumAmountCents =
+                            scenario.decision.newScope.maximumAmountCents;
+                    }
+                }
+            );
         }
 
         return scenario;

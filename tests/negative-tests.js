@@ -257,9 +257,6 @@
                     "DECISION-NEGATIVE",
                 disposition:
                     "NARROW",
-                reauthorizedScopeDimensions: [
-                "allowedRiskLevels"
-            ],
             evidenceReviewed: [
                     "E-POLICY",
                     "E-RISK"
@@ -268,8 +265,7 @@
                     maximumAmountCents:
                         25000,
                     allowedRiskLevels: [
-                        "LOW",
-                        "MEDIUM"
+                        "LOW"
                     ],
                     maximumTransactionAgeDays:
                         30
@@ -656,8 +652,7 @@
                     maximumAmountCents:
                         100000,
                     allowedRiskLevels: [
-                        "LOW",
-                        "MEDIUM"
+                        "LOW"
                     ],
                     maximumTransactionAgeDays:
                         30
@@ -681,8 +676,7 @@
                             maximumAmountCents:
                                 50000,
                             allowedRiskLevels: [
-                                "LOW",
-                                "MEDIUM"
+                                "LOW"
                             ],
                             maximumTransactionAgeDays:
                                 30
@@ -703,7 +697,7 @@
                         amountCents:
                             40000,
                         customerRisk:
-                            "MEDIUM",
+                            "LOW",
                         transactionAgeDays:
                             20
                     },
