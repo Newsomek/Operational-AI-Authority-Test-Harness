@@ -132,10 +132,12 @@
         }
 
         const requestedAction =
-            buildRequestedAction(
-                input.requestedAction,
-                input.priorConditions
-            );
+            input.controlRequestedAction
+                ? deepClone(input.controlRequestedAction)
+                : buildRequestedAction(
+                    input.requestedAction,
+                    input.priorConditions
+                );
 
         const executionResult =
             execution.evaluateExecution({
@@ -157,8 +159,26 @@
                 executionResult.result
             );
 
-        const maximumAssertion =
-            assertions.evaluate(
+        let controlAssertion;
+
+        if (input.controlAssertion) {
+            const parameters =
+                input.controlAssertion.parameters || {};
+
+            controlAssertion = assertions.evaluate(
+                input.controlAssertion,
+                {
+                    boundaryConstraints:
+                        controlBoundary.boundary.scope.constraints || [],
+                    actualValue:
+                        requestedAction[parameters.field],
+                    executionResult:
+                        executionResult.result
+                }
+            );
+        }
+        else {
+            controlAssertion = assertions.evaluate(
                 {
                     assertionId:
                         "CONTROL-INITIAL-BOUNDARY",
@@ -180,6 +200,7 @@
                         executionResult.result
                 }
             );
+        }
 
         return deepFreeze({
             authority:
@@ -215,7 +236,7 @@
                 expectedVsActual,
 
             controlAssertion:
-                maximumAssertion
+                controlAssertion
         });
     }
 

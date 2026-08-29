@@ -297,6 +297,235 @@
         }
     );
 
+    test(
+        "Generic baseline control uses explicit pre-change requested action",
+        function () {
+            const input = {
+                priorConditions: {
+                    organizationalContext: "PRODUCTION_OPERATIONS"
+                },
+                priorAuthority: {
+                    authorityId: "AUTH-ACCESS-CONTROL",
+                    authorityVersion: 1,
+                    actionType: "GRANT_PRIVILEGED_ACCESS",
+                    purpose: "PRODUCTION_ACCESS",
+                    status: "ACTIVE",
+                    owner: "Production Operations",
+                    scope: {
+                        constraints: [
+                            {
+                                field: "accessLevel",
+                                operator: "IN",
+                                comparisonValue: ["PRODUCTION_ADMIN"],
+                                valueType: "string"
+                            },
+                            {
+                                field: "organizationalContext",
+                                operator: "IN",
+                                comparisonValue: ["PRODUCTION_OPERATIONS"],
+                                valueType: "string"
+                            }
+                        ]
+                    },
+                    conditions: [],
+                    scenarioVersion: "S2",
+                    policyVersion: "P2"
+                },
+                requestedAction: {
+                    actionType: "GRANT_PRIVILEGED_ACCESS",
+                    accessLevel: "PRODUCTION_ADMIN",
+                    organizationalContext: "BUSINESS_ANALYTICS"
+                },
+                controlRequestedAction: {
+                    actionType: "GRANT_PRIVILEGED_ACCESS",
+                    accessLevel: "PRODUCTION_ADMIN",
+                    organizationalContext: "PRODUCTION_OPERATIONS"
+                },
+                technicalCapability: {
+                    supported: true,
+                    actionType: "GRANT_PRIVILEGED_ACCESS"
+                },
+                initialTechnicalValidity: { status: "PASS" },
+                controlExpectedResult: {
+                    expectedExecutionResult: "ALLOW",
+                    declaredBeforeExecution: true
+                },
+                controlAssertion: {
+                    assertionId: "CONTROL-ACCESS-CONTEXT",
+                    ruleReference: "ACTIVE_BOUNDARY_CONSTRAINT",
+                    assertionVersion: "1",
+                    parameters: {
+                        field: "organizationalContext",
+                        operator: "IN",
+                        comparisonValue: ["PRODUCTION_OPERATIONS"]
+                    }
+                }
+            };
+
+            const result = control.run(input);
+
+            assertEqual(
+                result.requestedAction.organizationalContext,
+                "PRODUCTION_OPERATIONS",
+                "Baseline must consume the explicit pre-change action."
+            );
+            assertEqual(
+                result.executionResult.result,
+                "ALLOW",
+                "Pre-change access should be allowed."
+            );
+            assertEqual(
+                result.controlAssertion.result,
+                "PASS",
+                "Generic access boundary assertion should pass."
+            );
+        }
+    );
+
+    test(
+        "Generic control assertion blocks an action outside a typed boundary",
+        function () {
+            const input = {
+                priorConditions: {},
+                priorAuthority: {
+                    authorityId: "AUTH-WORK-CONTROL",
+                    authorityVersion: 1,
+                    actionType: "ASSIGN_SHIFT",
+                    purpose: "WORKFORCE_SCHEDULING",
+                    status: "ACTIVE",
+                    owner: "Workforce Operations",
+                    scope: {
+                        constraints: [
+                            {
+                                field: "resultingWeeklyHours",
+                                operator: "LTE",
+                                comparisonValue: 40,
+                                valueType: "integer"
+                            }
+                        ]
+                    },
+                    conditions: [],
+                    scenarioVersion: "S3",
+                    policyVersion: "P3"
+                },
+                requestedAction: {
+                    actionType: "ASSIGN_SHIFT",
+                    resultingWeeklyHours: 48
+                },
+                controlRequestedAction: {
+                    actionType: "ASSIGN_SHIFT",
+                    resultingWeeklyHours: 48
+                },
+                technicalCapability: {
+                    supported: true,
+                    actionType: "ASSIGN_SHIFT"
+                },
+                initialTechnicalValidity: { status: "PASS" },
+                controlExpectedResult: {
+                    expectedExecutionResult: "BLOCK",
+                    declaredBeforeExecution: true
+                },
+                controlAssertion: {
+                    assertionId: "CONTROL-WEEKLY-HOURS",
+                    ruleReference: "ACTIVE_BOUNDARY_CONSTRAINT",
+                    assertionVersion: "1",
+                    parameters: {
+                        field: "resultingWeeklyHours",
+                        operator: "LTE",
+                        comparisonValue: 40
+                    }
+                }
+            };
+
+            const result = control.run(input);
+
+            assertEqual(result.executionResult.result, "BLOCK", "48 hours must exceed the 40-hour boundary.");
+            assertEqual(result.controlAssertion.result, "PASS", "Generic boundary assertion should independently predict BLOCK.");
+        }
+    );
+
+    test(
+        "Procurement control demonstrates faithful enforcement of the configured equipment-price metric",
+        function () {
+            const input = {
+                priorConditions: {
+                    authorityMetric: "equipmentPriceCents"
+                },
+                priorAuthority: {
+                    authorityId: "AUTH-PROC-CONTROL",
+                    authorityVersion: 1,
+                    actionType: "AUTHORIZE_PURCHASE",
+                    purpose: "EQUIPMENT_PROCUREMENT",
+                    status: "ACTIVE",
+                    owner: "Procurement",
+                    scope: {
+                        constraints: [
+                            {
+                                field: "equipmentPriceCents",
+                                operator: "LTE",
+                                comparisonValue: 17500000,
+                                valueType: "integer"
+                            }
+                        ]
+                    },
+                    conditions: [],
+                    scenarioVersion: "S4",
+                    policyVersion: "P4"
+                },
+                requestedAction: {
+                    actionType: "AUTHORIZE_PURCHASE",
+                    vendorId: "VENDOR-C",
+                    equipmentPriceCents: 14500000,
+                    shippingHandlingCents: 5500000,
+                    totalAcquisitionCostCents: 20000000
+                },
+                controlRequestedAction: {
+                    actionType: "AUTHORIZE_PURCHASE",
+                    vendorId: "VENDOR-C",
+                    equipmentPriceCents: 14500000,
+                    shippingHandlingCents: 5500000,
+                    totalAcquisitionCostCents: 20000000
+                },
+                technicalCapability: {
+                    supported: true,
+                    actionType: "AUTHORIZE_PURCHASE"
+                },
+                initialTechnicalValidity: { status: "PASS" },
+                controlExpectedResult: {
+                    expectedExecutionResult: "ALLOW",
+                    declaredBeforeExecution: true
+                },
+                controlAssertion: {
+                    assertionId: "CONTROL-EQUIPMENT-PRICE",
+                    ruleReference: "ACTIVE_BOUNDARY_CONSTRAINT",
+                    assertionVersion: "1",
+                    parameters: {
+                        field: "equipmentPriceCents",
+                        operator: "LTE",
+                        comparisonValue: 17500000
+                    }
+                }
+            };
+
+            const result = control.run(input);
+
+            assertEqual(
+                result.executionResult.result,
+                "ALLOW",
+                "The configured equipment-price rule should allow Vendor C."
+            );
+            assertEqual(
+                result.controlAssertion.result,
+                "PASS",
+                "The control assertion should confirm faithful enforcement of the configured metric."
+            );
+            assertTrue(
+                input.controlRequestedAction.totalAcquisitionCostCents > 17500000,
+                "The fixture must retain the higher total acquisition cost as the counterexample."
+            );
+        }
+    );
+
     const summary =
         document.getElementById(
             "control-run-summary"

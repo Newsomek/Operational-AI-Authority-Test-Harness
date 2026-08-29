@@ -511,6 +511,10 @@
                     input.priorConditions,
                 requestedAction:
                     input.requestedAction,
+                controlRequestedAction:
+                    input.controlRequestedAction,
+                controlAssertion:
+                    input.controlAssertion,
                 technicalCapability:
                     input.technicalCapability,
                 initialTechnicalValidity:

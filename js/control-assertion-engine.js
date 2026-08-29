@@ -15,6 +15,9 @@
         ACTIVE_BOUNDARY_MAXIMUM:
             "ACTIVE_BOUNDARY_MAXIMUM",
 
+        ACTIVE_BOUNDARY_CONSTRAINT:
+            "ACTIVE_BOUNDARY_CONSTRAINT",
+
         NO_AUTHORITY_BLOCKS:
             "NO_AUTHORITY_BLOCKS",
 
@@ -124,6 +127,79 @@
         );
     }
 
+    function compareConstraint(operator, actualValue, comparisonValue) {
+        if (operator === "EQ") {
+            return actualValue === comparisonValue;
+        }
+        if (operator === "NEQ") {
+            return actualValue !== comparisonValue;
+        }
+        if (operator === "LT") {
+            return actualValue < comparisonValue;
+        }
+        if (operator === "LTE") {
+            return actualValue <= comparisonValue;
+        }
+        if (operator === "GT") {
+            return actualValue > comparisonValue;
+        }
+        if (operator === "GTE") {
+            return actualValue >= comparisonValue;
+        }
+        if (operator === "IN") {
+            return Array.isArray(comparisonValue) &&
+                comparisonValue.includes(actualValue);
+        }
+
+        throw new Error(
+            "Unsupported control assertion operator: " +
+            String(operator)
+        );
+    }
+
+    function evaluateActiveBoundaryConstraint(assertion, evidence) {
+        const parameters = assertion.parameters || {};
+        const constraints = Array.isArray(evidence.boundaryConstraints)
+            ? evidence.boundaryConstraints
+            : [];
+
+        const matching = constraints.find(function (constraint) {
+            return constraint &&
+                constraint.field === parameters.field &&
+                constraint.operator === parameters.operator;
+        });
+
+        const constraintPresent = !!matching &&
+            JSON.stringify(matching.comparisonValue) ===
+                JSON.stringify(parameters.comparisonValue);
+
+        const constraintSatisfied = compareConstraint(
+            parameters.operator,
+            evidence.actualValue,
+            parameters.comparisonValue
+        );
+
+        const normativeExpectedExecution =
+            constraintSatisfied ? "ALLOW" : "BLOCK";
+
+        const observed = {
+            field: parameters.field,
+            operator: parameters.operator,
+            comparisonValue: deepClone(parameters.comparisonValue),
+            actualValue: deepClone(evidence.actualValue),
+            constraintPresent: constraintPresent,
+            normativeExpectedExecution: normativeExpectedExecution,
+            executionResult: evidence.executionResult
+        };
+
+        return result(
+            assertion,
+            constraintPresent &&
+                evidence.executionResult === normativeExpectedExecution,
+            observed
+        );
+    }
+
     function evaluateNoAuthorityBlocks(
         assertion,
         evidence
@@ -205,6 +281,16 @@
             RULES.ACTIVE_BOUNDARY_MAXIMUM
         ) {
             return evaluateActiveBoundaryMaximum(
+                assertion,
+                evidence
+            );
+        }
+
+        if (
+            assertion.ruleReference ===
+            RULES.ACTIVE_BOUNDARY_CONSTRAINT
+        ) {
+            return evaluateActiveBoundaryConstraint(
                 assertion,
                 evidence
             );
