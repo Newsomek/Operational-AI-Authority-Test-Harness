@@ -54,10 +54,22 @@
             document.getElementById("decision-disposition"),
         expectedResult:
             document.getElementById("expected-result"),
+        newAuthorityMaximumControl:
+            document.getElementById("new-authority-maximum-control"),
         newAuthorityMaximum:
             document.getElementById("new-authority-maximum"),
+        conditionSupervisorConfirmationControl:
+            document.getElementById("condition-supervisor-confirmation-control"),
+        conditionSupervisorConfirmation:
+            document.getElementById("condition-supervisor-confirmation"),
+        transferDecisionOwnerControl:
+            document.getElementById("transfer-decision-owner-control"),
+        transferDecisionOwner:
+            document.getElementById("transfer-decision-owner"),
         technicalValidity:
             document.getElementById("technical-validity"),
+        selectionSummary:
+            document.getElementById("selection-summary"),
 
         architectureOutput:
             document.getElementById("architecture-output"),
@@ -86,7 +98,43 @@
         authorityHistory:
             document.getElementById("authority-history-output"),
         eventLog:
-            document.getElementById("event-log-output")
+            document.getElementById("event-log-output"),
+        authorityExplain:
+            document.getElementById("authority-explain-output"),
+        boundaryExplain:
+            document.getElementById("boundary-explain-output"),
+        executionExplain:
+            document.getElementById("execution-explain-output"),
+        sameComparison:
+            document.getElementById("same-layer-comparison-output"),
+        separatedComparison:
+            document.getElementById("separated-comparison-output"),
+        comparisonSummary:
+            document.getElementById("architecture-comparison-summary"),
+        storyBefore:
+            document.getElementById("story-before"),
+        storyChange:
+            document.getElementById("story-change"),
+        storyAuthority:
+            document.getElementById("story-authority"),
+        storyTechnical:
+            document.getElementById("story-technical"),
+        storyOwner:
+            document.getElementById("story-owner"),
+        storyNewAuthority:
+            document.getElementById("story-new-authority"),
+        storyConsequence:
+            document.getElementById("story-consequence"),
+        storyMeaning:
+            document.getElementById("story-meaning"),
+        storyPrediction:
+            document.getElementById("story-prediction"),
+        comparisonSameReadable:
+            document.getElementById("comparison-same-readable"),
+        comparisonSeparatedReadable:
+            document.getElementById("comparison-separated-readable"),
+        comparisonFindingReadable:
+            document.getElementById("comparison-finding-readable")
     };
 
     let lastRunRecord = null;
@@ -143,6 +191,37 @@
         return "SAME_LAYER_REAUTHORIZATION";
     }
 
+    function setDispositionControl(wrapper, control, applicable) {
+        if (!wrapper || !control) {
+            return;
+        }
+
+        wrapper.hidden = !applicable;
+        wrapper.classList.toggle("is-applicable", applicable);
+        control.disabled = !applicable;
+    }
+
+    function updateDispositionControls() {
+        const disposition = elements.disposition.value;
+
+        setDispositionControl(
+            elements.newAuthorityMaximumControl,
+            elements.newAuthorityMaximum,
+            disposition === "NARROW"
+        );
+
+        setDispositionControl(
+            elements.conditionSupervisorConfirmationControl,
+            elements.conditionSupervisorConfirmation,
+            disposition === "CONDITION"
+        );
+
+        setDispositionControl(
+            elements.transferDecisionOwnerControl,
+            elements.transferDecisionOwner,
+            disposition === "TRANSFER"
+        );
+    }
     function syncControlsFromScenario(scenario) {
         const architecture =
             scenario.reauthorizationArchitecture ||
@@ -160,9 +239,10 @@
             scenario.currentConditions.customerRisk;
 
         elements.requestedAmount.value =
-            String(
-                scenario.requestedAction.amountCents
-            );
+            (
+                scenario.requestedAction.amountCents /
+                100
+            ).toFixed(2);
 
         elements.disposition.value =
             scenario.decision.disposition;
@@ -180,16 +260,97 @@
             )
         ) {
             elements.newAuthorityMaximum.value =
-                String(
-                    scenario.decision.newScope.maximumAmountCents
-                );
+                (
+                    scenario.decision.newScope.maximumAmountCents /
+                    100
+                ).toFixed(2);
         }
         else {
-            elements.newAuthorityMaximum.value =
-                "";
+            elements.newAuthorityMaximum.value = "";
         }
+
+        elements.conditionSupervisorConfirmation.value =
+            scenario.currentConditions &&
+            scenario.currentConditions.supervisorConfirmation === false
+                ? "false"
+                : "true";
+
+        elements.transferDecisionOwner.value =
+            scenario.decision.newDecisionOwner || "ACTOR-GOVERNANCE";
+
+        updateDispositionControls();
+        renderCurrentSelections();
     }
 
+    function readableArchitecture(value) {
+        if (value === "SEPARATED_REAUTHORIZATION") {
+            return "Separated reauthorization";
+        }
+
+        return "Same-layer reauthorization";
+    }
+
+    function selectedMoney(value) {
+        const number =
+            Number(value);
+
+        if (!Number.isFinite(number)) {
+            return "not set";
+        }
+
+        return "$" + number.toFixed(2);
+    }
+
+    function renderCurrentSelections() {
+        if (!elements.selectionSummary) {
+            return;
+        }
+
+        const disposition = elements.disposition.value;
+        const parts = [
+            "Risk after change: " + elements.currentRisk.value,
+            "Requested refund: " + selectedMoney(elements.requestedAmount.value),
+            "Governance disposition: " + disposition
+        ];
+
+        if (disposition === "NARROW") {
+            parts.push(
+                "New authority maximum: " +
+                (
+                    elements.newAuthorityMaximum.value
+                        ? selectedMoney(elements.newAuthorityMaximum.value)
+                        : "not set"
+                )
+            );
+        }
+        else if (disposition === "CONDITION") {
+            parts.push(
+                "Required condition: supervisor confirmation"
+            );
+            parts.push(
+                "Supervisor confirmation present: " +
+                (elements.conditionSupervisorConfirmation.value === "true"
+                    ? "YES"
+                    : "NO")
+            );
+        }
+        else if (disposition === "TRANSFER") {
+            parts.push(
+                "New decision owner: " +
+                (elements.transferDecisionOwner.value.trim() || "not set")
+            );
+        }
+
+        parts.push(
+            "Technical validity: " + elements.technicalValidity.value,
+            "Expected execution: " + elements.expectedResult.value,
+            "Reauthorization architecture: " +
+                readableArchitecture(selectedArchitecture()) + "."
+        );
+
+        elements.selectionSummary.textContent =
+            parts.join(" | ");
+    }
     function applyControlsToScenarioObject(scenario) {
         scenario.reauthorizationArchitecture =
             selectedArchitecture();
@@ -200,15 +361,64 @@
         scenario.requestedAction.customerRisk =
             elements.currentRisk.value;
 
-        scenario.requestedAction.amountCents =
-            Number(
-                elements.requestedAmount.value
+        const priorRisk =
+            scenario.priorConditions &&
+            scenario.priorConditions.customerRisk
+                ? scenario.priorConditions.customerRisk
+                : null;
+
+        const selectedRisk =
+            elements.currentRisk.value;
+
+        if (
+            priorRisk &&
+            selectedRisk &&
+            priorRisk !== selectedRisk
+        ) {
+            if (!Array.isArray(scenario.materialityRules)) {
+                scenario.materialityRules = [];
+            }
+
+            const transitionExists =
+                scenario.materialityRules.some(
+                    function (rule) {
+                        return (
+                            rule &&
+                            rule.type === "FIELD_TRANSITION" &&
+                            rule.field === "customerRisk" &&
+                            rule.from === priorRisk &&
+                            rule.to === selectedRisk &&
+                            rule.result === "MATERIAL"
+                        );
+                    }
+                );
+
+            if (!transitionExists) {
+                scenario.materialityRules.push({
+                    ruleId:
+                        "RISK-" +
+                        priorRisk +
+                        "-" +
+                        selectedRisk,
+                    type: "FIELD_TRANSITION",
+                    field: "customerRisk",
+                    from: priorRisk,
+                    to: selectedRisk,
+                    result: "MATERIAL"
+                });
+            }
+        }
+
+        const requestedAmountCents =
+            Math.round(
+                Number(elements.requestedAmount.value) * 100
             );
 
+        scenario.requestedAction.amountCents =
+            requestedAmountCents;
+
         scenario.currentConditions.refundAmountCents =
-            Number(
-                elements.requestedAmount.value
-            );
+            requestedAmountCents;
 
         scenario.decision.disposition =
             elements.disposition.value;
@@ -219,37 +429,104 @@
         scenario.technicalRevalidation.status =
             elements.technicalValidity.value;
 
+        delete scenario.decision.newScope;
+        delete scenario.decision.conditions;
+        delete scenario.decision.newDecisionOwner;
+        delete scenario.decision.reauthorizedScopeDimensions;
+
         if (
-            scenario.decision.disposition === "NARROW"
+            scenario.decision.disposition !== "CONDITION" &&
+            Object.prototype.hasOwnProperty.call(
+                scenario.currentConditions,
+                "supervisorConfirmation"
+            )
         ) {
-            if (!scenario.decision.newScope) {
-                scenario.decision.newScope = {};
-            }
+            delete scenario.currentConditions.supervisorConfirmation;
+        }
 
-            scenario.decision.newScope.maximumAmountCents =
-                Number(
-                    elements.newAuthorityMaximum.value
+        if (scenario.decision.disposition === "NARROW") {
+            const maximumDollars =
+                Number(elements.newAuthorityMaximum.value);
+
+            if (
+                !Number.isFinite(maximumDollars) ||
+                maximumDollars < 0
+            ) {
+                throw new Error(
+                    "NARROW requires a valid new authority maximum."
                 );
-
-            if (
-                !Array.isArray(
-                    scenario.decision.newScope.allowedRiskLevels
-                )
-            ) {
-                scenario.decision.newScope.allowedRiskLevels = [
-                    "LOW",
-                    "MEDIUM"
-                ];
             }
 
-            if (
-                !Number.isInteger(
-                    scenario.decision.newScope.maximumTransactionAgeDays
-                )
-            ) {
-                scenario.decision.newScope.maximumTransactionAgeDays =
-                    30;
+            const priorScope =
+                scenario.priorAuthority &&
+                scenario.priorAuthority.scope
+                    ? JSON.parse(
+                        JSON.stringify(
+                            scenario.priorAuthority.scope
+                        )
+                    )
+                    : {};
+
+            const allowedRiskLevels =
+                Array.isArray(priorScope.allowedRiskLevels)
+                    ? priorScope.allowedRiskLevels.slice()
+                    : [];
+
+            if (!allowedRiskLevels.includes(selectedRisk)) {
+                allowedRiskLevels.push(selectedRisk);
             }
+
+            scenario.decision.newScope = {
+                maximumAmountCents:
+                    Math.round(maximumDollars * 100),
+                allowedRiskLevels:
+                    allowedRiskLevels,
+                maximumTransactionAgeDays:
+                    Number.isInteger(
+                        priorScope.maximumTransactionAgeDays
+                    )
+                        ? priorScope.maximumTransactionAgeDays
+                        : 30
+            };
+
+            scenario.decision.reauthorizedScopeDimensions =
+                priorRisk && selectedRisk !== priorRisk
+                    ? ["allowedRiskLevels"]
+                    : [];
+        }
+        else if (
+            scenario.decision.disposition === "CONDITION"
+        ) {
+            scenario.decision.conditions = [
+                {
+                    required: true,
+                    predicate: {
+                        field: "supervisorConfirmation",
+                        operator: "EQ",
+                        comparisonValue: true,
+                        valueType: "boolean"
+                    }
+                }
+            ];
+
+            scenario.currentConditions.supervisorConfirmation =
+                elements.conditionSupervisorConfirmation.value ===
+                "true";
+        }
+        else if (
+            scenario.decision.disposition === "TRANSFER"
+        ) {
+            const newDecisionOwner =
+                elements.transferDecisionOwner.value.trim();
+
+            if (!newDecisionOwner) {
+                throw new Error(
+                    "TRANSFER requires an explicit new decision owner."
+                );
+            }
+
+            scenario.decision.newDecisionOwner =
+                newDecisionOwner;
         }
 
         return scenario;
@@ -374,6 +651,308 @@
             );
     }
 
+    function dollars(cents) {
+        if (typeof cents !== "number") {
+            return "not recorded";
+        }
+
+        return "$" + (cents / 100).toLocaleString(
+            "en-US",
+            {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 2
+            }
+        );
+    }
+
+    function renderHumanSummary(result) {
+        const control =
+            result.controlRun || {};
+
+        const controlBoundary =
+            control.boundaryResult &&
+            control.boundaryResult.boundary
+                ? control.boundaryResult.boundary
+                : {};
+
+        const controlScope =
+            controlBoundary.scope || {};
+
+        const changed =
+            result.changedState || {};
+
+        const materiality =
+            changed.materiality || {};
+
+        const currentAuthority =
+            changed.currentAuthority || {};
+
+        const governed =
+            result.governedResult || {};
+
+        const decisionResult =
+            governed.decisionResult || {};
+
+        const translation =
+            decisionResult.valid
+                ? decisionResult.translation
+                : null;
+
+        const boundaryResult =
+            governed.boundaryResult || {};
+
+        const boundary =
+            boundaryResult.boundary || {};
+
+        const scope =
+            boundary.scope || {};
+
+        const execution =
+            governed.executionResult || {};
+
+        const attempts =
+            result.runRecord &&
+            Array.isArray(result.runRecord.executionAttempts)
+                ? result.runRecord.executionAttempts
+                : [];
+
+        const attempt =
+            attempts.length > 0
+                ? attempts[0]
+                : {};
+
+        const technicalValidity =
+            attempt.technicalValidity ||
+            result.technicalRevalidation ||
+            {};
+
+        const requested =
+            attempt.requestedAction ||
+            result.requestedAction ||
+            {};
+
+        const priorConditions =
+            control.requestedAction ||
+            {};
+
+        const currentConditions =
+            attempt.requestedAction ||
+            {};
+
+        const architecture =
+            result.architectureContext || {};
+
+        const actor =
+            architecture.decisionActor || {};
+
+        const baselineResult =
+            control.executionResult &&
+            typeof control.executionResult.result ===
+                "string"
+                ? control.executionResult.result
+                : "not recorded";
+
+        const baselineMaximum =
+            typeof controlScope.maximumAmountCents === "number"
+                ? controlScope.maximumAmountCents
+                : null;
+
+        const requestedAmount =
+            typeof requested.amountCents === "number"
+                ? requested.amountCents
+                : typeof currentConditions.refundAmountCents === "number"
+                    ? currentConditions.refundAmountCents
+                    : null;
+
+        elements.storyBefore.textContent =
+            "The requested action was " +
+            dollars(requestedAmount) +
+            ". Existing authority allowed up to " +
+            dollars(baselineMaximum) +
+            ", and baseline execution was " +
+            baselineResult +
+            ".";
+
+        const priorRisk =
+            priorConditions.customerRisk || "not recorded";
+
+        const currentRisk =
+            currentConditions.customerRisk || "not recorded";
+
+        elements.storyChange.textContent =
+            "Customer risk changed from " +
+            priorRisk +
+            " to " +
+            currentRisk +
+            ". The configured materiality rules classified that change as " +
+            (materiality.result || "not recorded") +
+            ".";
+
+        elements.storyAuthority.textContent =
+            "The prior authority became " +
+            (currentAuthority.status || "not recorded") +
+            ". The material change did not automatically preserve the old permission.";
+
+        const baselineTechnicalStatus =
+            control.technicalValidity &&
+            control.technicalValidity.status
+                ? control.technicalValidity.status
+                : "not recorded";
+
+        const currentTechnicalStatus =
+            technicalValidity.status ||
+            "not recorded";
+
+        elements.storyTechnical.textContent =
+            "Before the material change, initial technical validation was " +
+            baselineTechnicalStatus +
+            ". Technical revalidation is currently " +
+            currentTechnicalStatus +
+            ". Technical validity is recorded independently and does not itself create or restore organizational authority.";
+        elements.storyOwner.textContent =
+            (actor.name || actor.actorId || "The configured decision actor") +
+            " made the reauthorization decision under " +
+            (architecture.architecture || "the selected architecture") +
+            ".";
+
+        const disposition =
+            translation && translation.disposition
+                ? translation.disposition
+                : "no recorded disposition";
+
+        const allowedRiskLevels =
+            Array.isArray(scope.allowedRiskLevels)
+                ? scope.allowedRiskLevels.join(", ")
+                : "not recorded";
+
+        elements.storyNewAuthority.textContent =
+            "The governance disposition was " +
+            disposition +
+            ". The current enforceable boundary allows up to " +
+            dollars(scope.maximumAmountCents) +
+            " and permits customer risk levels: " +
+            allowedRiskLevels +
+            ".";
+
+        elements.storyConsequence.textContent =
+            "The requested action is " +
+            dollars(requestedAmount) +
+            ". The current execution result is " +
+            (execution.result || "not recorded") +
+            ": " +
+            (execution.reason || "no reason recorded") +
+            (
+                execution.result === "BLOCK"
+                    ? " This does not determine the customer's ultimate refund outcome. It means only that this automated execution is not authorized under the authority currently in force; a separate escalation or authority path may exist outside this experiment."
+                    : ""
+            );
+        const prediction =
+            result.runRecord &&
+            result.runRecord.predictionComparison
+                ? result.runRecord.predictionComparison
+                : {};
+
+        const expectedExecution =
+            prediction.expected ||
+            prediction.expectedExecutionResult ||
+            "not recorded";
+
+        const actualExecution =
+            prediction.actual ||
+            execution.result ||
+            "not recorded";
+
+        const predictionComparison =
+            prediction.comparison ||
+            (
+                expectedExecution === actualExecution
+                    ? "MATCH"
+                    : "MISMATCH"
+            );
+
+        elements.storyPrediction.textContent =
+            "You expected " +
+            expectedExecution +
+            ". The actual execution result was " +
+            actualExecution +
+            ". Prediction comparison: " +
+            predictionComparison +
+            ".";
+        const technicalStatus =
+            technicalValidity.status || "not recorded";
+
+        elements.storyMeaning.textContent =
+            (
+                technicalStatus === "PASS"
+                    ? "Technical revalidation passed, but technical validity did not itself create or restore organizational authority. "
+                    : technicalStatus === "FAIL"
+                        ? "Technical revalidation failed, which is independently relevant to execution in addition to the organizational authority state. "
+                        : "Technical revalidation status was not recorded. "
+            ) +
+            "Execution followed the current enforceable authority boundary and the configured technical controls. " +
+            "This run demonstrates the configured authority-to-execution behavior; it does not establish that one governance architecture is universally superior.";
+    }
+
+    function renderReadableArchitectureComparison(
+        sameResult,
+        separatedResult,
+        summary
+    ) {
+        const sameActor =
+            sameResult.architectureContext.decisionActor;
+
+        const separatedActor =
+            separatedResult.architectureContext.decisionActor;
+
+        const sameBoundary =
+            (sameResult.governedResult.boundaryResult ? sameResult.governedResult.boundaryResult.boundary : null);
+
+        const separatedBoundary =
+            (separatedResult.governedResult.boundaryResult ? separatedResult.governedResult.boundaryResult.boundary : null);
+
+        elements.comparisonSameReadable.textContent =
+            (sameActor.name || sameActor.actorId) +
+            " made the reauthorization decision. The resulting maximum was " +
+            dollars(
+                sameBoundary &&
+                sameBoundary.scope
+                    ? sameBoundary.scope.maximumAmountCents
+                    : null
+            ) +
+            ", and execution was " +
+            sameResult.runRecord.actualResult +
+            ".";
+
+        elements.comparisonSeparatedReadable.textContent =
+            (separatedActor.name || separatedActor.actorId) +
+            " made the reauthorization decision. The resulting maximum was " +
+            dollars(
+                separatedBoundary &&
+                separatedBoundary.scope
+                    ? separatedBoundary.scope.maximumAmountCents
+                    : null
+            ) +
+            ", and execution was " +
+            separatedResult.runRecord.actualResult +
+            ".";
+
+        if (summary.separationFinding) {
+            elements.comparisonFindingReadable.textContent =
+                "Changing the decision owner did not change the execution consequence in this controlled run. " +
+                "The evidence therefore does not demonstrate that separation itself produced different operational control. " +
+                "Formal finding: " +
+                summary.separationFinding +
+                ".";
+        }
+        else if (summary.executionDifference) {
+            elements.comparisonFindingReadable.textContent =
+                "The two controlled runs produced different execution outcomes. Inspect the authority, boundary, actor, and event evidence below before attributing the difference to the architecture.";
+        }
+        else {
+            elements.comparisonFindingReadable.textContent =
+                "No execution-outcome difference was observed in this controlled run. That is a valid experimental result and does not establish that either architecture is superior.";
+        }
+    }
     function explainRun(result) {
         const translation =
             result.governedResult.decisionResult.valid
@@ -498,6 +1077,10 @@
             pretty(
                 run.eventLog
             );
+
+        renderHumanSummary(
+            result
+        );
 
         explainRun(
             result
@@ -662,13 +1245,22 @@
                         separatedResult.governedResult.boundaryResult
                 });
 
+            const summary =
+                architectureComparisonSummary(
+                    sameResult,
+                    separatedResult
+                );
+
             elements.comparisonSummary.textContent =
                 pretty(
-                    architectureComparisonSummary(
-                        sameResult,
-                        separatedResult
-                    )
+                    summary
                 );
+
+            renderReadableArchitectureComparison(
+                sameResult,
+                separatedResult,
+                summary
+            );
 
             setValidation(
                 "PASS",
@@ -1090,6 +1682,38 @@
         runReplay
     );
 
+    [
+        elements.sameLayer,
+        elements.separated,
+        elements.currentRisk,
+        elements.requestedAmount,
+        elements.disposition,
+        elements.expectedResult,
+        elements.newAuthorityMaximum,
+        elements.technicalValidity
+    ].forEach(function (element) {
+        if (!element) {
+            return;
+        }
+
+        element.addEventListener(
+            element.type === "number"
+                ? "input"
+                : "change",
+            renderCurrentSelections
+        );
+    });
+
+    elements.disposition.addEventListener(
+        "change",
+        function () {
+            updateDispositionControls();
+            renderCurrentSelections();
+        }
+    );
+
+    updateDispositionControls();
+    renderCurrentSelections();
     window.OAATH.App = Object.freeze({
         parseScenario:
             parseScenario,
@@ -1101,6 +1725,8 @@
             applyControlsToScenarioObject,
         buildRunInput:
             buildRunInput,
+        renderHumanSummary:
+            renderHumanSummary,
         runExperiment:
             runExperiment,
         compareArchitectures:

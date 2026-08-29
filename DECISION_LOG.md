@@ -149,3 +149,18 @@ Consequences:
 
 Date:
 2026-08-28
+## DECISION-V1.0.2-NARROW-SCOPE-ADAPTATION
+
+**Date:** 2026-08-29
+
+**Project version:** V1.0.2
+
+**Question:** When a material change concerns one scope dimension, can NARROW adapt that changed dimension while still truthfully representing the resulting authority as narrower than the authority it replaces?
+
+**Decision:** NARROW may adapt the scope dimension being reauthorized, but it must impose at least one stricter enforceable boundary than the authority it replaces and must not broaden unrelated scope dimensions.
+
+**Reason:** The default refund experiment changes customer risk from LOW to MEDIUM. Reauthorizing the changed risk dimension can therefore add MEDIUM to the allowed-risk set, but that adaptation alone is not a narrowing. The resulting authority qualifies as NARROW only if another enforceable boundary is genuinely stricter, such as reducing the maximum refund from $500 to $250. This preserves the distinction between adapting the changed condition and broadening authority generally.
+
+**Alternatives considered:** Treat any reduction in one dimension as NARROW regardless of broadening elsewhere; prohibit every form of scope expansion even when the expanded dimension is the material condition being explicitly reauthorized; or leave NARROW undefined across multidimensional scope. These alternatives were rejected because they either permit misleading broadening, prevent the default material-change experiment from representing reauthorization of the changed condition, or leave the experimental semantics ambiguous.
+
+**Consequences:** NARROW decisions must identify any scope dimension intentionally adapted by reauthorization. Broadening an unrelated scope dimension is invalid. At least one enforceable boundary must become stricter. A changed risk set plus an unchanged $500 maximum is not NARROW; changed risk plus a $250 maximum is. Tests must verify this distinction.

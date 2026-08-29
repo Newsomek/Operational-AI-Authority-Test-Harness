@@ -65,6 +65,9 @@
             allowedDispositions: [],
             decision: {
                 disposition: "NARROW",
+                reauthorizedScopeDimensions: [
+                    "allowedRiskLevels"
+                ],
                 newScope: {
                     maximumAmountCents: 25000,
                     allowedRiskLevels: [
@@ -81,6 +84,350 @@
         };
     }
 
+    test(
+        "Run Experiment render targets are bound",
+        function () {
+            [
+                "authority-explain-output",
+                "boundary-explain-output",
+                "execution-explain-output"
+            ].forEach(function (id) {
+                assertTrue(
+                    !!document.getElementById(id),
+                    "Missing Run Experiment render target: " + id
+                );
+            });
+        }
+    );
+
+    test(
+        "Architecture comparison render targets are bound",
+        function () {
+            [
+                "same-layer-comparison-output",
+                "separated-comparison-output",
+                "architecture-comparison-summary"
+            ].forEach(function (id) {
+                assertTrue(
+                    !!document.getElementById(id),
+                    "Missing architecture comparison render target: " + id
+                );
+            });
+        }
+    );
+    test(
+        "Human-readable experiment story targets exist",
+        function () {
+            [
+                "experiment-story",
+                "story-before",
+                "story-change",
+                "story-authority",
+                "story-technical",
+                "story-owner",
+                "story-new-authority",
+                "story-consequence",
+                "story-meaning"
+            ].forEach(function (id) {
+                assertTrue(
+                    !!document.getElementById(id),
+                    "Missing human-readable story target: " + id
+                );
+            });
+        }
+    );
+
+    test(
+        "Human-readable architecture comparison targets exist",
+        function () {
+            [
+                "comparison-same-readable",
+                "comparison-separated-readable",
+                "comparison-finding-readable"
+            ].forEach(function (id) {
+                assertTrue(
+                    !!document.getElementById(id),
+                    "Missing readable comparison target: " + id
+                );
+            });
+        }
+    );
+
+    test(
+        "Raw deterministic evidence remains present beneath narrative",
+        function () {
+            [
+                "control-run-output",
+                "materiality-output",
+                "decision-output",
+                "boundary-output",
+                "execution-output",
+                "architecture-comparison-summary",
+                "authority-history-output",
+                "event-log-output"
+            ].forEach(function (id) {
+                assertTrue(
+                    !!document.getElementById(id),
+                    "Required inspectable evidence target missing: " + id
+                );
+            });
+        }
+    );
+    test(
+        "Primary controls explain what they do and when to use them",
+        function () {
+            const ids = [
+                    "load-default",
+                    "import-scenario",
+                    "export-scenario",
+                    "export-run",
+                    "reset-scenario",
+                    "apply-controls",
+                    "run-experiment",
+                    "compare-architectures",
+                    "run-replay"
+            ];
+
+            ids.forEach(function (id) {
+                const button =
+                    document.getElementById(id);
+
+                assertTrue(
+                    !!button,
+                    "Expected primary control: " + id
+                );
+
+                assertTrue(
+                    typeof button.getAttribute("title") ===
+                        "string" &&
+                    button.getAttribute("title").trim().length >
+                        20,
+                    "Primary control requires explanatory hover text: " +
+                        id
+                );
+
+                assertTrue(
+                    typeof button.getAttribute(
+                        "aria-describedby"
+                    ) === "string" &&
+                    button.getAttribute(
+                        "aria-describedby"
+                    ).trim().length > 0,
+                    "Primary control requires an accessible definition reference: " +
+                        id
+                );
+            });
+
+            assertTrue(
+                !!document.getElementById(
+                    "control-guide"
+                ),
+                "A visible control-definition guide is required."
+            );
+        }
+    );
+    test(
+        "Money controls display dollars while scenario values remain cents",
+        function () {
+            const scenario =
+                sampleScenario();
+
+            window.OAATH.App.syncControlsFromScenario(
+                scenario
+            );
+
+            assertEqual(
+                document.getElementById(
+                    "requested-amount"
+                ).value,
+                "400.00",
+                "Requested refund amount should display dollars."
+            );
+
+            assertEqual(
+                document.getElementById(
+                    "new-authority-maximum"
+                ).value,
+                "250.00",
+                "New authority maximum should display dollars."
+            );
+
+            const updated =
+                window.OAATH.App.applyControlsToScenarioObject(
+                    scenario
+                );
+
+            assertEqual(
+                updated.requestedAction.amountCents,
+                40000,
+                "Requested refund must remain 40000 cents internally."
+            );
+
+            assertEqual(
+                updated.currentConditions.refundAmountCents,
+                40000,
+                "Current-condition refund amount must remain 40000 cents internally."
+            );
+
+            assertEqual(
+                updated.decision.newScope.maximumAmountCents,
+                25000,
+                "New authority maximum must remain 25000 cents internally."
+            );
+        }
+    );
+    test(
+        "Human-readable story renders authoritative experiment values",
+        function () {
+            window.OAATH.App.renderHumanSummary({
+                controlRun: {
+                    boundaryResult: {
+                        boundary: {
+                            scope: {
+                                maximumAmountCents:
+                                    50000
+                            }
+                        }
+                    },
+                    requestedAction: {
+                        actionType:
+                            "AUTO_REFUND",
+                        amountCents:
+                            40000,
+                        customerRisk:
+                            "LOW",
+                        transactionAgeDays:
+                            20
+                    },
+                    executionResult: {
+                        result:
+                            "ALLOW"
+                    }
+                },
+
+                changedState: {
+                    materiality: {
+                        result:
+                            "MATERIAL"
+                    },
+                    currentAuthority: {
+                        status:
+                            "INVALID"
+                    }
+                },
+
+                architectureContext: {
+                    architecture:
+                        "SAME_LAYER_REAUTHORIZATION",
+                    decisionActor: {
+                        actorId:
+                            "ACTOR-OPERATIONS",
+                        name:
+                            "Operations Authority Owner"
+                    }
+                },
+
+                governedResult: {
+                    decisionResult: {
+                        valid:
+                            true,
+                        translation: {
+                            disposition:
+                                "NARROW"
+                        }
+                    },
+                    boundaryResult: {
+                        boundary: {
+                            scope: {
+                                maximumAmountCents:
+                                    25000
+                            }
+                        }
+                    },
+                    executionResult: {
+                        result:
+                            "BLOCK",
+                        reason:
+                            "Requested amount exceeds the current authorized maximum."
+                    }
+                },
+
+                runRecord: {
+                    executionAttempts: [
+                        {
+                            requestedAction: {
+                                actionType:
+                                    "AUTO_REFUND",
+                                amountCents:
+                                    40000,
+                                customerRisk:
+                                    "HIGH",
+                                transactionAgeDays:
+                                    20
+                            },
+                            technicalValidity: {
+                                status:
+                                    "PASS"
+                            }
+                        }
+                    ]
+                }
+            });
+
+            const before =
+                document.getElementById(
+                    "story-before"
+                ).textContent;
+
+            const change =
+                document.getElementById(
+                    "story-change"
+                ).textContent;
+
+            const newAuthority =
+                document.getElementById(
+                    "story-new-authority"
+                ).textContent;
+
+            const consequence =
+                document.getElementById(
+                    "story-consequence"
+                ).textContent;
+
+            assertTrue(
+                before.includes("$400") &&
+                before.includes("$500") &&
+                before.includes("ALLOW"),
+                "Baseline story must show $400 request, $500 authority, and ALLOW."
+            );
+
+            assertTrue(
+                change.includes("LOW") &&
+                change.includes("HIGH") &&
+                change.includes("MATERIAL"),
+                "Change story must show LOW to HIGH and MATERIAL."
+            );
+
+            assertTrue(
+                newAuthority.includes("$250") &&
+                newAuthority.includes("NARROW"),
+                "New-authority story must show NARROW and $250."
+            );
+
+            assertTrue(
+                consequence.includes("$400") &&
+                consequence.includes("BLOCK"),
+                "Consequence story must show $400 and BLOCK."
+            );
+
+            assertTrue(
+                !before.includes("not recorded") &&
+                !before.includes("[object Object]") &&
+                !change.includes("not recorded"),
+                "Human-readable story must not expose unresolved mapping placeholders."
+            );
+        }
+    );
     test(
         "Application controller is exposed",
         function () {
@@ -447,6 +794,182 @@
             );
         }
     );
+
+    test(
+        "All editable selections propagate without stale defaults",
+        function () {
+            document.getElementById(
+                "architecture-same-layer"
+            ).checked = false;
+
+            document.getElementById(
+                "architecture-separated"
+            ).checked = true;
+
+            document.getElementById(
+                "current-risk"
+            ).value = "HIGH";
+
+            document.getElementById(
+                "requested-amount"
+            ).value = "375.50";
+
+            document.getElementById(
+                "decision-disposition"
+            ).value = "NARROW";
+
+            document.getElementById(
+                "expected-result"
+            ).value = "ALLOW";
+
+            document.getElementById(
+                "new-authority-maximum"
+            ).value = "425.00";
+
+            document.getElementById(
+                "technical-validity"
+            ).value = "FAIL";
+
+            const scenario = {
+                reauthorizationArchitecture:
+                    "SAME_LAYER_REAUTHORIZATION",
+                priorConditions: {
+                    customerRisk:
+                        "LOW"
+                },
+                currentConditions: {
+                    customerRisk:
+                        "MEDIUM",
+                    refundAmountCents:
+                        40000
+                },
+                requestedAction: {
+                    amountCents:
+                        40000,
+                    customerRisk:
+                        "MEDIUM"
+                },
+                decision: {
+                    disposition:
+                        "NARROW",
+                    newScope: {
+                        maximumAmountCents:
+                            25000,
+                        allowedRiskLevels: [
+                            "LOW",
+                            "MEDIUM"
+                        ],
+                        maximumTransactionAgeDays:
+                            30
+                    }
+                },
+                expectedResult: {
+                    expectedExecutionResult:
+                        "BLOCK"
+                },
+                technicalRevalidation: {
+                    status:
+                        "PASS"
+                },
+                materialityRules: [
+                    {
+                        ruleId:
+                            "RISK-LOW-MEDIUM",
+                        type:
+                            "FIELD_TRANSITION",
+                        field:
+                            "customerRisk",
+                        from:
+                            "LOW",
+                        to:
+                            "MEDIUM",
+                        result:
+                            "MATERIAL"
+                    }
+                ]
+            };
+
+            const updated =
+                window.OAATH.App
+                    .applyControlsToScenarioObject(
+                        scenario
+                    );
+
+            assertEqual(
+                updated.reauthorizationArchitecture,
+                "SEPARATED_REAUTHORIZATION",
+                "Architecture selection must propagate."
+            );
+
+            assertEqual(
+                updated.currentConditions.customerRisk,
+                "HIGH",
+                "Current risk HIGH must propagate."
+            );
+
+            assertEqual(
+                updated.requestedAction.customerRisk,
+                "HIGH",
+                "Requested-action risk HIGH must propagate."
+            );
+
+            assertEqual(
+                updated.requestedAction.amountCents,
+                37550,
+                "Requested amount must propagate as cents."
+            );
+
+            assertEqual(
+                updated.currentConditions.refundAmountCents,
+                37550,
+                "Current-condition refund amount must propagate as cents."
+            );
+
+            assertEqual(
+                updated.decision.disposition,
+                "NARROW",
+                "Governance disposition must propagate."
+            );
+
+            assertEqual(
+                updated.decision.newScope.maximumAmountCents,
+                42500,
+                "New authority maximum must propagate as cents."
+            );
+
+            assertEqual(
+                updated.expectedResult.expectedExecutionResult,
+                "ALLOW",
+                "Expected execution result must propagate."
+            );
+
+            assertEqual(
+                updated.technicalRevalidation.status,
+                "FAIL",
+                "Technical validity must propagate."
+            );
+
+            assertTrue(
+                updated.materialityRules.some(
+                    function (rule) {
+                        return (
+                            rule.type ===
+                                "FIELD_TRANSITION" &&
+                            rule.field ===
+                                "customerRisk" &&
+                            rule.from ===
+                                "LOW" &&
+                            rule.to ===
+                                "HIGH" &&
+                            rule.result ===
+                                "MATERIAL"
+                        );
+                    }
+                ),
+                "LOW to HIGH must create a MATERIAL transition rule."
+            );
+        }
+    );
     const summary =
         document.getElementById(
             "ui-summary"
@@ -513,4 +1036,119 @@
             ? "PASS"
             : "FAIL"
     );
+    test(
+        "CONDITION structured controls create an enforceable typed predicate",
+        function () {
+            const scenario = baseScenario();
+
+            document.getElementById("decision-disposition").value =
+                "CONDITION";
+            document.getElementById(
+                "condition-supervisor-confirmation"
+            ).disabled = false;
+            document.getElementById(
+                "condition-supervisor-confirmation"
+            ).value = "true";
+
+            const applied =
+                window.OAATH.App.applyControlsToScenarioObject(
+                    scenario
+                );
+
+            assertTrue(
+                Array.isArray(applied.decision.conditions),
+                "CONDITION must create decision.conditions."
+            );
+
+            assertEqual(
+                applied.decision.conditions[0].predicate.field,
+                "supervisorConfirmation",
+                "CONDITION predicate field mismatch."
+            );
+
+            assertEqual(
+                applied.decision.conditions[0].predicate.operator,
+                "EQ",
+                "CONDITION predicate operator mismatch."
+            );
+
+            assertEqual(
+                applied.currentConditions.supervisorConfirmation,
+                true,
+                "CONDITION execution value must propagate."
+            );
+        }
+    );
+
+    test(
+        "TRANSFER structured controls provide explicit new decision owner",
+        function () {
+            const scenario = baseScenario();
+
+            document.getElementById("decision-disposition").value =
+                "TRANSFER";
+            document.getElementById(
+                "transfer-decision-owner"
+            ).disabled = false;
+            document.getElementById(
+                "transfer-decision-owner"
+            ).value = "ACTOR-GOVERNANCE";
+
+            const applied =
+                window.OAATH.App.applyControlsToScenarioObject(
+                    scenario
+                );
+
+            assertEqual(
+                applied.decision.newDecisionOwner,
+                "ACTOR-GOVERNANCE",
+                "TRANSFER new decision owner must propagate."
+            );
+
+            assertFalse(
+                Object.prototype.hasOwnProperty.call(
+                    applied.decision,
+                    "newScope"
+                ),
+                "TRANSFER must not manufacture executable authority scope."
+            );
+        }
+    );
+
+    test(
+        "Disposition-specific controls show only inputs relevant to the selected disposition",
+        function () {
+            const scenario = baseScenario();
+
+            scenario.decision.disposition = "CONDITION";
+            window.OAATH.App.syncControlsFromScenario(scenario);
+
+            assertFalse(
+                document.getElementById(
+                    "condition-supervisor-confirmation-control"
+                ).hidden,
+                "CONDITION control should be visible."
+            );
+
+            assertTrue(
+                document.getElementById(
+                    "new-authority-maximum-control"
+                ).hidden,
+                "NARROW maximum should be hidden for CONDITION."
+            );
+
+            scenario.decision.disposition = "TRANSFER";
+            window.OAATH.App.syncControlsFromScenario(scenario);
+
+            assertFalse(
+                document.getElementById(
+                    "transfer-decision-owner-control"
+                ).hidden,
+                "TRANSFER owner control should be visible."
+            );
+        }
+    );
+
+    /* V1.0.2 disposition-specific UI regression marker */
+
 }());

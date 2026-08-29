@@ -93,16 +93,16 @@
             <div hidden>
                 <label for="scenario-editor">Scenario JSON</label>
                 <textarea id="scenario-editor"></textarea>
-                <button id="load-default" type="button">Load</button>
-                <button id="import-scenario" type="button">Import</button>
-                <button id="export-scenario" type="button">Export Scenario</button>
-                <button id="export-run" type="button">Export Run</button>
+                <button id="load-default" type="button" title="Load the known baseline scenario. Use this when you want to return to the standard experiment starting point before changing inputs or comparing results." aria-describedby="help-load-default">Load</button>
+                <button id="import-scenario" type="button" title="Import a compatible scenario JSON file. Use this when you want to run a saved or externally prepared scenario instead of the default." aria-describedby="help-import-scenario">Import</button>
+                <button id="export-scenario" type="button" title="Export the current scenario inputs as JSON. Use this before running when you want to preserve or share the exact configured experiment." aria-describedby="help-export-scenario">Export Scenario</button>
+                <button id="export-run" type="button" title="Export the evidence from the most recent completed run. Use this after Run Experiment when you need the deterministic record of what happened." aria-describedby="help-export-run">Export Run</button>
                 <input id="scenario-file-input" type="file">
-                <button id="reset-scenario" type="button">Reset</button>
-                <button id="run-experiment" type="button">Run</button>
-                <button id="compare-architectures" type="button">Compare</button>
-                <button id="run-replay" type="button">Replay</button>
-                <button id="apply-controls" type="button">Apply</button>
+                <button id="reset-scenario" type="button" title="Reset the current scenario and outputs. Use this when you want to discard the current working state and start over cleanly." aria-describedby="help-reset-scenario">Reset</button>
+                <button id="run-experiment" type="button" title="Run the deterministic authority-to-execution experiment using the current scenario. Use this when your inputs are ready and you want to see the resulting authority, boundary, execution, and evidence." aria-describedby="help-run-experiment">Run</button>
+                <button id="compare-architectures" type="button" title="Run a controlled comparison of same-layer and separated reauthorization. Use this when you want to isolate whether changing only the reauthorization topology changes the observed result." aria-describedby="help-compare-architectures">Compare</button>
+                <button id="run-replay" type="button" title="Deterministically replay the most recent completed run from causal inputs. Use this after Run Experiment when you want to test reproducibility without forcing the recorded outcome." aria-describedby="help-run-replay">Replay</button>
+                <button id="apply-controls" type="button" title="Apply the visible structured controls to the scenario JSON. Use this after changing architecture, risk, amounts, disposition, or technical validity and before inspecting the raw scenario." aria-describedby="help-apply-controls">Apply</button>
 
                 <input
                     id="architecture-same-layer"
@@ -125,23 +125,62 @@
                     <option value="HIGH">HIGH</option>
                 </select>
 
-                <input id="requested-amount" type="number" value="40000">
+                <input id="requested-amount" type="number" value="400.00">
 
                 <select id="decision-disposition">
+                    <option value="RENEW">RENEW</option>
                     <option value="NARROW" selected>NARROW</option>
+                    <option value="CONDITION">CONDITION</option>
+                    <option value="TRANSFER">TRANSFER</option>
+                    <option value="SUSPEND">SUSPEND</option>
+                    <option value="REFUSE">REFUSE</option>
                 </select>
 
                 <select id="expected-result">
+                    <option value="ALLOW">ALLOW</option>
                     <option value="BLOCK" selected>BLOCK</option>
                 </select>
 
-                <input id="new-authority-maximum" type="number" value="25000">
+                <div id="new-authority-maximum-control">
+                    <input id="new-authority-maximum" type="number" value="250.00">
+                </div>
+
+                <div id="condition-supervisor-confirmation-control" hidden>
+                    <select id="condition-supervisor-confirmation" disabled>
+                        <option value="true" selected>YES</option>
+                        <option value="false">NO</option>
+                    </select>
+                </div>
+
+                <div id="transfer-decision-owner-control" hidden>
+                    <input id="transfer-decision-owner" type="text" value="ACTOR-GOVERNANCE" disabled>
+                </div>
 
                 <select id="technical-validity">
                     <option value="PASS" selected>PASS</option>
+                    <option value="FAIL">FAIL</option>
                 </select>
 
                 <div id="validation-status" role="status" aria-live="polite"></div>
+
+                <details id="control-guide" class="control-guide">
+                <summary>What do these controls do?</summary>
+                <div class="control-guide-body">
+                    <p>Use this guide when you are unsure which action to take. The same concise definitions also appear as button tooltips when you hover over a control.</p>
+                    <dl>
+                        <dt id="help-load-default">Load default</dt>
+                        <dd>Loads the standard baseline scenario into the editor and structured controls. Use it when you want a known starting point, when you have changed the scenario substantially, or before demonstrating the harness to someone else.</dd>                        <dt id="help-import-scenario">Import scenario</dt>
+                        <dd>Loads a compatible saved scenario. Use it when you want to reproduce a prior setup, test a scenario prepared elsewhere, or compare multiple prebuilt cases.</dd>                        <dt id="help-export-scenario">Export scenario</dt>
+                        <dd>Saves the current experiment inputs, not the run result. Use it to preserve a configuration, share it with another reviewer, or rerun the same scenario later.</dd>                        <dt id="help-export-run">Export run evidence</dt>
+                        <dd>Saves the evidence generated by the latest completed experiment, including authority history, execution evidence, assertions, and replay inputs. Use it for review, audit, comparison, or reproducibility.</dd>                        <dt id="help-reset-scenario">Reset</dt>
+                        <dd>Clears the current working run state and returns the interface to a clean scenario state. Use it when the current experiment is no longer useful or before beginning a materially different setup.</dd>                        <dt id="help-apply-controls">Apply controls</dt>
+                        <dd>Copies the visible structured inputs into the scenario data. Use it after editing the form when you want the Raw editable input to reflect those changes. It changes inputs only; it does not run the experiment or manufacture results.</dd>                        <dt id="help-run-experiment">Run Experiment</dt>
+                        <dd>Executes the current scenario through the deterministic governed engines. Use it after your inputs are set. This is the main action for seeing what happens and why under the selected governance conditions.</dd>                        <dt id="help-compare-architectures">Compare Architectures</dt>
+                        <dd>Runs the same scenario twice while changing only the reauthorization architecture. Use it to test whether decision topology produces an observable difference while the scenario, evidence, requested action, capability, and disposition remain held constant.</dd>                        <dt id="help-run-replay">Replay</dt>
+                        <dd>Recomputes the most recent run from its causal replay inputs. Use it to confirm that the same evidence can reproduce the same governed result without using the recorded result itself as an instruction.</dd>
+                    </dl>
+                </div>
+            </details>
                 <pre id="architecture-output"></pre>
                 <pre id="control-run-output"></pre>
                 <pre id="recommendation-output"></pre>
@@ -166,6 +205,25 @@
         </section>
     </main>
 
+        <!-- V1.0.2 hidden application-DOM fixtures for UI smoke tests -->
+        <p id="selection-summary" hidden></p>
+<div id="experiment-story" hidden>
+        <p id="story-before"></p>
+        <p id="story-change"></p>
+        <p id="story-authority"></p>
+        <p id="story-technical"></p>
+        <p id="story-owner"></p>
+        <p id="story-new-authority"></p>
+        <p id="story-consequence"></p>
+                <p id="story-prediction"></p>
+        <p id="story-meaning"></p>
+    </div>
+
+    <div id="comparison-readable-fixture" hidden>
+        <p id="comparison-same-readable"></p>
+        <p id="comparison-separated-readable"></p>
+        <p id="comparison-finding-readable"></p>
+    </div>
     <script src="../js/validation-engine.js"></script>
     <script src="../js/state-machine.js"></script>
     <script src="../js/architecture-engine.js"></script>

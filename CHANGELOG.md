@@ -380,3 +380,151 @@ This file records material implementation changes to the Operational AI Authorit
 - Removed the duplicate page-level test-runner heading.
 - Independently verified normal application initialization.
 - Verified the complete browser suite as 182/182 PASS with zero failed tests and zero unexecuted suites.
+## 2026-08-28 - V1.0.2 UI render-binding defect correction
+
+- Added the README acknowledgment required by the governing specification, crediting the professional discussion with Wojciech Z. Kaleta, PhD that helped prompt the experiment while explicitly avoiding any implication of endorsement.
+
+- During direct reviewer use of the released V1.0.1 application, `Run Experiment` failed while rendering results because six existing output elements were referenced by `app.js` but not bound in the `elements` object.
+- Added bindings for authority explanation, boundary explanation, execution explanation, same-layer comparison, separated comparison, and architecture-comparison summary outputs.
+- Added browser UI regression coverage for these render targets.
+- Classified as an implementation defect in the ordinary application render path; the underlying governed experiment engines were not the source of the failure.
+- V1.0.0 and V1.0.1 historical tags are not moved or rewritten.
+- Full browser-suite verification and direct ordinary-application interaction verification are required before V1.0.2 release.
+
+## 2026-08-28 - V1.0.2 reviewer comprehensibility correction
+
+- Manual first-reviewer walkthrough found that the governed experiment could execute correctly while its primary interface remained difficult to understand without interpreting large raw JSON structures.
+- Added a human-readable Experiment Story that presents the deterministic run in causal order: baseline, material change, authority invalidation, technical revalidation, decision ownership, new authority boundary, and execution consequence.
+- Added a human-readable architecture comparison that explains what changed between controlled runs, what each decision owner produced, and what the observed comparison supports.
+- Preserved raw JSON, authority history, event log, Explain output, replay evidence, expected-versus-actual results, and control assertions as inspectable evidence rather than replacing them.
+- The presentation layer consumes deterministic engine outputs and does not manufacture authority, permission, execution results, or architecture findings.
+- Preserved the governed finding `AUTHORITY SEPARATION NOT OPERATIONALLY DEMONSTRATED` when a different approver does not produce a demonstrated downstream execution difference.
+- No claim is added that separated reauthorization is superior, that the harness proves universal governance effectiveness, or that technical validity creates authority.
+### V1.0.2 human-readable story mapping and layout follow-up
+
+- Corrected presentation-layer mappings for the baseline authority maximum, baseline execution result, and LOW-to-MEDIUM risk transition after browser evidence exposed `not recorded` and `[object Object]` placeholders.
+- The corrected story now reads those values from the same deterministic result structures used by the successful baseline control run and changed execution evidence.
+- Added a value-level UI regression test requiring the human-readable story to render the $400 request, $500 baseline authority, ALLOW baseline result, LOW-to-MEDIUM MATERIAL change, $250 narrowed authority, and BLOCK execution consequence without unresolved placeholders.
+- Collapsed Raw editable input into a closed-by-default advanced disclosure so the primary experiment story and structured interaction are not pushed far down the page.
+- No authority, materiality, governance-decision, boundary, execution, replay, or policy semantics were changed.
+
+### V1.0.2 exact money, layout, and architecture-help follow-up
+
+- Changed Requested refund amount and New authority maximum structured controls to display dollar values rather than raw integer cents.
+- Requested refund amount now converts visible dollars back to cents for both requestedAction.amountCents and currentConditions.refundAmountCents.
+- New authority maximum converts visible dollars back to cents for decision.newScope.maximumAmountCents.
+- Moved Raw editable input below the human-readable Experiment Story, kept it collapsed by default, and made its disclosure/editor full width.
+- Added plain-language explanations for same-layer and separated reauthorization and explicitly identified the experimental variable as who is authorized to make the reauthorization decision.
+- Added a regression test requiring dollar display while preserving all three cents-based internal values.
+- No authority, materiality, governance-decision, boundary, execution, replay, or policy semantics changed.
+
+### V1.0.2 control definitions and usage guidance
+
+- Added concise hover/focus definitions to each primary application button explaining what the control does, when to use it, and why it exists.
+- Added a collapsed What do these controls do? guide containing the same workflow guidance in visible text so help does not depend on mouse hover.
+- Added accessible aria-describedby relationships between primary controls and their definitions.
+- Added a UI regression test requiring explanatory metadata for every primary control and the presence of the visible control guide.
+- No authority, materiality, governance-decision, boundary, execution, replay, or policy semantics changed.
+
+### V1.0.2 Stratos Engine branding and raw-input consolidation
+
+- Moved Stratos Engine cover and logo assets from the repository root to assets/images/.
+- Added the Stratos Engine cover as the application masthead and the logo as favicon/footer identity.
+- Added restrained creator attribution linking Kelly Newsome to his LinkedIn profile and identifying Stratos Engine.
+- Consolidated Raw editable input, Scenario JSON, explanatory text, Apply controls to JSON, and validation/status feedback into one collapsed advanced section below the human-readable Experiment Story.
+- Removed the disconnected empty Raw editable input heading panel above the Experiment Story.
+- Kept the existing deterministic application, authority, governance, execution, replay, and policy behavior unchanged.
+- Test count remains 190; this change is verified through static structure checks and the existing complete browser/manual-review gate.
+
+### V1.0.2 first-time user explanation and scenario framing
+
+- Made Operational AI Authority Test Harness the large centered primary page title and added plain-language explanations of what the harness is for and how to use it.
+- Added explicit guidance under Experiment inputs telling the reviewer to scroll down and make selections.
+- Added a visible Scenario: what are we testing? explanation describing the default automated-refund case, the LOW-to-MEDIUM risk change, materiality, invalidation of prior authority, independent technical revalidation, and the authority-to-execution question being tested.
+- Added inline plain-language definitions for current customer risk, requested refund amount, governance disposition, expected execution result, new authority maximum, and technical validity.
+- Reframed the human-readable result section as As a result of your selections / What happened and increased its visual prominence.
+- No authority, governance, materiality, execution, replay, evidence, or policy semantics changed.
+- Test count remains 190.
+
+### V1.0.2 propagation integrity and human-first workflow
+
+- Changed the primary purpose sentence to begin "This is a deterministic laboratory..."
+- Clarified that customer risk is an experimental variable rather than a judgment the harness is evaluating.
+- Added a concrete return-frequency example for the risk trigger while explicitly keeping the fairness/accuracy of that rule outside experimental scope.
+- Clarified that BLOCK means the automated execution is not currently authorized; it does not determine the customer's ultimate refund outcome and may be followed by an external escalation path.
+- Configured changed customer-risk selections, including LOW-to-HIGH, as explicit MATERIAL field-transition rules for this scenario.
+- Added a live current-selection summary covering architecture, risk, refund amount, governance disposition, new authority maximum, technical validity, and expected execution.
+- Moved all experiment action buttons below the selection controls to remove unnecessary page scrolling.
+- Reordered the page so human-readable results precede Observed state, detailed experiment evidence, and raw editable JSON.
+- Expanded the human-readable authority story to show permitted risk levels.
+- Made the human-readable meaning conditional on actual technical PASS/FAIL rather than assuming PASS.
+- Added expected-versus-actual execution as an explicit human-readable story step.
+- Added a regression test that changes every editable experiment control, including HIGH risk, and verifies propagation into scenario state.
+- Strengthened the human-readable story regression to exercise HIGH rather than only the default MEDIUM condition.
+- Browser-suite test count increases from 190 to 191.
+
+### V1.0.2 control proximity, current-state wording, and action order
+
+- Moved "What do these controls do?" immediately beside the experiment selections and before the action area.
+- Reordered action buttons to match expected user workflow: Run Experiment, Compare Architectures, Replay Last Run, Reset, Load default, Import scenario, Export scenario, Export run evidence, then Apply controls to JSON.
+- Changed technical-status narration to distinguish historical baseline validation from the current technical-revalidation state.
+- Changed execution narration to describe the requested action and current execution result in present/current-state language.
+- Historical events such as the original baseline, material change, prior-authority invalidation, and completed reauthorization decision remain in past tense.
+- No governance, engine, evidence, materiality, replay, or authority semantics changed.
+- Browser-suite test count remains 191.
+
+### V1.0.2 raw editable input default-open behavior
+
+- Changed Raw editable input (advanced) to open by default now that it appears after the human-readable workflow.
+- The section remains a native details element and can still be collapsed by the reviewer.
+- No scenario, authority, governance, execution, replay, evidence, or test semantics changed.
+- Browser-suite test count remains 191.
+
+### V1.0.2 raw JSON full expansion
+
+- Made the Scenario JSON editor expand to the height of its content by default.
+- Kept the editor full-width within Raw editable input (advanced).
+- Removed the normal internal vertical scrollbar while preserving manual vertical resize capability.
+- No application, authority, governance, execution, replay, evidence, or test semantics changed.
+- Browser-suite test count remains 191.
+
+### V1.0.2 current-selection synchronization and placement
+
+- Moved "Your current selections" out of the scenario explanation and placed it immediately above "As a result of your selections / What happened."
+- Changed the current-selection summary into a bridge between configured inputs and resulting human-readable output.
+- Updated syncControlsFromScenario so the summary refreshes after a default, imported, or otherwise synchronized scenario populates the structured controls.
+- Prevented the opening summary from presenting stale native-control defaults such as LOW, zero dollars, RENEW, or ALLOW before the actual scenario values have loaded.
+- No authority, governance, execution, replay, evidence, or policy semantics changed.
+- Browser-suite test count remains 191.
+
+### V1.0.2 control-guide order and full-width result bridge
+
+- Moved "What do these controls do?" after the experiment action buttons and before the current-selection/result bridge.
+- Kept the user workflow in the order: make selections, choose an action, consult control help if needed, review current selections, then read the result.
+- Made the "Before you read the result / Your current selections" block full page-content width.
+- Made the "As a result of your selections / What happened" story block full page-content width.
+- No application, authority, governance, execution, replay, evidence, or test semantics changed.
+- Browser-suite test count remains 191.
+
+### V1.0.2 always-visible JSON evidence
+
+- Converted Raw editable input from a collapsible details control to an always-visible evidence section.
+- Kept Scenario JSON visible and editable at all times.
+- Removed the Scenario JSON textarea resize handle and retained full-width content-sized expansion with no normal internal vertical scrollbar.
+- Converted architecture comparison JSON evidence from a collapsible disclosure to an always-visible evidence section.
+- Removed "Show architecture comparison JSON evidence" as an interaction because the evidence is now displayed directly.
+- No application, authority, governance, execution, replay, evidence-generation, or policy semantics changed.
+- Browser-suite test count remains 191.
+
+### V1.0.2 coordinated authority correction
+
+- Recorded the approved multidimensional NARROW semantics refinement in DECISION_LOG.md.
+- Added explicit NARROW scope-adaptation metadata and enforcement: the reauthorized dimension may adapt, unrelated dimensions may not broaden, and at least one enforceable boundary must become stricter.
+- Added structured CONDITION input using the existing typed-predicate engine contract (`supervisorConfirmation EQ true`) and a visible execution-time condition value.
+- Added explicit TRANSFER new-decision-owner input using the existing authority-engine contract; TRANSFER still creates no executable authority.
+- Made disposition-specific inputs visible only when they apply, removing the misleading implication that a new authority maximum applies to TRANSFER, SUSPEND, or REFUSE.
+- Corrected NON_MATERIAL handling so unchanged ACTIVE authority is evaluated through its existing enforceable boundary rather than being sent through reauthorization, while preserving the invariant that actual reauthorization requires INVALID authority.
+- Prevented NON_MATERIAL runs from recording a governance-decision event that did not occur.
+- Made architecture-comparison rendering tolerate dispositions such as REFUSE that intentionally produce no boundary.
+- Added authority and UI regression coverage for the approved NARROW rule, CONDITION typed predicates, TRANSFER ownership, and disposition-aware control visibility.
+- No commit, tag, or push is created by this correction pass.

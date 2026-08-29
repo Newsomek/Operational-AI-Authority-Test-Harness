@@ -185,6 +185,9 @@
                     {
                         decisionId: "DECISION-4",
                         disposition: "NARROW",
+                        reauthorizedScopeDimensions: [
+                            "allowedRiskLevels"
+                        ],
                         newScope: {
                             maximumAmountCents: 25000,
                             allowedRiskLevels: ["LOW", "MEDIUM"],
@@ -223,6 +226,9 @@
                     {
                         decisionId: "DECISION-4",
                         disposition: "NARROW",
+                        reauthorizedScopeDimensions: [
+                            "allowedRiskLevels"
+                        ],
                         newScope: {
                             maximumAmountCents: 25000,
                             allowedRiskLevels: ["LOW", "MEDIUM"],
@@ -696,4 +702,105 @@
         "data-authority-status",
         passed === tests.length ? "PASS" : "FAIL"
     );
+    test(
+        "NARROW rejects adapted scope with no stricter enforceable boundary",
+        function () {
+            const prior = basePriorAuthority();
+
+            assertThrows(
+                function () {
+                    authorityEngine.translateDecision(
+                        prior,
+                        {
+                            decisionId: "DECISION-NARROW-NO-STRICTER",
+                            disposition: "NARROW",
+                            reauthorizedScopeDimensions: [
+                                "allowedRiskLevels"
+                            ],
+                            newScope: {
+                                maximumAmountCents: 50000,
+                                allowedRiskLevels: [
+                                    "LOW",
+                                    "MEDIUM"
+                                ],
+                                maximumTransactionAgeDays: 30
+                            }
+                        }
+                    );
+                },
+                "NARROW must reject an adapted scope that adds no stricter boundary."
+            );
+        }
+    );
+
+    test(
+        "NARROW rejects broadening of an unrelated scope dimension",
+        function () {
+            const prior = basePriorAuthority();
+
+            assertThrows(
+                function () {
+                    authorityEngine.translateDecision(
+                        prior,
+                        {
+                            decisionId: "DECISION-NARROW-UNRELATED-BROADENING",
+                            disposition: "NARROW",
+                            reauthorizedScopeDimensions: [
+                                "allowedRiskLevels"
+                            ],
+                            newScope: {
+                                maximumAmountCents: 60000,
+                                allowedRiskLevels: [
+                                    "LOW",
+                                    "MEDIUM"
+                                ],
+                                maximumTransactionAgeDays: 30
+                            }
+                        }
+                    );
+                },
+                "NARROW must reject unrelated amount broadening."
+            );
+        }
+    );
+
+    test(
+        "Approved NARROW adaptation permits changed risk only when another boundary is stricter",
+        function () {
+            const prior = basePriorAuthority();
+            const result =
+                authorityEngine.translateDecision(
+                    prior,
+                    {
+                        decisionId: "DECISION-NARROW-APPROVED-ADAPTATION",
+                        disposition: "NARROW",
+                        reauthorizedScopeDimensions: [
+                            "allowedRiskLevels"
+                        ],
+                        newScope: {
+                            maximumAmountCents: 25000,
+                            allowedRiskLevels: [
+                                "LOW",
+                                "MEDIUM"
+                            ],
+                            maximumTransactionAgeDays: 30
+                        }
+                    }
+                );
+
+            assertTrue(
+                result.authorityCreated,
+                "Approved NARROW adaptation must create authority."
+            );
+
+            assertEqual(
+                result.authority.scope.maximumAmountCents,
+                25000,
+                "Approved adaptation must retain the stricter amount boundary."
+            );
+        }
+    );
+
+    /* V1.0.2 approved NARROW semantics regression marker */
+
 }());

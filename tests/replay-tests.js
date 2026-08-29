@@ -201,7 +201,10 @@
             decision: {
                 decisionId: "DECISION-3",
                 disposition: "NARROW",
-                evidenceReviewed: [
+                reauthorizedScopeDimensions: [
+                "allowedRiskLevels"
+            ],
+            evidenceReviewed: [
                     "E-POLICY",
                     "E-RISK"
                 ],

@@ -321,3 +321,499 @@ input:focus-visible {
 [role="status"] {
     min-height: 2.75rem;
 }
+
+/* V1.0.2 human-readable experiment narrative */
+.story-panel {
+    grid-column: 1 / -1;
+}
+
+.story-flow {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+}
+
+.story-step,
+.story-meaning,
+.comparison-narrative,
+.comparison-readable-card,
+.comparison-finding {
+    border: 1px solid #d4d4d4;
+    border-radius: 0.5rem;
+    padding: 0.9rem;
+}
+
+.story-step h3,
+.story-meaning h3,
+.comparison-narrative h3,
+.comparison-readable-card h4,
+.comparison-finding h4 {
+    margin-top: 0;
+}
+
+.story-step p,
+.story-meaning p,
+.comparison-narrative p,
+.comparison-readable-card p,
+.comparison-finding p {
+    margin-bottom: 0;
+    line-height: 1.5;
+}
+
+.story-consequence,
+.story-meaning {
+    grid-column: 1 / -1;
+}
+
+.story-meaning {
+    margin-top: 0.75rem;
+    border-width: 2px;
+}
+
+.comparison-readable-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+    margin-top: 0.75rem;
+}
+
+.comparison-finding {
+    margin-top: 0.75rem;
+    border-width: 2px;
+}
+
+.technical-evidence {
+    margin-top: 1rem;
+}
+
+.technical-evidence summary {
+    cursor: pointer;
+    font-weight: 700;
+    padding: 0.75rem 0;
+}
+
+.technical-evidence summary:focus-visible {
+    outline: 3px solid currentColor;
+    outline-offset: 3px;
+}
+
+@media (max-width: 800px) {
+    .story-flow,
+    .comparison-readable-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .story-consequence,
+    .story-meaning {
+        grid-column: auto;
+    }
+}
+/* V1.0.2 compact raw editable input */
+.raw-input-details {
+    margin-top: 0.75rem;
+    border: 1px solid #d4d4d4;
+    border-radius: 0.5rem;
+}
+
+.raw-input-details summary {
+    cursor: pointer;
+    font-weight: 700;
+    padding: 0.8rem 0.9rem;
+}
+
+.raw-input-details summary:focus-visible {
+    outline: 3px solid currentColor;
+    outline-offset: 3px;
+}
+
+.raw-input-body {
+    padding: 0 0.9rem 0.9rem;
+}
+
+.raw-input-details:not([open]) {
+    padding-bottom: 0;
+}
+
+#scenario-editor {
+    min-height: 10rem;
+    max-height: 45vh;
+    resize: vertical;
+}
+
+/* V1.0.2 raw input full-width placement */
+.raw-input-details {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.raw-input-body {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+#scenario-editor {
+    width: 100%;
+    box-sizing: border-box;
+}
+/* V1.0.2 architecture choice explanation */
+.architecture-help {
+    margin-top: 0.75rem;
+    padding: 0.9rem 1rem;
+    border: 1px solid #d4d4d4;
+    border-radius: 0.5rem;
+}
+
+.architecture-help p {
+    margin: 0 0 0.7rem;
+}
+
+.architecture-help p:last-child {
+    margin-bottom: 0;
+}
+
+.architecture-help-note,
+.field-help {
+    font-size: 0.95em;
+}
+
+.field-help {
+    display: block;
+    margin-top: 0.25rem;
+}
+
+/* V1.0.2 control definitions */
+.control-guide {
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: 0.85rem;
+    border: 1px solid #d4d4d4;
+    border-radius: 0.5rem;
+}
+
+.control-guide summary {
+    cursor: pointer;
+    font-weight: 700;
+    padding: 0.8rem 0.9rem;
+}
+
+.control-guide summary:focus-visible {
+    outline: 3px solid currentColor;
+    outline-offset: 3px;
+}
+
+.control-guide-body {
+    padding: 0 0.95rem 0.95rem;
+}
+
+.control-guide-body > p {
+    margin-top: 0;
+}
+
+.control-guide dl {
+    margin: 0;
+}
+
+.control-guide dt {
+    font-weight: 700;
+    margin-top: 0.8rem;
+}
+
+.control-guide dd {
+    margin: 0.2rem 0 0 0;
+}
+
+.control-guide dd + dt {
+    margin-top: 1rem;
+}
+
+/* V1.0.2 Stratos Engine branding and raw-input layout */
+.brand-masthead {
+    width: 100%;
+    overflow: hidden;
+    background: #061324;
+}
+
+.brand-cover {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.raw-input-details.panel {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0;
+    overflow: hidden;
+}
+
+.raw-input-details.panel > summary {
+    padding: 1rem 1.25rem;
+}
+
+.raw-input-details.panel[open] > summary {
+    border-bottom: 1px solid #d4d4d4;
+}
+
+.raw-input-body {
+    padding: 1rem 1.25rem 1.25rem;
+}
+
+.raw-input-heading {
+    margin-bottom: 1rem;
+}
+
+.raw-input-actions {
+    margin-top: 1rem;
+}
+
+.raw-input-action-help {
+    margin: 0.5rem 0 0;
+}
+
+.app-footer {
+    display: grid;
+    gap: 1rem;
+}
+
+.footer-attribution {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.footer-logo {
+    width: 72px;
+    height: 72px;
+    object-fit: cover;
+    flex: 0 0 auto;
+}
+
+.footer-attribution p {
+    margin: 0.2rem 0;
+}
+
+@media (max-width: 720px) {
+    .footer-attribution {
+        align-items: flex-start;
+    }
+
+    .footer-logo {
+        width: 56px;
+        height: 56px;
+    }
+}
+
+/* V1.0.2 first-time user explanation pass */
+.app-title-block {
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto 1.4rem;
+    text-align: center;
+}
+
+.app-title-block h1 {
+    margin: 0;
+    font-size: clamp(2.4rem, 5vw, 4.4rem);
+    line-height: 1.05;
+    letter-spacing: -0.035em;
+}
+
+.app-purpose {
+    max-width: 900px;
+    margin: 1rem auto 0;
+    font-size: clamp(1.05rem, 2vw, 1.3rem);
+    line-height: 1.55;
+}
+
+.app-purpose-secondary {
+    max-width: 920px;
+    margin: 0.6rem auto 0;
+    font-size: 0.98rem;
+    line-height: 1.5;
+}
+
+.section-instruction {
+    margin: 0.45rem 0 0;
+    font-weight: 700;
+}
+
+.scenario-explanation {
+    margin: 0 0 1.25rem;
+    padding: 1rem 1.1rem;
+    border: 1px solid #d4d4d4;
+    border-radius: 0.6rem;
+}
+
+.scenario-explanation h3 {
+    margin-top: 0;
+    font-size: 1.2rem;
+}
+
+.scenario-explanation p:last-child {
+    margin-bottom: 0;
+}
+
+.field-explanation {
+    display: block;
+    margin-top: 0.35rem;
+    font-size: 0.9rem;
+    line-height: 1.45;
+    opacity: 0.82;
+}
+
+.story-context {
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+#story-heading {
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    line-height: 1.08;
+}
+
+@media (max-width: 720px) {
+    .app-title-block h1 {
+        font-size: 2.25rem;
+    }
+}
+
+/* V1.0.2 propagation and human-first flow */
+.selection-summary {
+    margin-top: 1rem;
+    padding: 0.9rem 1rem;
+    border: 1px solid #d4d4d4;
+    border-radius: 0.6rem;
+}
+
+.selection-summary h4 {
+    margin: 0 0 0.4rem;
+}
+
+.selection-summary p {
+    margin: 0;
+    line-height: 1.5;
+}
+
+.experiment-actions {
+    margin-top: 1.5rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid #d4d4d4;
+}
+
+.experiment-action-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.7rem;
+    margin: 1rem 0;
+}
+
+.experiment-actions .status-box {
+    margin-top: 0.8rem;
+}
+
+/* V1.0.2 raw JSON full expansion */
+#scenario-editor {
+    display: block;
+    width: 100%;
+    max-width: none;
+    box-sizing: border-box;
+    field-sizing: content;
+    min-height: 24rem;
+    overflow-y: hidden;
+    resize: vertical;
+}
+
+/* V1.0.2 current-selection bridge placement */
+.current-selection-panel {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
+
+.current-selection-panel .selection-summary {
+    margin-top: 0;
+}
+
+.current-selection-panel .selection-summary p {
+    font-weight: 600;
+}
+
+/* V1.0.2 full-width result bridge */
+.current-selection-panel,
+.story-panel {
+    grid-column: 1 / -1;
+    width: 100%;
+    max-width: none;
+    box-sizing: border-box;
+}
+
+.current-selection-panel .panel-heading,
+.current-selection-panel .selection-summary,
+.story-panel .panel-heading,
+.story-panel .story-flow,
+.story-panel .story-meaning {
+    width: 100%;
+    max-width: none;
+    box-sizing: border-box;
+}
+
+.controls-help-after-actions {
+    width: 100%;
+    margin-top: 1rem;
+}
+
+.controls-help-after-actions .control-guide {
+    width: 100%;
+    max-width: none;
+}
+
+/* V1.0.2 always-visible JSON evidence */
+#scenario-editor {
+    display: block;
+    width: 100%;
+    max-width: none;
+    box-sizing: border-box;
+    field-sizing: content;
+    min-height: 24rem;
+    height: auto;
+    overflow-y: hidden;
+    resize: none;
+}
+
+.always-visible-evidence {
+    width: 100%;
+    max-width: none;
+    box-sizing: border-box;
+}
+
+.static-evidence-heading {
+    margin: 0 0 1rem;
+    font-size: 1.15rem;
+    font-weight: 700;
+}
+
+.raw-input-always-visible,
+.architecture-json-always-visible {
+    grid-column: 1 / -1;
+}
+/* V1.0.2 scenario-editor resize override */
+#scenario-editor {
+    resize: none;
+}
+
+/* V1.0.2 disposition-specific authority controls */
+.disposition-specific[hidden] {
+    display: none !important;
+}
+
+.disposition-specific.is-applicable {
+    display: flex;
+}
+
+.disposition-specific input:disabled,
+.disposition-specific select:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}

@@ -166,6 +166,62 @@
         });
     }
 
+    function performStableExecution(input) {
+        const boundaryResult =
+            boundary.createBoundary(
+                input.currentAuthority
+            );
+
+        const executionResult =
+            boundaryResult.boundaryCreated
+                ? execution.evaluateExecution({
+                    requestedAction:
+                        input.requestedAction,
+                    boundary:
+                        boundaryResult.boundary,
+                    technicalCapability:
+                        input.technicalCapability,
+                    technicalValidity:
+                        input.technicalRevalidation,
+                    conditionValues:
+                        input.conditionValues
+                })
+                : blockedResult(
+                    "No enforceable boundary was available for the unchanged authority."
+                );
+
+        return deepFreeze({
+            decisionResult: {
+                valid: true,
+                skipped: true,
+                reason:
+                    "No reauthorization was required because the change was NON_MATERIAL.",
+                translation: {
+                    disposition:
+                        "NO_REAUTHORIZATION_REQUIRED",
+                    authorityCreated: false,
+                    authority:
+                        input.currentAuthority,
+                    transferredDecisionOwner: null
+                }
+            },
+            boundaryResult:
+                boundaryResult,
+            executionResult:
+                executionResult
+        });
+    }
+
+    function performGovernedTransition(input) {
+        if (
+            input.currentAuthority.status ===
+            state.AUTHORITY_STATUS.ACTIVE
+        ) {
+            return performStableExecution(input);
+        }
+
+        return performGovernedReauthorization(input);
+    }
     function performGovernedReauthorization(input) {
         if (
             input.currentAuthority.status !==
@@ -636,7 +692,7 @@
         );
 
         const governedResult =
-            performGovernedReauthorization({
+            performGovernedTransition({
                 currentAuthority:
                     changedState.currentAuthority,
                 actor:
@@ -659,6 +715,7 @@
                     input.currentConditions
             });
 
+        if (!governedResult.decisionResult.skipped) {
         recordCommand(
             "GOVERNANCE_DECISION_EVALUATED",
             architectureContext.decisionActor.actorId,
@@ -682,6 +739,7 @@
             input.decision.evidenceReviewed || [],
             changedState.currentAuthority.authorityVersion
         );
+        }
 
         const translation =
             governedResult.decisionResult.valid

@@ -119,10 +119,138 @@
         );
     }
 
+    function validateNarrowScope(
+        priorScope,
+        newScope,
+        reauthorizedScopeDimensions
+    ) {
+        requirePlainObject(priorScope, "priorAuthority.scope");
+        requirePlainObject(newScope, "decision.newScope");
+
+        const adaptations =
+            Array.isArray(reauthorizedScopeDimensions)
+                ? reauthorizedScopeDimensions
+                : [];
+
+        const supportedDimensions = [
+            "maximumAmountCents",
+            "allowedRiskLevels",
+            "maximumTransactionAgeDays"
+        ];
+
+        adaptations.forEach(function (dimension) {
+            if (!supportedDimensions.includes(dimension)) {
+                throw new Error(
+                    "Unsupported NARROW reauthorized scope dimension: " +
+                    String(dimension)
+                );
+            }
+        });
+
+        let stricter = false;
+
+        if (
+            Number.isInteger(priorScope.maximumAmountCents) &&
+            Number.isInteger(newScope.maximumAmountCents)
+        ) {
+            if (
+                newScope.maximumAmountCents >
+                    priorScope.maximumAmountCents &&
+                !adaptations.includes("maximumAmountCents")
+            ) {
+                throw new Error(
+                    "NARROW may not broaden unrelated maximumAmountCents."
+                );
+            }
+
+            if (
+                newScope.maximumAmountCents <
+                priorScope.maximumAmountCents
+            ) {
+                stricter = true;
+            }
+        }
+
+        if (
+            Number.isInteger(
+                priorScope.maximumTransactionAgeDays
+            ) &&
+            Number.isInteger(
+                newScope.maximumTransactionAgeDays
+            )
+        ) {
+            if (
+                newScope.maximumTransactionAgeDays >
+                    priorScope.maximumTransactionAgeDays &&
+                !adaptations.includes(
+                    "maximumTransactionAgeDays"
+                )
+            ) {
+                throw new Error(
+                    "NARROW may not broaden unrelated maximumTransactionAgeDays."
+                );
+            }
+
+            if (
+                newScope.maximumTransactionAgeDays <
+                priorScope.maximumTransactionAgeDays
+            ) {
+                stricter = true;
+            }
+        }
+
+        if (
+            Array.isArray(priorScope.allowedRiskLevels) &&
+            Array.isArray(newScope.allowedRiskLevels)
+        ) {
+            const addedRisks =
+                newScope.allowedRiskLevels.filter(
+                    function (risk) {
+                        return !priorScope.allowedRiskLevels.includes(
+                            risk
+                        );
+                    }
+                );
+
+            if (
+                addedRisks.length > 0 &&
+                !adaptations.includes("allowedRiskLevels")
+            ) {
+                throw new Error(
+                    "NARROW may not broaden unrelated allowedRiskLevels."
+                );
+            }
+
+            const removedRisks =
+                priorScope.allowedRiskLevels.filter(
+                    function (risk) {
+                        return !newScope.allowedRiskLevels.includes(
+                            risk
+                        );
+                    }
+                );
+
+            if (removedRisks.length > 0) {
+                stricter = true;
+            }
+        }
+
+        if (!stricter) {
+            throw new Error(
+                "NARROW must impose at least one stricter enforceable boundary than the authority it replaces."
+            );
+        }
+    }
     function applyNarrow(priorAuthority, decision) {
         requirePlainObject(
             decision.newScope,
             "decision.newScope"
+        );
+
+        validateNarrowScope(
+            priorAuthority.scope,
+            decision.newScope,
+            decision.reauthorizedScopeDimensions
         );
 
         const authority = createBaseAuthority(

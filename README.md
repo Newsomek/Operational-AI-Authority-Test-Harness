@@ -47,6 +47,12 @@ The primary hypothesis is:
 
 The experiment is designed so that the hypothesis can fail.
 
+## Acknowledgment
+
+This experiment grew in part from professional discussion with Wojciech Z. Kaleta, PhD, whose questions and perspective around decision engineering, AI capability change, organizational authority, material change, revalidation, reauthorization, and execution control helped prompt the inquiry that led to this test harness.
+
+This acknowledgment recognizes the discussion that contributed to the experiment's origin. It does not imply Wojciech's endorsement of the resulting conceptual model, implementation, experimental design, or conclusions.
+
 ## What it is not
 
 This is not a production authorization platform, enterprise GRC system, policy-as-code platform, identity system, model benchmark, or proof that a governance architecture is universally correct.

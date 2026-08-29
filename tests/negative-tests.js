@@ -257,7 +257,10 @@
                     "DECISION-NEGATIVE",
                 disposition:
                     "NARROW",
-                evidenceReviewed: [
+                reauthorizedScopeDimensions: [
+                "allowedRiskLevels"
+            ],
+            evidenceReviewed: [
                     "E-POLICY",
                     "E-RISK"
                 ],

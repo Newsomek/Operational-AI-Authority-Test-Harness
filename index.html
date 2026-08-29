@@ -3,32 +3,47 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Operational AI Authority Test Harness</title>
+    <title>Operational AI Authority Test Harness | Stratos Engine</title>
+    <link rel="icon" type="image/jpeg" href="assets/images/stratosengine_logo.jpg">
     <link rel="stylesheet" href="css/app.css">
 </head>
 <body>
     <a class="skip-link" href="#main-content">Skip to experiment controls</a>
+    <div class="brand-masthead" aria-label="Stratos Engine">
+        <img
+            class="brand-cover"
+            src="assets/images/stratosengine_cover.jpg"
+            alt="Stratos Engine — Deterministic AI. Operational trust. Intelligent outcomes."
+        >
+    </div>
+
     <header class="app-header">
-        <div>
-            <p class="eyebrow">Operational AI Authority Test Harness</p>
-            <h1>Authority-to-Execution Laboratory</h1>
+        <div class="app-title-block">
+            <h1>Operational AI Authority Test Harness</h1>
+            <p class="app-purpose">
+                This is a deterministic laboratory for testing how organizational authority changes when conditions change — and whether an AI-enabled system is still permitted to act.
+            </p>
+            <p class="app-purpose-secondary">
+                Configure the scenario, run the experiment, and inspect the evidence showing what authority existed, what changed, who could reauthorize it, and why execution was allowed or blocked.
+            </p>
         </div>
 
         <div class="header-actions">
-            <button id="load-default" type="button">Load default</button>
-            <button id="import-scenario" type="button">Import scenario</button>
-            <button id="export-scenario" type="button">Export scenario</button>
-            <button id="export-run" type="button">Export run evidence</button>
-            <button id="reset-scenario" type="button">Reset</button>
+
+
+
+
+
             <input
                 id="scenario-file-input"
                 type="file"
                 accept="application/json,.json"
                 hidden
             >
-            <button id="run-experiment" type="button">Run experiment</button>
-            <button id="compare-architectures" type="button">Compare architectures</button>
-            <button id="run-replay" type="button">Replay last run</button>
+
+
+
+
         </div>
     </header>
 
@@ -38,10 +53,42 @@
                 <div>
                     <p class="eyebrow">Structured controls</p>
                     <h2 id="controls-heading">Experiment inputs</h2>
+                    <p class="section-instruction">
+                        Scroll down to make your selections. The values below define the scenario the harness will test.
+                    </p>
                 </div>
                 <p class="muted">
                     Controls edit scenario data only. Deterministic engines remain authoritative.
                 </p>
+            </div>
+            <div id="scenario-explanation" class="scenario-explanation" aria-labelledby="scenario-explanation-heading">
+                <h3 id="scenario-explanation-heading">Scenario: what are we testing?</h3>
+
+                <p>
+                    <strong>Default scenario:</strong>
+                    An automated refund system is being asked to issue a customer refund. Before conditions change, Operations has active authority to approve refunds up to &#36;500 for LOW-risk customers.
+                </p>
+
+                <p>
+                    <strong>Customer risk is the experimental variable, not the point of the experiment.</strong>
+                    To make the change concrete, imagine the customer has crossed a configured return-frequency threshold, such as a third return within 30 days. That trigger changes the customer's risk classification. The harness is not evaluating whether that risk rule is fair, accurate, or desirable; it simply uses the selected risk level as a controlled condition.
+                </p>
+
+                <p>
+                    For this scenario, a change from the prior customer-risk classification to a different selected risk classification is treated as <strong>MATERIAL</strong>. That lets the experiment test what happens to organizational authority after a material condition changes.
+                </p>
+
+                <p>
+                    <strong>What the experiment is testing:</strong>
+                    after the material change, what organizational authority — if any — exists, who is permitted to make the reauthorization decision, what execution boundary results, and whether the automated system is permitted to perform the requested refund.
+                </p>
+
+                <p>
+                    <strong>What the experiment is not deciding:</strong>
+                    a BLOCK result does not mean the customer's refund is ultimately denied. It means only that this automated execution is not authorized under the authority currently in force. A real organization might escalate the request to another person, process, or authority level. That downstream decision is outside this experiment.
+                </p>
+
+
             </div>
 
             <fieldset>
@@ -72,6 +119,11 @@
                         <small>Reauthorization is modeled as a separated governance function.</small>
                     </span>
                 </label>
+                <div id="architecture-help" class="architecture-help">
+                    <p><strong>Same-layer reauthorization:</strong> the operational team running the process also retains authority to make the reauthorization decision after a material change.</p>
+                    <p><strong>Separated reauthorization:</strong> the operational layer detects the material change, invalidates prior authority, and blocks execution. A designated authority owner outside the operational layer then decides whether and how authority should be renewed, narrowed, conditioned, transferred, suspended, or refused.</p>
+                    <p class="architecture-help-note"><strong>The experimental variable is who is authorized to decide.</strong> Changing the architecture does not automatically change technical capability, evidence, the requested action, or execution permission. Separation does not itself create authority or prove a better outcome.</p>
+                </div>
             </fieldset>
 
             <div class="form-grid">
@@ -82,11 +134,14 @@
                         <option value="MEDIUM">MEDIUM</option>
                         <option value="HIGH">HIGH</option>
                     </select>
+                    <span id="current-risk-explanation" class="field-explanation">The customer's risk level after the condition change. Changing this can trigger the configured materiality rules and invalidate prior authority.</span>
                 </label>
 
                 <label>
-                    Requested refund amount
-                    <input id="requested-amount" type="number" min="0" step="1">
+                    Requested refund amount ($)
+                    <input id="requested-amount" type="number" min="0" step="0.01" inputmode="decimal" aria-describedby="requested-amount-help">
+                    <span id="requested-amount-explanation" class="field-explanation">The dollar amount the automated system is being asked to refund in this execution attempt.</span>
+                    <span id="requested-amount-help" class="field-help">Enter dollars, for example 400.00.</span>
                 </label>
 
                 <label>
@@ -99,6 +154,7 @@
                         <option value="SUSPEND">SUSPEND</option>
                         <option value="REFUSE">REFUSE</option>
                     </select>
+                    <span id="decision-disposition-explanation" class="field-explanation">The governance decision made after reauthorization is required. For example: renew authority, narrow it, add conditions, transfer the decision, suspend authority, or refuse to create new authority.</span>
                 </label>
 
                 <label>
@@ -107,11 +163,28 @@
                         <option value="ALLOW">ALLOW</option>
                         <option value="BLOCK">BLOCK</option>
                     </select>
+                    <span id="expected-result-explanation" class="field-explanation">Your prediction before execution: should the current requested action be ALLOWed or BLOCKed? The harness compares this predeclared expectation with the actual result.</span>
                 </label>
 
-                <label>
-                    New authority maximum
-                    <input id="new-authority-maximum" type="number" min="0" step="1">
+                <label id="new-authority-maximum-control" class="disposition-specific">
+                    New authority maximum ($)
+                    <input id="new-authority-maximum" type="number" min="0" step="0.01" inputmode="decimal" aria-describedby="new-authority-maximum-help">
+                    <span id="new-authority-maximum-explanation" class="field-explanation">The maximum dollar amount permitted by the new authority created through the selected governance disposition. In the default NARROW case, &#36;250 is less than the requested &#36;400.</span>
+                    <span id="new-authority-maximum-help" class="field-help">Enter dollars, for example 250.00.</span>
+                </label>
+                <label id="condition-supervisor-confirmation-control" class="disposition-specific" hidden>
+                    Supervisor confirmation present?
+                    <select id="condition-supervisor-confirmation" disabled>
+                        <option value="true">YES</option>
+                        <option value="false">NO</option>
+                    </select>
+                    <span class="field-explanation">Used only for CONDITION. CONDITION creates a new authority version with an enforceable typed requirement that supervisorConfirmation must equal true. This selection records whether that required condition is actually satisfied when execution is evaluated.</span>
+                </label>
+
+                <label id="transfer-decision-owner-control" class="disposition-specific" hidden>
+                    New decision owner
+                    <input id="transfer-decision-owner" type="text" value="ACTOR-GOVERNANCE" disabled>
+                    <span class="field-explanation">Used only for TRANSFER. This identifies the authorized actor who receives decision authority. TRANSFER does not itself create executable authority, so execution remains blocked until a later authorized decision creates a valid boundary.</span>
                 </label>
 
                 <label>
@@ -120,39 +193,249 @@
                         <option value="PASS">PASS</option>
                         <option value="FAIL">FAIL</option>
                     </select>
+                    <span id="technical-validity-explanation" class="field-explanation">Whether the system remains technically valid under the changed conditions. PASS means the technology still works as validated; it does not restore organizational authority after that authority has been invalidated.</span>
                 </label>
             </div>
 
-            <div class="control-actions">
-                <button id="apply-controls" type="button">Apply controls to JSON</button>
-            </div>
+<div class="experiment-actions" aria-labelledby="experiment-actions-heading">
+                <div>
+                    <p class="eyebrow">After making your selections</p>
+                    <h3 id="experiment-actions-heading">Run or manage the experiment</h3>
+                    <p class="muted">
+                        These controls are placed here so you can configure the experiment and act on it without scrolling back to the top of the page.
+                    </p>
+                </div>
 
-            <div id="validation-status" class="status-box" role="status" aria-live="polite">
-                No scenario loaded.
+                                <div class="experiment-action-buttons">
+                    <button id="run-experiment" type="button" title="Run the deterministic authority-to-execution experiment using the current scenario. Use this when your inputs are ready and you want to see the resulting authority, boundary, execution, and evidence." aria-describedby="help-run-experiment">Run experiment</button>
+                    <button id="compare-architectures" type="button" title="Run a controlled comparison of same-layer and separated reauthorization. Use this when you want to isolate whether changing only the reauthorization topology changes the observed result." aria-describedby="help-compare-architectures">Compare architectures</button>
+                    <button id="run-replay" type="button" title="Deterministically replay the most recent completed run from causal inputs. Use this after Run Experiment when you want to test reproducibility without forcing the recorded outcome." aria-describedby="help-run-replay">Replay Last Run</button>
+                    <button id="reset-scenario" type="button" title="Reset the current scenario and outputs. Use this when you want to discard the current working state and start over cleanly." aria-describedby="help-reset-scenario">Reset</button>
+                    <button id="load-default" type="button" title="Load the known baseline scenario. Use this when you want to return to the standard experiment starting point before changing inputs or comparing results." aria-describedby="help-load-default">Load default</button>
+                    <button id="import-scenario" type="button" title="Import a compatible scenario JSON file. Use this when you want to run a saved or externally prepared scenario instead of the default." aria-describedby="help-import-scenario">Import scenario</button>
+                    <button id="export-scenario" type="button" title="Export the current scenario inputs as JSON. Use this before running when you want to preserve or share the exact configured experiment." aria-describedby="help-export-scenario">Export scenario</button>
+                    <button id="export-run" type="button" title="Export the evidence from the most recent completed run. Use this after Run Experiment when you need the deterministic record of what happened." aria-describedby="help-export-run">Export run evidence</button>
+                    <button
+                    id="apply-controls"
+                    type="button"
+                    title="Apply the visible structured controls to the scenario JSON. Use this after changing architecture, risk, amounts, disposition, or technical validity and before inspecting the raw scenario."
+                    aria-describedby="help-apply-controls"
+                    >
+                    Apply controls to JSON
+                    </button>
+                </div>
+
+                <div id="validation-status" class="status-box" role="status" aria-live="polite">
+                    No scenario loaded.
+                </div>
+            </div>
+            <div class="controls-help controls-help-after-actions">
+                <details id="control-guide" class="control-guide">
+                <summary>What do these controls do?</summary>
+                <div class="control-guide-body">
+                    <p>Use this guide when you are unsure which action to take. The same concise definitions also appear as button tooltips when you hover over a control.</p>
+                    <dl>
+                        <dt id="help-load-default">Load default</dt>
+                        <dd>Loads the standard baseline scenario into the editor and structured controls. Use it when you want a known starting point, when you have changed the scenario substantially, or before demonstrating the harness to someone else.</dd>                        <dt id="help-import-scenario">Import scenario</dt>
+                        <dd>Loads a compatible saved scenario. Use it when you want to reproduce a prior setup, test a scenario prepared elsewhere, or compare multiple prebuilt cases.</dd>                        <dt id="help-export-scenario">Export scenario</dt>
+                        <dd>Saves the current experiment inputs, not the run result. Use it to preserve a configuration, share it with another reviewer, or rerun the same scenario later.</dd>                        <dt id="help-export-run">Export run evidence</dt>
+                        <dd>Saves the evidence generated by the latest completed experiment, including authority history, execution evidence, assertions, and replay inputs. Use it for review, audit, comparison, or reproducibility.</dd>                        <dt id="help-reset-scenario">Reset</dt>
+                        <dd>Clears the current working run state and returns the interface to a clean scenario state. Use it when the current experiment is no longer useful or before beginning a materially different setup.</dd>                        <dt id="help-apply-controls">Apply controls</dt>
+                        <dd>Copies the visible structured inputs into the scenario data. Use it after editing the form when you want the Raw editable input to reflect those changes. It changes inputs only; it does not run the experiment or manufacture results.</dd>                        <dt id="help-run-experiment">Run Experiment</dt>
+                        <dd>Executes the current scenario through the deterministic governed engines. Use it after your inputs are set. This is the main action for seeing what happens and why under the selected governance conditions.</dd>                        <dt id="help-compare-architectures">Compare Architectures</dt>
+                        <dd>Runs the same scenario twice while changing only the reauthorization architecture. Use it to test whether decision topology produces an observable difference while the scenario, evidence, requested action, capability, and disposition remain held constant.</dd>                        <dt id="help-run-replay">Replay</dt>
+                        <dd>Recomputes the most recent run from its causal replay inputs. Use it to confirm that the same evidence can reproduce the same governed result without using the recorded result itself as an instruction.</dd>
+                    </dl>
+                </div>
+            </details>
             </div>
         </section>
 
-        <section class="panel scenario-panel" aria-labelledby="scenario-heading">
+
+                <section class="panel current-selection-panel" aria-labelledby="current-selection-heading">
             <div class="panel-heading">
                 <div>
-                    <p class="eyebrow">Raw editable input</p>
-                    <h2 id="scenario-heading">Scenario JSON</h2>
+                    <p class="eyebrow">Before you read the result</p>
+                    <h2 id="current-selection-heading">Your current selections</h2>
                 </div>
                 <p class="muted">
-                    Raw JSON remains visible and editable for inspection and reproducibility.
+                    These are the inputs currently configured for the experiment below.
                 </p>
             </div>
 
-            <label for="scenario-editor">Scenario JSON</label>
-            <textarea id="scenario-editor" spellcheck="false"></textarea>
+            <div class="selection-summary current-selection-summary" aria-live="polite">
+
+                    <p id="selection-summary">Loading current scenario selections...</p>
+                </div>
+        </section>
+<section class="panel story-panel" id="experiment-story" aria-labelledby="story-heading">
+            <div class="panel-heading">
+                <div>
+                    <p class="eyebrow story-context">As a result of your selections</p>
+                    <h2 id="story-heading">What happened</h2>
+                </div>
+                <p class="muted">
+                    Read this first. This section explains the causal result produced by the selections above. The detailed JSON below remains available as inspectable evidence.
+                </p>
+            </div>
+
+            <ol class="story-flow" aria-label="Experiment outcome in causal order">
+                <li class="story-step">
+                    <h3>1. Before the change</h3>
+                    <p id="story-before">Run the experiment to see the baseline.</p>
+                </li>
+                <li class="story-step">
+                    <h3>2. What changed</h3>
+                    <p id="story-change">Run the experiment to evaluate materiality.</p>
+                </li>
+                <li class="story-step">
+                    <h3>3. What happened to existing authority</h3>
+                    <p id="story-authority">Run the experiment to see the authority state.</p>
+                </li>
+                <li class="story-step">
+                    <h3>4. Did the technology still work?</h3>
+                    <p id="story-technical">Run the experiment to see technical validity.</p>
+                </li>
+                <li class="story-step">
+                    <h3>5. Who made the reauthorization decision?</h3>
+                    <p id="story-owner">Run the experiment to see the decision owner.</p>
+                </li>
+                <li class="story-step">
+                    <h3>6. What authority exists now?</h3>
+                    <p id="story-new-authority">Run the experiment to see the current enforceable boundary.</p>
+                </li>
+                <li class="story-step story-consequence">
+                    <h3>7. What consequence did that authority produce?</h3>
+                    <p id="story-consequence">Run the experiment to see whether execution is allowed or blocked.</p>
+                </li>
+                            <li class="story-step">
+                    <h3>8. Did the result match your expectation?</h3>
+                    <p id="story-prediction">Run the experiment to compare expected and actual execution.</p>
+                </li></ol>
+
+            <div class="story-meaning" aria-labelledby="story-meaning-heading">
+                <h3 id="story-meaning-heading">Why this matters</h3>
+                <p id="story-meaning">
+                    The experiment has not been run yet.
+                </p>
+            </div>
         </section>
 
-        <section class="panel results-panel" aria-labelledby="results-heading">
+
+
+
+
+        <section class="panel comparison-panel" aria-labelledby="comparison-heading">
+            <div class="panel-heading">
+                <div>
+                    <p class="eyebrow">Controlled comparison</p>
+                    <h2 id="comparison-heading">Architecture comparison</h2>
+                </div>
+                <p class="muted">
+                    Both runs use the same scenario, capability, recommendation, evidence, requested action, and governance disposition. Only reauthorization topology changes.
+                </p>
+            </div>
+
+            <div class="comparison-narrative" aria-labelledby="comparison-narrative-heading">
+                <h3 id="comparison-narrative-heading">What changed between the two runs?</h3>
+                <p>
+                    The scenario stays the same. The comparison changes only who is assigned to make the reauthorization decision.
+                </p>
+
+                <div class="comparison-readable-grid">
+                    <article class="comparison-readable-card">
+                        <h4>Same-layer</h4>
+                        <p id="comparison-same-readable">Run Compare Architectures to see the result.</p>
+                    </article>
+                    <article class="comparison-readable-card">
+                        <h4>Separated</h4>
+                        <p id="comparison-separated-readable">Run Compare Architectures to see the result.</p>
+                    </article>
+                </div>
+
+                <div class="comparison-finding">
+                    <h4>What did we learn?</h4>
+                    <p id="comparison-finding-readable">
+                        Run Compare Architectures to evaluate whether changing the decision owner changed downstream authority or execution.
+                    </p>
+                </div>
+            </div>
+
+            <section class="technical-evidence always-visible-evidence architecture-json-always-visible">
+                <div class="static-evidence-heading">Architecture comparison JSON evidence</div>            <div class="comparison-grid">
+                <article class="result-card">
+                    <h3>SAME-LAYER REAUTHORIZATION</h3>
+                    <pre id="same-layer-comparison-output">Not run.</pre>
+                </article>
+
+                <article class="result-card">
+                    <h3>SEPARATED REAUTHORIZATION</h3>
+                    <pre id="separated-comparison-output">Not run.</pre>
+                </article>
+            </div>
+
+            <article class="result-card comparison-summary">
+                <h3>Observed comparison</h3>
+                <pre id="architecture-comparison-summary">Not run.</pre>
+            </article>
+            </section>
+        </section>
+
+        <section class="panel explain-panel" aria-labelledby="explain-heading">
+            <div class="panel-heading">
+                <div>
+                    <p class="eyebrow">Inspectable reasoning</p>
+                    <h2 id="explain-heading">Explain</h2>
+                </div>
+            </div>
+
+            <div class="card-grid">
+                <article class="result-card">
+                    <h3>Why authority changed</h3>
+                    <pre id="authority-explain-output">Not run.</pre>
+                </article>
+
+                <article class="result-card">
+                    <h3>Why this boundary exists</h3>
+                    <pre id="boundary-explain-output">Not run.</pre>
+                </article>
+
+                <article class="result-card">
+                    <h3>Why execution was allowed or blocked</h3>
+                    <pre id="execution-explain-output">Not run.</pre>
+                </article>
+            </div>
+        </section>
+
+        <section class="panel evidence-panel" aria-labelledby="authority-heading">
+            <div class="panel-heading">
+                <div>
+                    <p class="eyebrow">Versioned evidence</p>
+                    <h2 id="authority-heading">Authority history</h2>
+                </div>
+            </div>
+            <pre id="authority-history-output">Not run.</pre>
+        </section>
+
+        <section class="panel evidence-panel" aria-labelledby="events-heading">
+            <div class="panel-heading">
+                <div>
+                    <p class="eyebrow">Deterministic evidence</p>
+                    <h2 id="events-heading">Event log</h2>
+                </div>
+            </div>
+            <pre id="event-log-output">Not run.</pre>
+        </section>
+
+<section class="panel results-panel" aria-labelledby="results-heading">
             <div class="panel-heading">
                 <div>
                     <p class="eyebrow">Observed state</p>
-                    <h2 id="results-heading">Experiment results</h2>
+                    <h2 id="results-heading">Detailed experiment evidence</h2>
                 </div>
+                <p class="muted">
+                    These deterministic records support the experiment story above. They are retained for inspection, replay, and challenge.
+                </p>
             </div>
 
             <div class="card-grid">
@@ -218,86 +501,52 @@
             </div>
         </section>
 
-        <section class="panel comparison-panel" aria-labelledby="comparison-heading">
-            <div class="panel-heading">
-                <div>
-                    <p class="eyebrow">Controlled comparison</p>
-                    <h2 id="comparison-heading">Architecture comparison</h2>
+<section class="raw-input-details panel always-visible-evidence raw-input-always-visible">
+            <div class="static-evidence-heading">Raw editable input</div>
+            <div class="raw-input-body">
+                <div class="panel-heading raw-input-heading">
+                    <div>
+                        <p class="eyebrow">Raw editable input</p>
+                        <h2 id="scenario-heading">Scenario JSON</h2>
+                    </div>
+                    <p class="muted">
+                        Raw JSON remains visible and editable for inspection and reproducibility.
+                    </p>
                 </div>
+
+                <label for="scenario-editor">Scenario JSON</label>
+                <textarea id="scenario-editor" spellcheck="false"></textarea>
+
+
+
+
+            </div>
+        </section>
+</main>
+
+    <footer class="app-footer">
+        <div class="footer-governance-note">
+            <p>
+                Architecture selection is an experimental input. It does not itself create authority or execution permission.
+            </p>
+        </div>
+
+        <div class="footer-attribution">
+            <img
+                class="footer-logo"
+                src="assets/images/stratosengine_logo.jpg"
+                alt=""
+                aria-hidden="true"
+            >
+            <div>
+                <p>
+                    <strong>Created by <a href="https://www.linkedin.com/in/michaelkellynewsome/" target="_blank" rel="noopener noreferrer">Kelly Newsome</a> · Stratos Engine</strong>
+                </p>
                 <p class="muted">
-                    Both runs use the same scenario, capability, recommendation, evidence, requested action, and governance disposition. Only reauthorization topology changes.
+                    Concept, experimental design, and product direction by Kelly Newsome. AI-assisted implementation.
                 </p>
             </div>
-
-            <div class="comparison-grid">
-                <article class="result-card">
-                    <h3>SAME-LAYER REAUTHORIZATION</h3>
-                    <pre id="same-layer-comparison-output">Not run.</pre>
-                </article>
-
-                <article class="result-card">
-                    <h3>SEPARATED REAUTHORIZATION</h3>
-                    <pre id="separated-comparison-output">Not run.</pre>
-                </article>
-            </div>
-
-            <article class="result-card comparison-summary">
-                <h3>Observed comparison</h3>
-                <pre id="architecture-comparison-summary">Not run.</pre>
-            </article>
-        </section>
-
-        <section class="panel explain-panel" aria-labelledby="explain-heading">
-            <div class="panel-heading">
-                <div>
-                    <p class="eyebrow">Inspectable reasoning</p>
-                    <h2 id="explain-heading">Explain</h2>
-                </div>
-            </div>
-
-            <div class="card-grid">
-                <article class="result-card">
-                    <h3>Why authority changed</h3>
-                    <pre id="authority-explain-output">Not run.</pre>
-                </article>
-
-                <article class="result-card">
-                    <h3>Why this boundary exists</h3>
-                    <pre id="boundary-explain-output">Not run.</pre>
-                </article>
-
-                <article class="result-card">
-                    <h3>Why execution was allowed or blocked</h3>
-                    <pre id="execution-explain-output">Not run.</pre>
-                </article>
-            </div>
-        </section>
-
-        <section class="panel evidence-panel" aria-labelledby="authority-heading">
-            <div class="panel-heading">
-                <div>
-                    <p class="eyebrow">Versioned evidence</p>
-                    <h2 id="authority-heading">Authority history</h2>
-                </div>
-            </div>
-            <pre id="authority-history-output">Not run.</pre>
-        </section>
-
-        <section class="panel evidence-panel" aria-labelledby="events-heading">
-            <div class="panel-heading">
-                <div>
-                    <p class="eyebrow">Deterministic evidence</p>
-                    <h2 id="events-heading">Event log</h2>
-                </div>
-            </div>
-            <pre id="event-log-output">Not run.</pre>
-        </section>
-    </main>
-
-    <footer>
-        <p>
-            Architecture selection is an experimental input. It does not itself create authority or execution permission.
-        </p>
+        </div>
     </footer>
 
     <script src="js/validation-engine.js"></script>
