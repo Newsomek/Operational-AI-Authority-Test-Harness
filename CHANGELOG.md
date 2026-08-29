@@ -329,3 +329,25 @@ This file records material implementation changes to the Operational AI Authorit
 - Added 10 baseline control-run tests.
 - Previous 172 tests remain passing.
 - Combined fresh-profile browser suite passes 182 of 182.
+## 2026-08-28 - V1 public-release preparation
+
+- Added source-available noncommercial license.
+- Added first-run quick-start instructions.
+- Added independent automated and manual testing instructions.
+- Added V1 roadmap for explicitly deferred capabilities and research questions.
+- Added V1 readiness record pending final publication verification.
+- Added README public-use, testing, licensing, and start-here guidance.
+- Retained the verified pre-publication browser-suite baseline of 182/182 tests
+  before this documentation pass.
+## 2026-08-28 - Final V1 browser verification
+
+- During final publication verification, a real interactive browser run exposed an implementation defect that earlier verification had not reliably established.
+- Restored the missing `compareArchitectures` DOM reference used by the application controller.
+- Removed an accidental nested duplicate `main` element from `tests/test-runner.html`.
+- Re-ran the complete test instrument in a fresh browser profile.
+- Observed **182/182 tests passing**.
+- Confirmed zero FAIL status markers.
+- Confirmed no remaining "Tests have not run" markers.
+- Confirmed strict UTF-8 integrity and `git diff --cached --check`.
+- Finalized `docs/V1-READINESS.md` as V1 READY for publication.
+- No claim is made that the passing software suite proves the broader governance hypothesis.

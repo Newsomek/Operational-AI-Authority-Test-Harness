@@ -583,11 +583,23 @@
                 sameResult.governedResult.executionResult.boundaryId,
             separatedBoundary:
                 separatedResult.governedResult.executionResult.boundaryId,
-            interpretation:
+            separationFinding:
+                sameResult.architectureContext.decisionActor.actorId !==
+                separatedResult.architectureContext.decisionActor.actorId &&
                 sameResult.runRecord.actualResult ===
                 separatedResult.runRecord.actualResult
-                    ? "No execution-outcome difference was observed for this controlled scenario. That is a valid experimental result."
-                    : "An execution-outcome difference was observed. Inspect actor, authority, boundary, and event evidence before interpreting why."
+                    ? "AUTHORITY SEPARATION NOT OPERATIONALLY DEMONSTRATED"
+                    : null,
+            interpretation:
+                sameResult.architectureContext.decisionActor.actorId !==
+                separatedResult.architectureContext.decisionActor.actorId &&
+                sameResult.runRecord.actualResult ===
+                separatedResult.runRecord.actualResult
+                    ? "AUTHORITY SEPARATION NOT OPERATIONALLY DEMONSTRATED"
+                    : sameResult.runRecord.actualResult ===
+                      separatedResult.runRecord.actualResult
+                        ? "No execution-outcome difference was observed for this controlled scenario. That is a valid experimental result."
+                        : "An execution-outcome difference was observed. Inspect actor, authority, boundary, and event evidence before interpreting why."
         };
     }
 

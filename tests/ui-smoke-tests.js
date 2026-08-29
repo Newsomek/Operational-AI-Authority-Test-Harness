@@ -332,6 +332,18 @@
                 ),
                 "Comparison must remain neutral."
             );
+
+            assertEqual(
+                summary.separationFinding,
+                "AUTHORITY SEPARATION NOT OPERATIONALLY DEMONSTRATED",
+                "Different approver without downstream execution difference must report the governed separation finding."
+            );
+
+            assertEqual(
+                summary.interpretation,
+                "AUTHORITY SEPARATION NOT OPERATIONALLY DEMONSTRATED",
+                "Visible comparison interpretation must report the governed separation finding."
+            );
         }
     );
 
