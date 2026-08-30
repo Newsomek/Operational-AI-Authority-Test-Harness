@@ -1,0 +1,75 @@
+{
+  "deployment": {
+    "url": "https://newsomek.github.io/Operational-AI-Authority-Test-Harness/",
+    "title": "Operational AI Authority Test Harness | Stratos Engine",
+    "declaredVersion": "Version 2",
+    "scenariosFound": ["Automated Refund", "Privileged System Access", "Workforce Shift Assignment", "Procurement / Total Acquisition Cost", "Customer Account Restriction"],
+    "scenarioValues": ["REFUND-V2", "ACCESS-V2", "WORKFORCE-V2", "PROCUREMENT-V2", "ACCOUNT-RESTRICTION-V2"],
+    "identityGatePassed": true
+  },
+  "commonControls": {
+    "scenario-selector": {"type": "select", "options": ["REFUND-V2","ACCESS-V2","WORKFORCE-V2","PROCUREMENT-V2","ACCOUNT-RESTRICTION-V2"], "alwaysVisible": true},
+    "architecture-same-layer / architecture-separated": {"type": "radio", "options": ["SAME_LAYER_REAUTHORIZATION","SEPARATED_REAUTHORIZATION"], "alwaysVisible": true},
+    "decision-disposition": {"type": "select", "options": ["RENEW","NARROW","CONDITION","TRANSFER","SUSPEND","REFUSE"], "alwaysVisible": true},
+    "technical-validity": {"type": "select", "options": ["PASS","FAIL"], "alwaysVisible": true},
+    "expected-result": {"type": "select", "options": ["ALLOW","BLOCK"], "alwaysVisible": true, "role": "user prediction, read back for prediction_match comparison, never consumed by execution logic (confirmed causally non-functional in all 5 scenarios)"},
+    "current-risk": {"type": "select", "options": ["LOW","MEDIUM","HIGH"], "alwaysVisible": true, "causality": "Causal materiality/boundary driver ONLY in REFUND-V2. Confirmed INERT (visible, editable, zero effect on materiality or execution) in ACCESS-V2, WORKFORCE-V2, PROCUREMENT-V2, ACCOUNT-RESTRICTION-V2 via extreme-value probes (LOW/1 vs HIGH/999999 produced identical results)."},
+    "requested-amount": {"type": "number", "options": "continuous", "causality": "Causal boundary numeric ONLY in REFUND-V2 ($500 amountCents threshold). Confirmed INERT in the other 4 scenarios (same extreme-value probe as current-risk)."},
+    "new-authority-maximum": {"type": "number", "visibleWhen": "disposition == NARROW", "causality": "Causal ONLY in REFUND-V2 (sets/tests the narrowed dollar cap). Confirmed INERT in ACCESS-V2, WORKFORCE-V2, PROCUREMENT-V2 -- the narrowed scope value in those three scenarios is fixed by scenario configuration regardless of the number entered here (tested with 1 and 999999999, no change in resulting constraint)."},
+    "condition-supervisor-confirmation": {"type": "select", "options": ["true","false"], "visibleWhen": "scenario == REFUND-V2 AND disposition == CONDITION", "causality": "Causally consumed (matched-pair verified: false -> BLOCK 'Required condition was not satisfied: supervisorConfirmation')."},
+    "transfer-decision-owner": {"type": "text (free text)", "visibleWhen": "disposition == TRANSFER", "causality": "Cosmetic/actor-labeling field in ACCESS-V2, WORKFORCE-V2, PROCUREMENT-V2, ACCOUNT-RESTRICTION-V2 (execution always BLOCK regardless of owner text, per the TRANSFER-never-creates-authority invariant). In REFUND-V2 an EMPTY string reproducibly (2/2) altered the materiality classification and produced a scope with a $250 (25000-cent) cap -- see finding F-1 in the report. NOT reproduced in ACCESS-V2 with the same empty-string treatment.", "sourceConfirmation": "CONFIRMED FROM SOURCE (data/scenarios/automated-refund.json, fetched directly from the pinned commit): the scenario file's own baked-in 'decision' object (decisionId DECISION-REFUND-3) is a canonical example NARROW decision with newScope.maximumAmountCents=25000 -- a value that has no arithmetic relationship to the $500 (50000-cent) priorAuthority baseline and does not appear in any UI control. This is the exact and only place the value 25000 occurs anywhere in the scenario's static configuration. This strongly indicates the empty-owner TRANSFER anomaly is the app failing to construct/overwrite a proper TRANSFER decision object when the owner field is an empty string, and instead leaking the scenario file's default example NARROW decision through to the evidence output. This mechanism is inferred from the combination of browser observation + source content, not itself directly observed as a line of executing code, so it is reported as 'consistent with' rather than 'proven'."}
+  },
+  "scenarioSpecificControls": {
+    "REFUND-V2": {
+      "extraFields": [],
+      "baseAuthority": {"maximumAmountCents": 50000, "allowedRiskLevels": ["LOW"], "maximumTransactionAgeDays": 30},
+      "note": "transactionAgeDays has no corresponding UI control -- fixed/not user-selectable, so not part of the categorical matrix."
+    },
+    "ACCESS-V2": {
+      "extraFields": {
+        "scenario-control-access-context": {"type":"select","options":["PRODUCTION_OPERATIONS","BUSINESS_ANALYTICS"],"alwaysVisible":true,"causal":true},
+        "scenario-control-access-ticket": {"type":"select","options":["true","false"],"alwaysVisible":true,"causal":"under CONDITION disposition; see note below on possible cross-disposition carry-over (REVIEW REQUIRED)"}
+      },
+      "baseAuthority": {"accessLevel": ["PRODUCTION_ADMIN"], "organizationalContext": ["BUSINESS_ANALYTICS"]}
+    },
+    "WORKFORCE-V2": {
+      "extraFields": {
+        "scenario-control-work-resulting-hours": {"type":"number","label":"Resulting weekly hours if shift executes","causal":true,"thresholds":{"RENEW":48,"NARROW":36}},
+        "scenario-control-work-overtime-approval": {"type":"select","options":["true","false"],"alwaysVisible":true,"causal":"under CONDITION disposition"}
+      }
+    },
+    "PROCUREMENT-V2": {
+      "extraFields": {
+        "scenario-control-proc-metric": {"type":"select","options":["equipmentPriceCents","totalAcquisitionCostCents"],"alwaysVisible":true,"causal":"under RENEW (confirmed genuinely causal in the browser, flips ALLOW/BLOCK for identical dollar facts); NOT respected under NARROW -- see finding F-2 (FAIL-IMPLEMENTATION)", "sourceConfirmation": "CONFIRMED FROM SOURCE (data/scenarios/procurement-total-acquisition-cost.json, fetched directly from the pinned commit): ui.dispositionTemplates.NARROW.newScope.constraints[0].field is hardcoded to the literal string 'equipmentPriceCents' with comparisonValue 15000000, and this is a static per-disposition template entry with no expression or reference back to currentConditions.governedMetric (the live selector's bound path). ui.dispositionTemplates.RENEW.newScope.constraints[0].field is likewise a static literal, 'totalAcquisitionCostCents' at comparisonValue 17500000 -- matching the file's own default governedMetric value. Because live browser testing showed RENEW's resulting field DID track the user's live selector changes while NARROW's did NOT, the underlying application code must substitute the live selector value into the RENEW branch specifically while leaving the NARROW branch pinned to this file's hardcoded default -- an asymmetric, disposition-specific implementation gap confirmed at the config layer and behaviorally confirmed in the browser. The exact JS line performing this substitution was not located (time-boxed); the config-level hardcoding and the asymmetry itself are directly confirmed."},
+        "scenario-control-proc-equipment": {"type":"number","label":"Vendor C equipment price ($)"},
+        "scenario-control-proc-shipping": {"type":"number","label":"Vendor C shipping and handling ($)"},
+        "scenario-control-proc-total": {"type":"number","label":"Vendor C total acquisition cost ($)","note":"not independently exercised across multiple boundary points -- COVERAGE GAP, see audit"},
+        "scenario-control-proc-finance-approval": {"type":"select","options":["true","false"],"alwaysVisible":true,"causal":"under CONDITION disposition"}
+      },
+      "baseAuthority": {"totalAcquisitionCostCentsThreshold": 17500000, "equipmentPriceCentsThreshold": 17500000, "narrowedEquipmentPriceCentsThreshold": 15000000}
+    },
+    "ACCOUNT-RESTRICTION-V2": {
+      "extraFields": {
+        "scenario-control-account-identity": {"type":"select","options":["true","false"],"alwaysVisible":true,"causal":true,"role":"materiality driver (true=changed/material, false=baseline/non-material)"},
+        "scenario-control-account-second-review": {"type":"select","options":["true","false"],"alwaysVisible":true,"causal":"under CONDITION disposition"}
+      },
+      "baseAuthority": {"restrictionLevel": ["TEMPORARY_RESTRICTION"], "identityVerificationSucceeded": [true]},
+      "note": "recommendation confidence (0.97) is displayed but not an editable control and was never observed to influence decision/execution logic."
+    }
+  },
+  "otherUIFeatures": {
+    "run-experiment": "primary execution trigger, exercised on every case",
+    "compare-architectures": "exercised once (ACCOUNT-RESTRICTION-V2, RENEW) -- produced correct SAME_LAYER vs SEPARATED comparison with authorityMoved:true/false and identical execution result across both",
+    "run-replay": "exercised once (ACCOUNT-RESTRICTION-V2) -- reported equivalent:true across all 8 compared evidence dimensions",
+    "reset-scenario": "used repeatedly to establish clean baselines between contaminated run sequences",
+    "import-scenario / export-scenario / export-run / apply-controls-to-JSON / scenario-editor textarea": "NOT exercised -- see coverage audit (browser file-picker dialogs are not automatable through this session's tooling)"
+  },
+  "numericEquivalenceClasses": {
+    "REFUND-V2 requested-amount vs $500 boundary": ["400 (below)", "500 (at)", "600 (above)"],
+    "REFUND-V2 new-authority-maximum under NARROW": ["300 (narrower than original $500)", "500 (equal, non-narrowing)", "700 (wider than original -- tests whether NARROW can be abused to widen; observed: no effect, value is inert)"],
+    "WORKFORCE-V2 resulting-hours vs 48h (RENEW)": ["40 (below)", "48 (at)", "49 (above)"],
+    "WORKFORCE-V2 resulting-hours vs 36h (NARROW)": ["36 (at)", "44 (above)"],
+    "PROCUREMENT-V2 equipment/shipping vs $175k boundary": ["equipment-only $145k (below, under equipmentPriceCents metric)", "total $200k (above, under totalAcquisitionCostCents metric)"],
+    "PROCUREMENT-V2 note": "equipment and shipping dollar amounts were not independently swept through below/at/above classes -- only one representative fact pattern ($145k/$55k) was tested against both metric choices. COVERAGE GAP."
+  }
+}

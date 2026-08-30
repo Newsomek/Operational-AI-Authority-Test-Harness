@@ -1,0 +1,44 @@
+{
+  "summary": {
+    "plannedApproach": "Equivalence-class-reduced categorical + numeric matrix, not literal full Cartesian enumeration. See report Section 3 for the explicit reasoning and the technical constraints that drove this scoping decision.",
+    "totalExecutedCases": 109,
+    "integrityCorrectionNote": "An initial consolidation pass produced 110 rows. A pre-publication integrity check (case-ID uniqueness scan) found that case RF-NAR-1000 had been accidentally recorded in both refund_core.json and refund_extra.json as byte-identical duplicate rows (same inputs, same outputs). The duplicate was removed and all downstream files (ledger CSV, evidence JSON, classification counts, this audit) were regenerated against the corrected 109-row dataset before this report was finalized. This is disclosed rather than silently corrected because the directive requires an explicit output-integrity reconciliation step.",
+    "notInstantiableCases": 2,
+    "expectedRejections": 0,
+    "declaredCategoricalOptions": 34,
+    "categoricalOptionsExercisedAtLeastOnce": 34,
+    "untestedDeclaredCategoricalOptions": 0,
+    "caveat": "UNTESTED DECLARED CATEGORICAL OPTIONS = 0 refers only to each control's discrete option values (e.g. every disposition, every architecture, every scenario-specific enum value) each being set and run at least once. It does NOT mean every combination (full Cartesian product) of those options was executed -- that was deliberately not attempted; see gaps below."
+  },
+  "perControlCoverage": [
+    {"control":"scenario-selector","declaredOptions":5,"exercised":5,"missing":[]},
+    {"control":"architecture","declaredOptions":2,"exercised":2,"missing":[]},
+    {"control":"decision-disposition","declaredOptions":6,"exercisedPerScenario":"6/6 in all 5 scenarios (30/30 scenario-disposition pairs)","missing":[]},
+    {"control":"technical-validity","declaredOptions":2,"exercisedPerScenario":"2/2 in all 5 scenarios","missing":[]},
+    {"control":"expected-result","declaredOptions":2,"exercisedPerScenario":"2/2 in all 5 scenarios","missing":[]},
+    {"control":"current-risk","declaredOptions":3,"exercised":3,"missing":[],"note":"all 3 values exercised in REFUND-V2's core sweep; LOW/HIGH extremes probed in the other 4 scenarios to confirm inertness, MEDIUM not separately probed there since the field was already shown non-causal"},
+    {"control":"condition-supervisor-confirmation (REFUND)","declaredOptions":2,"exercised":2,"missing":[]},
+    {"control":"scenario-control-access-context (ACCESS)","declaredOptions":2,"exercised":2,"missing":[]},
+    {"control":"scenario-control-access-ticket (ACCESS)","declaredOptions":2,"exercised":2,"missing":[]},
+    {"control":"scenario-control-work-overtime-approval (WORKFORCE)","declaredOptions":2,"exercised":2,"missing":[]},
+    {"control":"scenario-control-proc-metric (PROCUREMENT)","declaredOptions":2,"exercisedPerDisposition":"both values run under RENEW and under NARROW","missing":["not run under CONDITION/TRANSFER/SUSPEND/REFUSE dispositions"]},
+    {"control":"scenario-control-proc-finance-approval (PROCUREMENT)","declaredOptions":2,"exercised":2,"missing":[]},
+    {"control":"scenario-control-account-identity (ACCOUNT)","declaredOptions":2,"exercised":2,"missing":[]},
+    {"control":"scenario-control-account-second-review (ACCOUNT)","declaredOptions":2,"exercised":2,"missing":[]},
+    {"control":"transfer-decision-owner","declaredOptions":"free text, treated as EMPTY / NON-EMPTY equivalence classes","exercised":"both classes in REFUND-V2 and ACCESS-V2","missing":["empty-string class not retested in WORKFORCE-V2, PROCUREMENT-V2, ACCOUNT-RESTRICTION-V2 -- COVERAGE GAP given the anomaly found in REFUND-V2"]}
+  ],
+  "numericEquivalenceCoverage": [
+    {"dimension":"REFUND requested-amount vs $500","classesDeclared":3,"classesExecuted":3},
+    {"dimension":"REFUND new-authority-maximum vs $500 original","classesDeclared":3,"classesExecuted":3},
+    {"dimension":"WORKFORCE resulting-hours vs 48h","classesDeclared":3,"classesExecuted":3},
+    {"dimension":"WORKFORCE resulting-hours vs 36h narrowed","classesDeclared":2,"classesExecuted":2},
+    {"dimension":"PROCUREMENT equipment/shipping vs $175k / $150k","classesDeclared":3,"classesExecuted":1,"gap":"Only the single 'above-total/below-equipment' representative fact pattern was tested; a below-both and an above-both class were not separately executed. Documented as a gap, not silently dropped."}
+  ],
+  "structurallyNotInstantiableOrExplicitlyOmitted": [
+    {"item":"Full Cartesian product of all categorical dimensions per scenario (would require several thousand runs per the prompt's own worked examples)","reason":"NOT a structural impossibility of the application -- a resource/tooling constraint of this evaluation. The automation channel available in this session truncates script-return payloads to roughly 1500-2000 characters per call, forcing expensive chunked retrieval for any bulk dataset; a fraction of automated run attempts silently continued executing in the background after the calling tool call reported failure, which on two occasions produced overlapping/racing writes that had to be detected, discarded, and manually re-run in isolation; and the application's own client-side state visibly slowed down (roughly 15x) after ~40-50 uninstrumented runs within one page load, before recovering after a reload. Given these constraints, exhaustively running the multi-thousand-case matrix the prompt describes was not practical within this session; a deliberately curated equivalence-class matrix was substituted and is disclosed here rather than silently passed off as complete."},
+    {"item":"Scenario-switching ordered-transition matrix (20 pairs)","reason":"Not systematically executed as a dedicated ledger. Scenario switches were performed dozens of times informally over the course of the session (every scenario reload/switch) and in every observed instance the scenario description, narrative, and scenario-specific controls updated correctly with no stale text detected -- but this was not captured as a formal per-pair ledger, so it is reported as an informal, non-exhaustive observation rather than a completed matrix."},
+    {"item":"Disposition-switching ordered-transition matrix (up to 30 pairs x 5 scenarios)","reason":"Partially covered. One concrete stale-state candidate was found and investigated (ACCESS-V2: a condition possibly leaking from CONDITION into a later RENEW), but the retest with a controlled CONDITION->RENEW pair did not reproduce it, leaving the exact trigger unresolved (see finding F-3 / REVIEW REQUIRED). The full ordered-pair matrix was not executed."},
+    {"item":"Import/export round-trip testing","reason":"The Import scenario / Export scenario / Export run evidence controls in this application drive native browser file-save and file-open dialogs. This session's browser-automation tools can click the buttons and can supply files to an <input type=file> element via the accessibility tree in some cases, but there is no available mechanism in this environment to intercept a browser 'Save As' download dialog's destination or to independently verify the exported file's byte content without a downloads-folder-capable device bridge, which this session does not have. This is a genuine tooling limitation, not something skipped for convenience: the Export scenario JSON was visually inspected in the scenario-editor textarea (confirmed it contains the full current control state as JSON) but a full export->modify->import->rerun->compare round trip was not completed."},
+    {"item":"Full replay/determinism matrix (60 scenario x disposition x architecture families)","reason":"Only 1 of the 60 families was executed via the Replay Last Run control (ACCOUNT-RESTRICTION-V2, RENEW, SAME_LAYER), which returned equivalent:true on all 8 compared dimensions. Not extended to the other 59 families for the same resource reasons above."}
+  ]
+}
