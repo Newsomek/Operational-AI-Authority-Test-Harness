@@ -168,6 +168,18 @@
                     procurementResult.runRecord.actualResult === "BLOCK"
             );
 
+            const procurementMetricControl = procurement.ui.controls.find(function (control) {
+                return control.id === "proc-metric";
+            });
+
+            record(
+                "Procurement UI distinguishes observed materiality metric from resulting authority metric",
+                Boolean(procurementMetricControl) &&
+                    procurementMetricControl.help.includes("materiality") &&
+                    procurementMetricControl.help.includes("resulting authority boundary") &&
+                    procurement.presentation.evidence.includes("selected governance disposition defines the resulting executable authority")
+            );
+
             const account = scenarios.find(function (scenario) {
                 return scenario.scenarioId === "ACCOUNT-RESTRICTION-V2";
             });

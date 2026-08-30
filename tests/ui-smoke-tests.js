@@ -425,6 +425,161 @@
         }
     );
     test(
+        "Experiment Story reports the executed change instead of stale scenario narrative",
+        function () {
+            const scenario = {
+                priorConditions: {
+                    customerRisk: "LOW"
+                },
+                currentConditions: {
+                    customerRisk: "LOW"
+                },
+                materialityRules: [
+                    {
+                        field: "customerRisk"
+                    }
+                ],
+                presentation: {
+                    situation: "Configured refund scenario.",
+                    change: "Customer risk changes from LOW to MEDIUM.",
+                    capability: "Technical capability remains available.",
+                    authorityQuestion: "Does current authority still permit execution?"
+                },
+                technicalRevalidation: {
+                    status: "PASS"
+                }
+            };
+
+            window.OAATH.App.renderHumanSummary(
+                {
+                    controlRun: {
+                        boundaryResult: {
+                            boundary: {
+                                scope: {
+                                    maximumAmountCents: 50000
+                                }
+                            }
+                        },
+                        requestedAction: {
+                            amountCents: 40000,
+                            customerRisk: "LOW"
+                        },
+                        executionResult: {
+                            result: "ALLOW"
+                        }
+                    },
+                    changedState: {
+                        materiality: {
+                            result: "NON_MATERIAL"
+                        },
+                        currentAuthority: {
+                            status: "ACTIVE"
+                        }
+                    },
+                    architectureContext: {
+                        architecture: "SAME_LAYER_REAUTHORIZATION",
+                        decisionActor: {
+                            name: "Operations Authority Owner"
+                        }
+                    },
+                    governedResult: {
+                        decisionResult: {
+                            valid: true,
+                            translation: {
+                                disposition: "RENEW"
+                            }
+                        },
+                        boundaryResult: {
+                            boundary: {
+                                scope: {
+                                    maximumAmountCents: 50000
+                                }
+                            }
+                        },
+                        executionResult: {
+                            result: "ALLOW"
+                        }
+                    },
+                    runRecord: {
+                        executionAttempts: [
+                            {
+                                requestedAction: {
+                                    amountCents: 40000,
+                                    customerRisk: "LOW"
+                                },
+                                technicalValidity: {
+                                    status: "PASS"
+                                }
+                            }
+                        ]
+                    }
+                },
+                scenario
+            );
+
+            const change = document.getElementById("story-change").textContent;
+
+            assertTrue(
+                change.includes("Customer risk changed from LOW to LOW.") &&
+                change.includes("NON_MATERIAL") &&
+                !change.includes("MEDIUM"),
+                "Story change must reflect the executed LOW to LOW case, not the scenario default narrative."
+            );
+        }
+    );
+    test(
+        "Scenario-specific controls replace prior scenario controls without stale remnants",
+        function () {
+            const container = document.createElement("div");
+
+            window.OAATH.ScenarioCatalog.renderControls(
+                container,
+                {
+                    ui: {
+                        controls: [
+                            {
+                                id: "access-context",
+                                label: "Current organizational context",
+                                kind: "select",
+                                path: "currentConditions.organizationalContext",
+                                options: ["PRODUCTION_OPERATIONS", "BUSINESS_ANALYTICS"]
+                            }
+                        ]
+                    },
+                    currentConditions: {
+                        organizationalContext: "BUSINESS_ANALYTICS"
+                    }
+                }
+            );
+
+            window.OAATH.ScenarioCatalog.renderControls(
+                container,
+                {
+                    ui: {
+                        controls: [
+                            {
+                                id: "work-resulting-hours",
+                                label: "Resulting weekly hours if shift executes",
+                                kind: "number",
+                                path: "currentConditions.resultingWeeklyHours"
+                            }
+                        ]
+                    },
+                    currentConditions: {
+                        resultingWeeklyHours: 48
+                    }
+                }
+            );
+
+            assertTrue(
+                container.querySelector("#scenario-control-access-context") === null &&
+                container.querySelector("#scenario-control-work-resulting-hours") !== null &&
+                container.querySelectorAll("[data-scenario-control]").length === 1,
+                "Rendering a destination scenario must remove controls from the source scenario."
+            );
+        }
+    );
+    test(
         "Application controller is exposed",
         function () {
             assertTrue(

@@ -1,0 +1,3439 @@
+[
+  {
+    "case_id": "S1-001",
+    "scenario": "Automated Refund",
+    "test_inputs": {
+      "architecture": "SAME_LAYER_REAUTHORIZATION",
+      "currentRisk": "MEDIUM",
+      "requestedAmount": 400.0,
+      "disposition": "NARROW",
+      "newAuthorityMax": 250.0,
+      "technicalValidity": "PASS",
+      "expectedExecution": "BLOCK"
+    },
+    "browser_selections": "Risk after change: MEDIUM | Requested refund: $400.00 | Governance disposition: NARROW | New authority maximum: $250.00 | Technical validity: PASS | Expected execution: BLOCK | Reauthorization architecture: Same-layer reauthorization.",
+    "materiality": {
+      "result": "MATERIAL"
+    },
+    "authority_state": "prior authority INVALID; new authority created ACTIVE",
+    "workflow": "SAME_LAYER_REAUTHORIZATION",
+    "actor": "Operations Authority Owner",
+    "resulting_authority": {
+      "authorityId": "AUTH-DECISION-REFUND-3",
+      "authorityVersion": 105,
+      "status": "ACTIVE",
+      "scope": {
+        "maximumAmountCents": 25000,
+        "allowedRiskLevels": [
+          "LOW"
+        ],
+        "maximumTransactionAgeDays": 30
+      }
+    },
+    "enforceable_boundary": {
+      "boundaryId": "BOUNDARY-AUTH-DECISION-REFUND-3",
+      "constraints": [
+        "amountCents LTE 25000",
+        "customerRisk IN [LOW]",
+        "transactionAgeDays LTE 30"
+      ]
+    },
+    "technical_validity": {
+      "status": "PASS"
+    },
+    "recommendation": {
+      "actionType": "AUTO_REFUND",
+      "amountCents": 40000,
+      "confidence": 0.91
+    },
+    "confidence": 0.91,
+    "actual_execution": {
+      "result": "BLOCK",
+      "reason": "Requested amount exceeds the current authorized maximum. Requested customer risk is outside the current authority scope.",
+      "boundaryId": "BOUNDARY-AUTH-DECISION-REFUND-3"
+    },
+    "expected_actual_comparison": {
+      "expected": "BLOCK",
+      "actual": "BLOCK",
+      "comparison": "MATCH"
+    },
+    "control_assertion": {
+      "assertionId": "ASSERT-MATERIAL-INVALIDATES",
+      "result": "PASS",
+      "observed": {
+        "authorityStatus": "INVALID",
+        "executionResult": "BLOCK"
+      }
+    },
+    "application_validation": "valid",
+    "browser_validation": "executed through public UI; ref-based click on Run experiment",
+    "replay_result": null,
+    "independent_classification": "PASS",
+    "independent_reasoning": "NARROW correctly restricts scope to LOW risk / $250 cap; requested $400 at MEDIUM risk fails both dimensions; BLOCK is the correct, coherent result.",
+    "anomalies": [],
+    "reproduction": "Scenario=Automated Refund (default load); click Run experiment with default inputs (risk=MEDIUM, amount=400.00, disposition=NARROW, newAuthMax=250.00, techValidity=PASS, expected=BLOCK, architecture=Same-layer).",
+    "evidence_source": "browser_observed_detailed"
+  },
+  {
+    "case_id": "S1-002",
+    "scenario": "Automated Refund",
+    "test_inputs": {
+      "architecture": "SAME_LAYER_REAUTHORIZATION",
+      "currentRisk": "MEDIUM",
+      "requestedAmount": 200.0,
+      "disposition": "RENEW",
+      "technicalValidity": "PASS",
+      "expectedExecution": "BLOCK"
+    },
+    "browser_selections": "Risk after change: MEDIUM | Requested refund: $200.00 | Governance disposition: RENEW | Technical validity: PASS | Expected execution: BLOCK | Reauthorization architecture: Same-layer reauthorization.",
+    "materiality": {
+      "result": "MATERIAL"
+    },
+    "authority_state": "prior authority INVALID; RENEW created new ACTIVE authority reproducing the OLD (LOW-risk-only) scope",
+    "workflow": "SAME_LAYER_REAUTHORIZATION",
+    "actor": "Operations Authority Owner",
+    "resulting_authority": {
+      "authorityId": "AUTH-DECISION-REFUND-3",
+      "authorityVersion": 105,
+      "status": "ACTIVE",
+      "scope": {
+        "maximumAmountCents": 50000,
+        "allowedRiskLevels": [
+          "LOW"
+        ],
+        "maximumTransactionAgeDays": 30
+      }
+    },
+    "enforceable_boundary": {
+      "boundaryId": "BOUNDARY-AUTH-DECISION-REFUND-3",
+      "constraints": [
+        "amountCents LTE 50000",
+        "customerRisk IN [LOW]",
+        "transactionAgeDays LTE 30"
+      ]
+    },
+    "technical_validity": {
+      "status": "PASS"
+    },
+    "recommendation": {
+      "actionType": "AUTO_REFUND",
+      "confidence": 0.91
+    },
+    "confidence": 0.91,
+    "actual_execution": {
+      "result": "BLOCK",
+      "reason": "Requested customer risk is outside the current authority scope.",
+      "boundaryId": "BOUNDARY-AUTH-DECISION-REFUND-3"
+    },
+    "expected_actual_comparison": {
+      "expected": "BLOCK",
+      "actual": "BLOCK",
+      "comparison": "MATCH"
+    },
+    "control_assertion": {
+      "assertionId": "ASSERT-MATERIAL-INVALIDATES",
+      "result": "PASS",
+      "observed": {
+        "authorityStatus": "INVALID",
+        "executionResult": "BLOCK"
+      }
+    },
+    "application_validation": "valid",
+    "browser_validation": "executed through public UI",
+    "replay_result": null,
+    "independent_classification": "PASS",
+    "independent_reasoning": "RENEW reproduced an equivalent OLD boundary (LOW-risk-only) rather than authorizing the new MEDIUM-risk profile. Amount ($200) is inside the renewed $500 cap but risk is still outside scope, so it correctly BLOCKs on risk alone. Demonstrates RENEW is not automatic re-authorization of the post-change state.",
+    "anomalies": [],
+    "reproduction": "From S1-001: set Governance disposition=RENEW, Requested refund amount=200.00, click Run experiment (must click the actual button element, not a stale screen coordinate).",
+    "evidence_source": "browser_observed_detailed"
+  },
+  {
+    "case_id": "S1-003",
+    "scenario": "Automated Refund",
+    "test_inputs": {
+      "architecture": "SAME_LAYER_REAUTHORIZATION",
+      "currentRisk": "LOW",
+      "requestedAmount": 200.0,
+      "disposition": "RENEW(selected, ignored)",
+      "technicalValidity": "PASS",
+      "expectedExecution": "BLOCK"
+    },
+    "browser_selections": "Risk after change: LOW | Requested refund: $200.00 | Governance disposition: RENEW | Technical validity: PASS | Expected execution: BLOCK | Reauthorization architecture: Same-layer reauthorization.",
+    "materiality": {
+      "result": "NON_MATERIAL",
+      "matchedRules": []
+    },
+    "authority_state": "original authority ACTIVE, untouched",
+    "workflow": "NO_REAUTHORIZATION_REQUIRED (skipped=true)",
+    "actor": "N/A (no reauthorization decision made)",
+    "resulting_authority": {
+      "authorityId": "AUTH-REFUND-104",
+      "authorityVersion": 104,
+      "status": "ACTIVE",
+      "scope": {
+        "maximumAmountCents": 50000,
+        "allowedRiskLevels": [
+          "LOW"
+        ],
+        "maximumTransactionAgeDays": 30
+      }
+    },
+    "enforceable_boundary": {
+      "boundaryId": "BOUNDARY-AUTH-REFUND-104"
+    },
+    "technical_validity": {
+      "status": "PASS"
+    },
+    "recommendation": {
+      "actionType": "AUTO_REFUND",
+      "confidence": 0.91
+    },
+    "confidence": 0.91,
+    "actual_execution": {
+      "result": "ALLOW",
+      "reason": "Requested action is within the current enforceable boundary and all required conditions are satisfied.",
+      "boundaryId": "BOUNDARY-AUTH-REFUND-104"
+    },
+    "expected_actual_comparison": {
+      "expected": "BLOCK",
+      "actual": "ALLOW",
+      "comparison": "MISMATCH"
+    },
+    "control_assertion": {
+      "assertionId": "ASSERT-MATERIAL-INVALIDATES",
+      "result": "FAIL",
+      "observed": {
+        "authorityStatus": "ACTIVE",
+        "executionResult": "ALLOW"
+      }
+    },
+    "application_validation": "valid state transition (NON_MATERIAL correctly detected for LOW->LOW)",
+    "browser_validation": "executed through public UI",
+    "replay_result": null,
+    "independent_classification": "FAIL \u2014 EVIDENCE",
+    "independent_reasoning": "Core behavior is conceptually correct: no change occurred, so reauthorization is correctly skipped, the original authority governs, and the $200/LOW request is within its scope, so ALLOW is right. However two evidence-layer defects were observed in the same run: (1) the human-readable '2. What changed' narrative is a stale/hardcoded sentence reading 'Customer risk changes from LOW to MEDIUM' regardless of the actual LOW->LOW selection, contradicting the correctly-computed NON_MATERIAL materiality result; (2) the app's own 'Control assertions' self-check (ASSERT-MATERIAL-INVALIDATES) reports result=FAIL with observed {authorityStatus:ACTIVE, executionResult:ALLOW} for a case where that assertion (which appears scoped to material-invalidation scenarios) is not applicable, making its own FAIL label misleading to a reviewer even though the underlying behavior is correct.",
+    "anomalies": [
+      "Narrative text does not reflect the actual selected currentRisk value (stale copy).",
+      "Self-reported Control assertion badge reads FAIL on behavior that is actually correct for a NON_MATERIAL transition."
+    ],
+    "reproduction": "From S1-002: set Current customer risk=LOW, leave amount=200.00 and disposition=RENEW unchanged, click Run experiment. Compare 'Your current selections' (correctly shows LOW) against the '2. What changed' narrative (still reads LOW to MEDIUM) and the Materiality JSON card (correctly NON_MATERIAL, matchedRules: []).",
+    "evidence_source": "browser_observed_detailed"
+  },
+  {
+    "case_id": "S1-004",
+    "scenario": "Automated Refund",
+    "test_inputs": {
+      "architecture": "SAME_LAYER_REAUTHORIZATION",
+      "currentRisk": "MEDIUM",
+      "requestedAmount": 100.0,
+      "disposition": "NARROW",
+      "newAuthorityMax": 250.0,
+      "technicalValidity": "PASS",
+      "expectedExecution": "BLOCK"
+    },
+    "browser_selections": "Risk after change: MEDIUM | Requested refund: $100.00 | Governance disposition: NARROW | New authority maximum: $250.00 | Technical validity: PASS | Expected execution: BLOCK | Reauthorization architecture: Same-layer reauthorization.",
+    "materiality": {
+      "result": "MATERIAL"
+    },
+    "authority_state": "prior authority INVALID; new NARROW authority ACTIVE",
+    "workflow": "SAME_LAYER_REAUTHORIZATION",
+    "actor": "Operations Authority Owner",
+    "resulting_authority": {
+      "authorityId": "AUTH-DECISION-REFUND-3",
+      "authorityVersion": 105,
+      "status": "ACTIVE",
+      "scope": {
+        "maximumAmountCents": 25000,
+        "allowedRiskLevels": [
+          "LOW"
+        ],
+        "maximumTransactionAgeDays": 30
+      }
+    },
+    "enforceable_boundary": {
+      "boundaryId": "BOUNDARY-AUTH-DECISION-REFUND-3"
+    },
+    "technical_validity": {
+      "status": "PASS"
+    },
+    "recommendation": {
+      "actionType": "AUTO_REFUND",
+      "confidence": 0.91
+    },
+    "confidence": 0.91,
+    "actual_execution": {
+      "result": "BLOCK",
+      "reason": "Requested customer risk is outside the current authority scope.",
+      "boundaryId": "BOUNDARY-AUTH-DECISION-REFUND-3"
+    },
+    "expected_actual_comparison": {
+      "expected": "BLOCK",
+      "actual": "BLOCK",
+      "comparison": "MATCH"
+    },
+    "control_assertion": {
+      "assertionId": "ASSERT-MATERIAL-INVALIDATES",
+      "result": "PASS",
+      "observed": {
+        "authorityStatus": "INVALID",
+        "executionResult": "BLOCK"
+      }
+    },
+    "application_validation": "valid",
+    "browser_validation": "executed through public UI",
+    "replay_result": null,
+    "independent_classification": "PASS",
+    "independent_reasoning": "Isolates the risk dimension from the amount dimension: amount $100 is well inside the narrowed $250 cap, yet execution still BLOCKs purely because customerRisk(MEDIUM) is outside NARROW's fixed allowedRiskLevels=[LOW]. Confirms NARROW's risk restriction is fixed/non-configurable and dominates independently of the amount cap.",
+    "anomalies": [],
+    "reproduction": "currentRisk=MEDIUM, amount=100.00, disposition=NARROW, newAuthorityMax=250.00, click Run experiment.",
+    "evidence_source": "browser_observed_detailed"
+  },
+  {
+    "case_id": "S1-005",
+    "scenario": "Automated Refund",
+    "test_inputs": {
+      "architecture": "SAME_LAYER_REAUTHORIZATION",
+      "currentRisk": "MEDIUM",
+      "requestedAmount": 100.0,
+      "disposition": "CONDITION",
+      "conditionName": "supervisorConfirmation",
+      "conditionValue": true,
+      "technicalValidity": "PASS",
+      "expectedExecution": "BLOCK"
+    },
+    "browser_selections": "Risk after change: MEDIUM | Requested refund: $100.00 | Governance disposition: CONDITION | Supervisor confirmation present?: YES | Technical validity: PASS | Expected execution: BLOCK | Architecture: Same-layer.",
+    "materiality": {
+      "result": "MATERIAL"
+    },
+    "authority_state": "prior authority INVALID; new CONDITION authority ACTIVE with condition satisfied",
+    "workflow": "SAME_LAYER_REAUTHORIZATION",
+    "actor": "Operations Authority Owner",
+    "resulting_authority": {
+      "authorityId": "AUTH-DECISION-REFUND-3",
+      "authorityVersion": 105,
+      "status": "ACTIVE",
+      "scope": {
+        "maximumAmountCents": 50000,
+        "allowedRiskLevels": [
+          "LOW",
+          "MEDIUM"
+        ],
+        "maximumTransactionAgeDays": 30
+      },
+      "conditions": [
+        {
+          "required": true,
+          "predicate": {
+            "field": "supervisorConfirmation",
+            "operator": "EQ",
+            "comparisonValue": true
+          }
+        }
+      ]
+    },
+    "enforceable_boundary": {
+      "boundaryId": "BOUNDARY-AUTH-DECISION-REFUND-3"
+    },
+    "technical_validity": {
+      "status": "PASS"
+    },
+    "recommendation": {
+      "actionType": "AUTO_REFUND",
+      "confidence": 0.91
+    },
+    "confidence": 0.91,
+    "actual_execution": {
+      "result": "ALLOW",
+      "reason": "Requested action is within the current enforceable boundary and all required conditions are satisfied.",
+      "boundaryId": "BOUNDARY-AUTH-DECISION-REFUND-3"
+    },
+    "expected_actual_comparison": {
+      "expected": "BLOCK",
+      "actual": "ALLOW",
+      "comparison": "MISMATCH"
+    },
+    "control_assertion": {
+      "assertionId": "ASSERT-MATERIAL-INVALIDATES",
+      "result": "PASS",
+      "observed": {
+        "authorityStatus": "INVALID",
+        "executionResult": "BLOCK"
+      },
+      "note": "STALE - see S1-006"
+    },
+    "application_validation": "valid",
+    "browser_validation": "executed through public UI",
+    "replay_result": null,
+    "independent_classification": "PASS",
+    "independent_reasoning": "CONDITION creates a wider authority (amount<=50000, risk in [LOW,MEDIUM]) gated on supervisorConfirmation. Predicate TRUE + request inside boundary -> correctly ALLOW.",
+    "anomalies": [
+      "Prediction MISMATCH is a harmless artifact of not resetting the Expected-execution control between cases; execution itself was never influenced by it (invariant holds)."
+    ],
+    "reproduction": "From S1-004: disposition=CONDITION (Supervisor confirmation defaults to YES/true), click Run experiment.",
+    "evidence_source": "browser_observed_detailed"
+  },
+  {
+    "case_id": "S1-006",
+    "scenario": "Automated Refund",
+    "test_inputs": {
+      "note": "identical to S1-005, re-run with zero changes (determinism/staleness probe)"
+    },
+    "materiality": {
+      "result": "MATERIAL"
+    },
+    "actual_execution": {
+      "result": "ALLOW",
+      "reason": "Requested action is within the current enforceable boundary and all required conditions are satisfied.",
+      "boundaryId": "BOUNDARY-AUTH-DECISION-REFUND-3"
+    },
+    "expected_actual_comparison": {
+      "expected": "BLOCK",
+      "actual": "ALLOW",
+      "comparison": "MISMATCH"
+    },
+    "control_assertion": {
+      "assertionId": "ASSERT-MATERIAL-INVALIDATES",
+      "result": "PASS",
+      "observed": {
+        "authorityStatus": "INVALID",
+        "executionResult": "BLOCK"
+      }
+    },
+    "independent_classification": "FAIL \u2014 EVIDENCE",
+    "independent_reasoning": "Determinism holds for Execution and Governance decision (both reproduced identically on an unmodified re-run of S1-005). BUT the 'Control assertions' evidence card is FROZEN: across two independent runs that both produced ALLOW, it continues to display the very first case's unrelated record (authorityStatus:INVALID, executionResult:BLOCK) verbatim. This directly disagrees with the live Execution/Governance decision cards rendered on the very same page at the very same time.",
+    "anomalies": [
+      "Control assertions panel does not recompute per run; confirmed reproducible across 2 consecutive runs with 2 different real outcomes (S1-005 ALLOW and this rerun ALLOW), both still showing the original BLOCK/INVALID record from case S1-001/004."
+    ],
+    "reproduction": "Re-ran S1-005's exact configuration unchanged (clicked Run experiment again with no input changes); compared Execution (updated, ALLOW) against Control assertions (unchanged, stale) within the same rendered page.",
+    "evidence_source": "browser_observed_detailed"
+  },
+  {
+    "case_id": "S1-007",
+    "scenario": "Automated Refund",
+    "test_inputs": {
+      "architecture": "SAME_LAYER_REAUTHORIZATION",
+      "currentRisk": "MEDIUM",
+      "requestedAmount": 100.0,
+      "disposition": "CONDITION",
+      "conditionName": "supervisorConfirmation",
+      "conditionValue": false,
+      "technicalValidity": "PASS",
+      "expectedExecution": "BLOCK"
+    },
+    "actual_execution": {
+      "result": "BLOCK",
+      "reason": "Required condition was not satisfied: supervisorConfirmation",
+      "boundaryId": "BOUNDARY-AUTH-DECISION-REFUND-3"
+    },
+    "expected_actual_comparison": {
+      "expected": "BLOCK",
+      "actual": "BLOCK",
+      "comparison": "MATCH"
+    },
+    "independent_classification": "PASS",
+    "independent_reasoning": "Completes the CONDITION causal pair (supplementary probe A) for Scenario 1 / SAME_LAYER architecture: predicate TRUE (S1-005/006) -> ALLOW; predicate FALSE (this case), all else held constant -> BLOCK with reason 'Required condition was not satisfied: supervisorConfirmation.' The predicate is causally decisive, not merely descriptive.",
+    "anomalies": [
+      "Control-assertions staleness persists (same frozen record) but happens to superficially match this case's BLOCK label, for the wrong underlying reason."
+    ],
+    "reproduction": "From S1-006: set Supervisor confirmation present?=NO, click Run experiment.",
+    "evidence_source": "browser_observed_detailed"
+  },
+  {
+    "case_id": "S1-008",
+    "scenario": "Automated Refund",
+    "test_inputs": {
+      "architecture": "SAME_LAYER_REAUTHORIZATION",
+      "currentRisk": "MEDIUM",
+      "requestedAmount": 100.0,
+      "disposition": "TRANSFER",
+      "technicalValidity": "PASS",
+      "expectedExecution": "BLOCK"
+    },
+    "resulting_authority": {
+      "authorityCreated": false,
+      "authority": null,
+      "transferredDecisionOwner": "ACTOR-GOVERNANCE"
+    },
+    "actual_execution": {
+      "result": "BLOCK",
+      "reason": "No executable authority was created by the governance decision.",
+      "boundaryId": null
+    },
+    "expected_actual_comparison": {
+      "expected": "BLOCK",
+      "actual": "BLOCK",
+      "comparison": "MATCH"
+    },
+    "independent_classification": "PASS",
+    "independent_reasoning": "TRANSFER correctly creates no executable authority (authorityCreated=false, authority=null); only transferredDecisionOwner=ACTOR-GOVERNANCE is recorded. Execution BLOCKs. Matches spec: TRANSFER changes decision ownership, not executable authority.",
+    "anomalies": [],
+    "reproduction": "From S1-007: set disposition=TRANSFER, click Run experiment.",
+    "evidence_source": "browser_observed_detailed"
+  },
+  {
+    "case_id": "S1-009",
+    "scenario": "Automated Refund",
+    "test_inputs": {
+      "architecture": "SAME_LAYER_REAUTHORIZATION",
+      "currentRisk": "MEDIUM",
+      "requestedAmount": 100.0,
+      "disposition": "SUSPEND",
+      "technicalValidity": "PASS",
+      "expectedExecution": "BLOCK"
+    },
+    "resulting_authority": {
+      "authorityId": "AUTH-DECISION-REFUND-3",
+      "status": "SUSPENDED",
+      "scope_preserved": true
+    },
+    "actual_execution": {
+      "result": "BLOCK",
+      "reason": "No enforceable boundary was created.",
+      "boundaryId": null
+    },
+    "expected_actual_comparison": {
+      "expected": "BLOCK",
+      "actual": "BLOCK",
+      "comparison": "MATCH"
+    },
+    "independent_classification": "PASS",
+    "independent_reasoning": "SUSPEND correctly produces an authority record with status=SUSPENDED (historical scope preserved for reconstruction) in a non-executable state; no enforceable boundary is produced; execution BLOCKs. Matches spec.",
+    "anomalies": [],
+    "reproduction": "From S1-008: set disposition=SUSPEND, click Run experiment.",
+    "evidence_source": "browser_observed_detailed"
+  },
+  {
+    "case_id": "S1-010",
+    "scenario": "Automated Refund",
+    "test_inputs": {
+      "architecture": "SAME_LAYER_REAUTHORIZATION",
+      "currentRisk": "MEDIUM",
+      "requestedAmount": 100.0,
+      "disposition": "REFUSE",
+      "technicalValidity": "PASS",
+      "expectedExecution": "BLOCK"
+    },
+    "resulting_authority": {
+      "authorityCreated": false,
+      "authority": null,
+      "transferredDecisionOwner": null
+    },
+    "actual_execution": {
+      "result": "BLOCK",
+      "reason": "No executable authority was created by the governance decision.",
+      "boundaryId": null
+    },
+    "expected_actual_comparison": {
+      "expected": "BLOCK",
+      "actual": "BLOCK",
+      "comparison": "MATCH"
+    },
+    "independent_classification": "PASS",
+    "independent_reasoning": "REFUSE correctly creates no new active executable authority; execution BLOCKs. Matches spec: REFUSE need not create a literal REFUSED-status record.",
+    "anomalies": [],
+    "reproduction": "From S1-009: set disposition=REFUSE, click Run experiment.",
+    "evidence_source": "browser_observed_detailed"
+  },
+  {
+    "case_id": "S1-011",
+    "scenario": "Automated Refund",
+    "test_inputs": {
+      "architecture": "SAME_LAYER_REAUTHORIZATION",
+      "currentRisk": "MEDIUM",
+      "requestedAmount": 100.0,
+      "disposition": "CONDITION",
+      "conditionName": "supervisorConfirmation",
+      "conditionValue": true,
+      "technicalValidity": "FAIL",
+      "expectedExecution": "BLOCK"
+    },
+    "resulting_authority": {
+      "authorityId": "AUTH-DECISION-REFUND-3",
+      "status": "ACTIVE",
+      "scope": {
+        "maximumAmountCents": 50000,
+        "allowedRiskLevels": [
+          "LOW",
+          "MEDIUM"
+        ]
+      },
+      "condition_satisfied": true
+    },
+    "technical_validity": {
+      "status": "FAIL",
+      "reason": "Technical revalidation failed under changed conditions."
+    },
+    "actual_execution": {
+      "result": "BLOCK",
+      "reason": "Technical validity is not PASS.",
+      "boundaryId": "BOUNDARY-AUTH-DECISION-REFUND-3"
+    },
+    "expected_actual_comparison": {
+      "expected": "BLOCK",
+      "actual": "BLOCK",
+      "comparison": "MATCH"
+    },
+    "independent_classification": "PASS",
+    "independent_reasoning": "KEY INDEPENDENCE CHECK: identical to the ALLOW case S1-005/006 (organizational authority ACTIVE, condition satisfied, request inside boundary) except Technical validity forced to FAIL. Execution correctly BLOCKs solely on the technical dimension ('Technical validity is not PASS'). Combined with S1-001/004 (technical PASS does not rescue an authority-side BLOCK), this confirms the technical and organizational dimensions are both independently necessary and neither alone is sufficient.",
+    "anomalies": [],
+    "reproduction": "From S1-007: disposition=CONDITION, supervisorConfirmation=true, Technical validity=FAIL, click Run experiment.",
+    "evidence_source": "browser_observed_detailed"
+  },
+  {
+    "case_id": "S1-012",
+    "scenario": "Automated Refund",
+    "test_inputs": {
+      "architecture": "SEPARATED_REAUTHORIZATION",
+      "currentRisk": "MEDIUM",
+      "requestedAmount": 100.0,
+      "disposition": "NARROW",
+      "newAuthorityMax": 250.0,
+      "technicalValidity": "PASS",
+      "expectedExecution": "BLOCK"
+    },
+    "actor": "Designated Governance Authority Owner",
+    "resulting_authority": {
+      "authorityId": "AUTH-DECISION-REFUND-3",
+      "scope": {
+        "maximumAmountCents": 25000,
+        "allowedRiskLevels": [
+          "LOW"
+        ]
+      },
+      "identical_to": "S1-004"
+    },
+    "actual_execution": {
+      "result": "BLOCK",
+      "reason": "Requested customer risk is outside the current authority scope.",
+      "boundaryId": "BOUNDARY-AUTH-DECISION-REFUND-3"
+    },
+    "expected_actual_comparison": {
+      "expected": "BLOCK",
+      "actual": "BLOCK",
+      "comparison": "MATCH"
+    },
+    "independent_classification": "PASS",
+    "independent_reasoning": "ARCHITECTURE-ATTRIBUTION PAIR with S1-004 (identical inputs, only architecture changed). Decision actor correctly changed to 'Designated Governance Authority Owner'; resulting scope, boundary, and BLOCK execution are IDENTICAL to S1-004. No hidden confounding variable; architecture alone does not manufacture a different outcome.",
+    "anomalies": [],
+    "reproduction": "From S1-011: click Separated-reauthorization radio, set disposition=NARROW, newAuthorityMax=250.00, click Run experiment.",
+    "evidence_source": "browser_observed_detailed"
+  },
+  {
+    "case_id": "S1-013",
+    "scenario": "Automated Refund",
+    "test_inputs": {
+      "note": "used app's built-in Compare Architectures feature on the S1-012 configuration"
+    },
+    "actual_execution": {
+      "result": "BLOCK (both architectures)"
+    },
+    "independent_classification": "PASS",
+    "independent_reasoning": "Supplementary architecture-attribution probe using the app's own built-in comparison tool, corroborating the manual S1-004/S1-012 pair. App's own verbatim conclusion: \"Changing the decision owner did not change the execution consequence in this controlled run... Formal finding: AUTHORITY SEPARATION NOT OPERATIONALLY DEMONSTRATED.\" This is the correct/expected conclusion given the spec's own caution not to assume separation is inherently superior.",
+    "anomalies": [],
+    "reproduction": "From S1-012: click 'Compare Architectures' button; read the auto-generated 'Architecture comparison' section.",
+    "evidence_source": "browser_observed_detailed"
+  },
+  {
+    "case_id": "S1-014",
+    "scenario": "Automated Refund",
+    "test_inputs": {
+      "note": "Replay Last Run on the S1-012/013 configuration"
+    },
+    "replay_result": {
+      "equivalent": true,
+      "comparisons": {
+        "controlRun": true,
+        "authorityHistory": true,
+        "decisionHistory": true,
+        "executionAttempts": true,
+        "actualResult": true,
+        "predictionComparison": true,
+        "controlAssertionResults": true,
+        "eventLog": true
+      }
+    },
+    "actual_execution": {
+      "result": "BLOCK",
+      "reason": "Requested customer risk is outside the current authority scope."
+    },
+    "independent_classification": "PASS",
+    "independent_reasoning": "DETERMINISM/REPLAY probe: 'Replay Last Run' returned an explicit per-field equivalence report (8 fields, all true) rather than a bare 'success' flag, and the recomputed Execution result matched the original. This is stronger evidence of genuine recomputation (vs. mere redisplay of cached output) than a single boolean would provide.",
+    "anomalies": [],
+    "reproduction": "From S1-013: click 'Replay Last Run' button; read the Replay evidence card.",
+    "evidence_source": "browser_observed_detailed"
+  },
+  {
+    "case_id": "S1-IMPORT-PROBE",
+    "scenario": "Automated Refund",
+    "test_inputs": {
+      "note": "Import/Export round-trip probe (supplementary probe G)"
+    },
+    "independent_classification": "REVIEW REQUIRED",
+    "independent_reasoning": "Export scenario worked and produced a real browser file download (confirmed via a download-scan notification); its content was not further inspected. Import scenario was clicked but produced no observable in-page change; it appears to invoke a native OS file picker outside the reach of the available browser-automation tooling (no mechanism exists to select a specific local file path in a native OS dialog from this session).",
+    "anomalies": [
+      "INSTANTIATION LIMITATION (UI-related, not a claimed application defect): the full Import -> verify identity -> rerun -> compare round trip could not be completed through the public UI with available tooling."
+    ],
+    "reproduction": "Clicked 'Export scenario' (produced a download). Clicked 'Import scenario' (no visible UI response observed).",
+    "evidence_source": "browser_observed_detailed"
+  },
+  {
+    "case_id": "S2-001",
+    "scenario": "Privileged System Access",
+    "scenario_id": "ACCESS_V2",
+    "test_inputs": {
+      "architecture": "SAME_LAYER_REAUTHORIZATION",
+      "disposition": "CONDITION",
+      "technical_validity": "PASS",
+      "condition_name": "approvedChangeTicket",
+      "condition_value": "false",
+      "governed_metric_or_basis": "accessLevel + organizationalContext",
+      "relevant_requested_value_or_scope": "accessLevel=PRODUCTION_ADMIN, org=BUSINESS_ANALYTICS",
+      "expected_execution_selected_by_user": "BLOCK"
+    },
+    "browser_selections": "accessLevel=PRODUCTION_ADMIN, org=BUSINESS_ANALYTICS",
+    "materiality": {
+      "result": "MATERIAL"
+    },
+    "authority_state": "prior INVALID; new ACTIVE (conditioned)",
+    "workflow": "SAME_LAYER_REAUTHORIZATION",
+    "actor": "Operations/Production Operations Authority Owner",
+    "resulting_authority": "AUTH-DECISION-ACCESS-2 v21",
+    "enforceable_boundary": "BOUNDARY-AUTH-DECISION-ACCESS-2",
+    "technical_validity": {
+      "status": "PASS"
+    },
+    "recommendation": "GRANT ACCESS",
+    "confidence": null,
+    "actual_execution": {
+      "result": "BLOCK",
+      "reason": "Condition correctly gates access grant when approvedChangeTicket is false"
+    },
+    "expected_actual_comparison": {
+      "expected": "BLOCK",
+      "comparison": "MATCH"
+    },
+    "control_assertion": "valid",
+    "application_validation": "valid",
+    "browser_validation": "executed via UI",
+    "replay_result": "",
+    "independent_classification": "PASS",
+    "independent_reasoning": "Condition correctly gates access grant when approvedChangeTicket is false",
+    "anomalies": "",
+    "reproduction": "Scenario=Privileged System Access default load (org=BUSINESS_ANALYTICS, disposition=CONDITION, changeTicket=NO); click Run experiment.",
+    "evidence_source": "browser_observed_notes_derived"
+  },
+  {
+    "case_id": "S2-STALE-001",
+    "scenario": "Privileged System Access",
+    "scenario_id": "ACCESS_V2",
+    "test_inputs": {
+      "architecture": "SAME_LAYER_REAUTHORIZATION",
+      "disposition": "N/A",
+      "technical_validity": "PASS",
+      "condition_name": "",
+      "condition_value": "",
+      "governed_metric_or_basis": "N/A",
+      "relevant_requested_value_or_scope": "N/A",
+      "expected_execution_selected_by_user": ""
+    },
+    "browser_selections": "N/A",
+    "materiality": {
+      "result": "N/A"
+    },
+    "authority_state": "N/A",
+    "workflow": "N/A",
+    "actor": "N/A",
+    "resulting_authority": "N/A",
+    "enforceable_boundary": "N/A",
+    "technical_validity": {
+      "status": "PASS"
+    },
+    "recommendation": "",
+    "confidence": null,
+    "actual_execution": {
+      "result": "N/A",
+      "reason": "After switching from Automated Refund to Privileged System Access, the scenario-1-specific fields 'Current customer risk' and 'Requested refund amount ($)' remain visibly mounted and interactive in the Experiment Inputs form, with original Scenario-1 help text. Cross-checked: Your-current-selections and Governance decision/Execution evidence correctly reference ONLY scenario-2 fields -- stale fields do not feed into computation."
+    },
+    "expected_actual_comparison": {
+      "expected": "",
+      "comparison": "N/A"
+    },
+    "control_assertion": "N/A",
+    "application_validation": "N/A",
+    "browser_validation": "observed via UI + DOM query",
+    "replay_result": "",
+    "independent_classification": "FAIL \u2014 UI/STATE PROPAGATION",
+    "independent_reasoning": "After switching from Automated Refund to Privileged System Access, the scenario-1-specific fields 'Current customer risk' and 'Requested refund amount ($)' remain visibly mounted and interactive in the Experiment Inputs form, with original Scenario-1 help text. Cross-checked: Your-current-selections and Governance decision/Execution evidence correctly reference ONLY scenario-2 fields -- stale fields do not feed into computation.",
+    "anomalies": "Leftover scenario-1 controls remain interactive after scenario switch (cosmetic/state-cleanup defect, not a computation-correctness defect).",
+    "reproduction": "Switch Select scenario from Automated Refund to Privileged System Access; inspect <label> elements in Experiment Inputs form via DOM query; confirmed persistent after running the experiment.",
+    "evidence_source": "browser_observed_notes_derived"
+  },
+  {
+    "case_id": "S2-002",
+    "scenario": "Privileged System Access",
+    "scenario_id": "ACCESS_V2",
+    "test_inputs": {
+      "architecture": "SAME_LAYER_REAUTHORIZATION",
+      "disposition": "CONDITION",
+      "technical_validity": "PASS",
+      "condition_name": "approvedChangeTicket",
+      "condition_value": "true",
+      "governed_metric_or_basis": "accessLevel + organizationalContext",
+      "relevant_requested_value_or_scope": "accessLevel=PRODUCTION_ADMIN, org=BUSINESS_ANALYTICS",
+      "expected_execution_selected_by_user": "BLOCK"
+    },
+    "browser_selections": "accessLevel=PRODUCTION_ADMIN, org=BUSINESS_ANALYTICS",
+    "materiality": {
+      "result": "MATERIAL"
+    },
+    "authority_state": "ACTIVE (conditioned, satisfied)",
+    "workflow": "SAME_LAYER_REAUTHORIZATION",
+    "actor": "Operations/Production Operations Authority Owner",
+    "resulting_authority": "AUTH-DECISION-ACCESS-2 v21",
+    "enforceable_boundary": "BOUNDARY-AUTH-DECISION-ACCESS-2",
+    "technical_validity": {
+      "status": "PASS"
+    },
+    "recommendation": "GRANT ACCESS",
+    "confidence": null,
+    "actual_execution": {
+      "result": "ALLOW",
+      "reason": "Completes CONDITION causal pair with S2-001 (probe A): changeTicket FALSE->BLOCK, TRUE->ALLOW, all else constant."
+    },
+    "expected_actual_comparison": {
+      "expected": "BLOCK",
+      "comparison": "MISMATCH"
+    },
+    "control_assertion": "valid",
+    "application_validation": "valid",
+    "browser_validation": "executed via UI",
+    "replay_result": "",
+    "independent_classification": "PASS",
+    "independent_reasoning": "Completes CONDITION causal pair with S2-001 (probe A): changeTicket FALSE->BLOCK, TRUE->ALLOW, all else constant.",
+    "anomalies": "",
+    "reproduction": "From S2-001: set Approved change ticket=YES, click Run experiment.",
+    "evidence_source": "browser_observed_notes_derived"
+  },
+  {
+    "case_id": "S2-003",
+    "scenario": "Privileged System Access",
+    "scenario_id": "ACCESS_V2",
+    "test_inputs": {
+      "architecture": "SAME_LAYER_REAUTHORIZATION",
+      "disposition": "RENEW",
+      "technical_validity": "PASS",
+      "condition_name": "",
+      "condition_value": "",
+      "governed_metric_or_basis": "accessLevel + organizationalContext",
+      "relevant_requested_value_or_scope": "accessLevel=PRODUCTION_ADMIN, org=BUSINESS_ANALYTICS",
+      "expected_execution_selected_by_user": "BLOCK"
+    },
+    "browser_selections": "accessLevel=PRODUCTION_ADMIN, org=BUSINESS_ANALYTICS",
+    "materiality": {
+      "result": "MATERIAL"
+    },
+    "authority_state": "prior INVALID; new ACTIVE (renewed)",
+    "workflow": "SAME_LAYER_REAUTHORIZATION",
+    "actor": "Production Operations Authority Owner",
+    "resulting_authority": "AUTH-DECISION-ACCESS-2 v21",
+    "enforceable_boundary": "BOUNDARY-AUTH-DECISION-ACCESS-2",
+    "technical_validity": {
+      "status": "PASS"
+    },
+    "recommendation": "GRANT ACCESS",
+    "confidence": null,
+    "actual_execution": {
+      "result": "ALLOW",
+      "reason": "FLAGSHIP FINDING #1 of 4: RENEW's resulting authority substitutes the CURRENT/post-change organizationalContext (BUSINESS_ANALYTICS) for the ORIGINAL qualifying value (PRODUCTION_OPERATIONS) required by the baseline authority AUTH-ACCESS-20. Net effect: RENEW silently re-authorizes production-database ADMINISTRATOR access using exactly the changed fact that made the prior authority invalid, with zero condition/narrowing/scrutiny. Contrasts with Scenario 1's RENEW (S1-002), which correctly preserved the original LOW-risk-only value."
+    },
+    "expected_actual_comparison": {
+      "expected": "BLOCK",
+      "comparison": "MISMATCH"
+    },
+    "control_assertion": "valid (app label)",
+    "application_validation": "valid",
+    "browser_validation": "executed via UI",
+    "replay_result": "",
+    "independent_classification": "FAIL \u2014 CONCEPTUAL",
+    "independent_reasoning": "FLAGSHIP FINDING #1 of 4: RENEW's resulting authority substitutes the CURRENT/post-change organizationalContext (BUSINESS_ANALYTICS) for the ORIGINAL qualifying value (PRODUCTION_OPERATIONS) required by the baseline authority AUTH-ACCESS-20. Net effect: RENEW silently re-authorizes production-database ADMINISTRATOR access using exactly the changed fact that made the prior authority invalid, with zero condition/narrowing/scrutiny. Contrasts with Scenario 1's RENEW (S1-002), which correctly preserved the original LOW-risk-only value.",
+    "anomalies": "RENEW re-derives its boundary from the current/changed state rather than the original qualifying state, on the exact dimension that made the change material.",
+    "reproduction": "From S2-002: set Governance disposition=RENEW, click Run experiment. Compare resulting authority scope's organizationalContext value against the Baseline control run card's organizationalContext value (PRODUCTION_OPERATIONS).",
+    "evidence_source": "browser_observed_notes_derived"
+  },
+  {
+    "case_id": "S2-004",
+    "scenario": "Privileged System Access",
+    "scenario_id": "ACCESS_V2",
+    "test_inputs": {
+      "architecture": "SAME_LAYER_REAUTHORIZATION",
+      "disposition": "NARROW",
+      "technical_validity": "PASS",
+      "condition_name": "",
+      "condition_value": "",
+      "governed_metric_or_basis": "accessLevel + organizationalContext",
+      "relevant_requested_value_or_scope": "accessLevel=PRODUCTION_ADMIN, org=BUSINESS_ANALYTICS",
+      "expected_execution_selected_by_user": "BLOCK"
+    },
+    "browser_selections": "accessLevel=PRODUCTION_ADMIN, org=BUSINESS_ANALYTICS",
+    "materiality": {
+      "result": "MATERIAL"
+    },
+    "authority_state": "prior INVALID; new ACTIVE (narrowed)",
+    "workflow": "SAME_LAYER_REAUTHORIZATION",
+    "actor": "Operations Authority Owner",
+    "resulting_authority": "AUTH-DECISION-ACCESS-2 v21",
+    "enforceable_boundary": "BOUNDARY-AUTH-DECISION-ACCESS-2",
+    "technical_validity": {
+      "status": "PASS"
+    },
+    "recommendation": "GRANT ACCESS",
+    "confidence": null,
+    "actual_execution": {
+      "result": "BLOCK",
+      "reason": "CONTRAST case for S2-003: NARROW correctly ties its resulting scope back to the ORIGINAL qualifying organizationalContext (PRODUCTION_OPERATIONS), unlike RENEW. Confirms the app CAN anchor to pre-change values; RENEW's failure to do so (S2-003) is an isolable, disposition-specific defect."
+    },
+    "expected_actual_comparison": {
+      "expected": "BLOCK",
+      "comparison": "MATCH"
+    },
+    "control_assertion": "valid",
+    "application_validation": "valid",
+    "browser_validation": "executed via UI",
+    "replay_result": "",
+    "independent_classification": "PASS",
+    "independent_reasoning": "CONTRAST case for S2-003: NARROW correctly ties its resulting scope back to the ORIGINAL qualifying organizationalContext (PRODUCTION_OPERATIONS), unlike RENEW. Confirms the app CAN anchor to pre-change values; RENEW's failure to do so (S2-003) is an isolable, disposition-specific defect.",
+    "anomalies": "",
+    "reproduction": "From S2-003: set Governance disposition=NARROW, click Run experiment.",
+    "evidence_source": "browser_observed_notes_derived"
+  },
+  {
+    "case_id": "S2-005",
+    "scenario": "Privileged System Access",
+    "scenario_id": "ACCESS_V2",
+    "test_inputs": {
+      "architecture": "SAME_LAYER_REAUTHORIZATION",
+      "disposition": "TRANSFER",
+      "technical_validity": "PASS",
+      "condition_name": "",
+      "condition_value": "",
+      "governed_metric_or_basis": "N/A",
+      "relevant_requested_value_or_scope": "N/A",
+      "expected_execution_selected_by_user": "BLOCK"
+    },
+    "browser_selections": "N/A",
+    "materiality": {
+      "result": "MATERIAL"
+    },
+    "authority_state": "INVALID (no new authority)",
+    "workflow": "SAME_LAYER_REAUTHORIZATION",
+    "actor": "N/A (transferred)",
+    "resulting_authority": "authorityCreated=false",
+    "enforceable_boundary": "none",
+    "technical_validity": {
+      "status": "PASS"
+    },
+    "recommendation": "GRANT ACCESS",
+    "confidence": null,
+    "actual_execution": {
+      "result": "BLOCK",
+      "reason": "TRANSFER correctly creates no executable authority; transferredDecisionOwner=ACTOR-DATA-SECURITY matches spec's 'Data Security Authority'."
+    },
+    "expected_actual_comparison": {
+      "expected": "BLOCK",
+      "comparison": "MATCH"
+    },
+    "control_assertion": "valid",
+    "application_validation": "valid",
+    "browser_validation": "executed via UI",
+    "replay_result": "",
+    "independent_classification": "PASS",
+    "independent_reasoning": "TRANSFER correctly creates no executable authority; transferredDecisionOwner=ACTOR-DATA-SECURITY matches spec's 'Data Security Authority'.",
+    "anomalies": "",
+    "reproduction": "From S2-004: set disposition=TRANSFER, click Run experiment.",
+    "evidence_source": "browser_observed_notes_derived"
+  },
+  {
+    "case_id": "S2-006",
+    "scenario": "Privileged System Access",
+    "scenario_id": "ACCESS_V2",
+    "test_inputs": {
+      "architecture": "SAME_LAYER_REAUTHORIZATION",
+      "disposition": "SUSPEND",
+      "technical_validity": "PASS",
+      "condition_name": "",
+      "condition_value": "",
+      "governed_metric_or_basis": "N/A",
+      "relevant_requested_value_or_scope": "N/A",
+      "expected_execution_selected_by_user": "BLOCK"
+    },
+    "browser_selections": "N/A",
+    "materiality": {
+      "result": "MATERIAL"
+    },
+    "authority_state": "SUSPENDED",
+    "workflow": "SAME_LAYER_REAUTHORIZATION",
+    "actor": "Operations Authority Owner",
+    "resulting_authority": "AUTH-DECISION-ACCESS-2 status=SUSPENDED",
+    "enforceable_boundary": "none",
+    "technical_validity": {
+      "status": "PASS"
+    },
+    "recommendation": "GRANT ACCESS",
+    "confidence": null,
+    "actual_execution": {
+      "result": "BLOCK",
+      "reason": "SUSPEND correctly produces a SUSPENDED authority record with no enforceable boundary; execution BLOCKs."
+    },
+    "expected_actual_comparison": {
+      "expected": "BLOCK",
+      "comparison": "MATCH"
+    },
+    "control_assertion": "valid",
+    "application_validation": "valid",
+    "browser_validation": "executed via UI",
+    "replay_result": "",
+    "independent_classification": "PASS",
+    "independent_reasoning": "SUSPEND correctly produces a SUSPENDED authority record with no enforceable boundary; execution BLOCKs.",
+    "anomalies": "",
+    "reproduction": "From S2-005: set disposition=SUSPEND, click Run experiment.",
+    "evidence_source": "browser_observed_notes_derived"
+  },
+  {
+    "case_id": "S2-007",
+    "scenario": "Privileged System Access",
+    "scenario_id": "ACCESS_V2",
+    "test_inputs": {
+      "architecture": "SAME_LAYER_REAUTHORIZATION",
+      "disposition": "REFUSE",
+      "technical_validity": "PASS",
+      "condition_name": "",
+      "condition_value": "",
+      "governed_metric_or_basis": "N/A",
+      "relevant_requested_value_or_scope": "N/A",
+      "expected_execution_selected_by_user": "BLOCK"
+    },
+    "browser_selections": "N/A",
+    "materiality": {
+      "result": "MATERIAL"
+    },
+    "authority_state": "INVALID (no new authority)",
+    "workflow": "SAME_LAYER_REAUTHORIZATION",
+    "actor": "Operations Authority Owner",
+    "resulting_authority": "authorityCreated=false",
+    "enforceable_boundary": "none",
+    "technical_validity": {
+      "status": "PASS"
+    },
+    "recommendation": "GRANT ACCESS",
+    "confidence": null,
+    "actual_execution": {
+      "result": "BLOCK",
+      "reason": "REFUSE correctly creates no executable authority; execution BLOCKs."
+    },
+    "expected_actual_comparison": {
+      "expected": "BLOCK",
+      "comparison": "MATCH"
+    },
+    "control_assertion": "valid",
+    "application_validation": "valid",
+    "browser_validation": "executed via UI",
+    "replay_result": "",
+    "independent_classification": "PASS",
+    "independent_reasoning": "REFUSE correctly creates no executable authority; execution BLOCKs.",
+    "anomalies": "",
+    "reproduction": "From S2-006: set disposition=REFUSE, click Run experiment.",
+    "evidence_source": "browser_observed_notes_derived"
+  },
+  {
+    "case_id": "S2-008",
+    "scenario": "Privileged System Access",
+    "scenario_id": "ACCESS_V2",
+    "test_inputs": {
+      "architecture": "SAME_LAYER_REAUTHORIZATION",
+      "disposition": "CONDITION",
+      "technical_validity": "FAIL",
+      "condition_name": "approvedChangeTicket",
+      "condition_value": "true",
+      "governed_metric_or_basis": "accessLevel + organizationalContext",
+      "relevant_requested_value_or_scope": "accessLevel=PRODUCTION_ADMIN, org=BUSINESS_ANALYTICS",
+      "expected_execution_selected_by_user": "BLOCK"
+    },
+    "browser_selections": "accessLevel=PRODUCTION_ADMIN, org=BUSINESS_ANALYTICS",
+    "materiality": {
+      "result": "MATERIAL"
+    },
+    "authority_state": "ACTIVE (conditioned, satisfied) but technically invalid",
+    "workflow": "SAME_LAYER_REAUTHORIZATION",
+    "actor": "Operations Authority Owner",
+    "resulting_authority": "AUTH-DECISION-ACCESS-2 v21",
+    "enforceable_boundary": "BOUNDARY-AUTH-DECISION-ACCESS-2",
+    "technical_validity": {
+      "status": "FAIL"
+    },
+    "recommendation": "GRANT ACCESS",
+    "confidence": null,
+    "actual_execution": {
+      "result": "BLOCK",
+      "reason": "Technical/organizational independence check: identical to the ALLOW case (S2-002) except Technical validity forced to FAIL. Execution correctly BLOCKs solely on 'Technical validity is not PASS.'"
+    },
+    "expected_actual_comparison": {
+      "expected": "BLOCK",
+      "comparison": "MATCH"
+    },
+    "control_assertion": "valid",
+    "application_validation": "valid",
+    "browser_validation": "executed via UI",
+    "replay_result": "",
+    "independent_classification": "PASS",
+    "independent_reasoning": "Technical/organizational independence check: identical to the ALLOW case (S2-002) except Technical validity forced to FAIL. Execution correctly BLOCKs solely on 'Technical validity is not PASS.'",
+    "anomalies": "",
+    "reproduction": "From S2-004: set disposition=CONDITION, Approved change ticket=YES, Technical validity=FAIL, click Run experiment.",
+    "evidence_source": "browser_observed_notes_derived"
+  },
+  {
+    "case_id": "S2-009",
+    "scenario": "Privileged System Access",
+    "scenario_id": "ACCESS_V2",
+    "test_inputs": {
+      "architecture": "SEPARATED_REAUTHORIZATION",
+      "disposition": "NARROW",
+      "technical_validity": "PASS",
+      "condition_name": "",
+      "condition_value": "",
+      "governed_metric_or_basis": "accessLevel + organizationalContext",
+      "relevant_requested_value_or_scope": "accessLevel=PRODUCTION_ADMIN, org=BUSINESS_ANALYTICS",
+      "expected_execution_selected_by_user": "BLOCK"
+    },
+    "browser_selections": "accessLevel=PRODUCTION_ADMIN, org=BUSINESS_ANALYTICS",
+    "materiality": {
+      "result": "MATERIAL"
+    },
+    "authority_state": "identical to S2-004",
+    "workflow": "SEPARATED_REAUTHORIZATION",
+    "actor": "Data Security Authority",
+    "resulting_authority": "AUTH-DECISION-ACCESS-2 v21",
+    "enforceable_boundary": "BOUNDARY-AUTH-DECISION-ACCESS-2",
+    "technical_validity": {
+      "status": "PASS"
+    },
+    "recommendation": "GRANT ACCESS",
+    "confidence": null,
+    "actual_execution": {
+      "result": "BLOCK",
+      "reason": "Architecture-attribution pair with S2-004: decision actor correctly changed to 'Data Security Authority' (matches spec); resulting scope/boundary/execution identical to S2-004. No hidden confound."
+    },
+    "expected_actual_comparison": {
+      "expected": "BLOCK",
+      "comparison": "MATCH"
+    },
+    "control_assertion": "valid",
+    "application_validation": "valid",
+    "browser_validation": "executed via UI",
+    "replay_result": "",
+    "independent_classification": "PASS",
+    "independent_reasoning": "Architecture-attribution pair with S2-004: decision actor correctly changed to 'Data Security Authority' (matches spec); resulting scope/boundary/execution identical to S2-004. No hidden confound.",
+    "anomalies": "",
+    "reproduction": "From S2-008: click Separated-reauthorization radio, set disposition=NARROW, Technical validity=PASS, click Run experiment.",
+    "evidence_source": "browser_observed_notes_derived"
+  },
+  {
+    "case_id": "S2-010",
+    "scenario": "Privileged System Access",
+    "scenario_id": "ACCESS_V2",
+    "test_inputs": {
+      "architecture": "SEPARATED_REAUTHORIZATION",
+      "disposition": "N/A (skipped)",
+      "technical_validity": "PASS",
+      "condition_name": "",
+      "condition_value": "",
+      "governed_metric_or_basis": "accessLevel + organizationalContext",
+      "relevant_requested_value_or_scope": "accessLevel=PRODUCTION_ADMIN, org=PRODUCTION_OPERATIONS",
+      "expected_execution_selected_by_user": "BLOCK"
+    },
+    "browser_selections": "accessLevel=PRODUCTION_ADMIN, org=PRODUCTION_OPERATIONS",
+    "materiality": {
+      "result": "NON_MATERIAL"
+    },
+    "authority_state": "ACTIVE (original, untouched)",
+    "workflow": "NO_REAUTHORIZATION_REQUIRED",
+    "actor": "N/A",
+    "resulting_authority": "AUTH-ACCESS-20",
+    "enforceable_boundary": "BOUNDARY-AUTH-ACCESS-20",
+    "technical_validity": {
+      "status": "PASS"
+    },
+    "recommendation": "GRANT ACCESS",
+    "confidence": null,
+    "actual_execution": {
+      "result": "ALLOW",
+      "reason": "Core behavior correct (no change -> original authority governs -> ALLOW). But '2. What changed' narrative still reads 'Jordan moves from Production Operations to Business Analytics' verbatim despite the actual PRODUCTION_OPERATIONS->PRODUCTION_OPERATIONS (no-change) selection -- same systemic narrative-staleness defect as S1-003, now confirmed in a second scenario."
+    },
+    "expected_actual_comparison": {
+      "expected": "BLOCK",
+      "comparison": "MISMATCH"
+    },
+    "control_assertion": "see anomaly",
+    "application_validation": "valid (NON_MATERIAL correctly detected)",
+    "browser_validation": "executed via UI",
+    "replay_result": "",
+    "independent_classification": "FAIL \u2014 EVIDENCE",
+    "independent_reasoning": "Core behavior correct (no change -> original authority governs -> ALLOW). But '2. What changed' narrative still reads 'Jordan moves from Production Operations to Business Analytics' verbatim despite the actual PRODUCTION_OPERATIONS->PRODUCTION_OPERATIONS (no-change) selection -- same systemic narrative-staleness defect as S1-003, now confirmed in a second scenario.",
+    "anomalies": "Narrative text does not reflect the actual selected value; systemic (cross-scenario) defect.",
+    "reproduction": "From S2-009: set Current organizational context=PRODUCTION_OPERATIONS, click Run experiment. Compare 'Your current selections' (correct) against '2. What changed' narrative (stale) and Materiality JSON (correct, NON_MATERIAL).",
+    "evidence_source": "browser_observed_notes_derived"
+  },
+  {
+    "case_id": "S3-001",
+    "scenario": "Workforce Shift Assignment",
+    "scenario_id": "WORKFORCE_V2",
+    "test_inputs": {
+      "architecture": "SAME_LAYER_REAUTHORIZATION",
+      "disposition": "CONDITION",
+      "technical_validity": "PASS",
+      "condition_name": "overtimeApproval",
+      "condition_value": "false",
+      "governed_metric_or_basis": "resultingWeeklyHours",
+      "relevant_requested_value_or_scope": "resultingWeeklyHours=48",
+      "expected_execution_selected_by_user": "BLOCK"
+    },
+    "browser_selections": "resultingWeeklyHours=48",
+    "materiality": {
+      "result": "MATERIAL"
+    },
+    "authority_state": "prior INVALID; new ACTIVE (conditioned)",
+    "workflow": "SAME_LAYER_REAUTHORIZATION",
+    "actor": "Workforce Scheduling",
+    "resulting_authority": "AUTH-DECISION-WORK-2 v31",
+    "enforceable_boundary": "BOUNDARY-AUTH-DECISION-WORK-2",
+    "technical_validity": {
+      "status": "PASS"
+    },
+    "recommendation": "ASSIGN SHIFT",
+    "confidence": null,
+    "actual_execution": {
+      "result": "BLOCK",
+      "reason": "Condition correctly gates the shift assignment when overtimeApproval is false."
+    },
+    "expected_actual_comparison": {
+      "expected": "BLOCK",
+      "comparison": "MATCH"
+    },
+    "control_assertion": "valid",
+    "application_validation": "valid",
+    "browser_validation": "executed via UI",
+    "replay_result": "",
+    "independent_classification": "PASS",
+    "independent_reasoning": "Condition correctly gates the shift assignment when overtimeApproval is false.",
+    "anomalies": "",
+    "reproduction": "Scenario=Workforce Shift Assignment default load (resultingWeeklyHours=48, disposition=CONDITION, overtimeApproval=NO); click Run experiment.",
+    "evidence_source": "browser_observed_notes_derived"
+  },
+  {
+    "case_id": "S3-002",
+    "scenario": "Workforce Shift Assignment",
+    "scenario_id": "WORKFORCE_V2",
+    "test_inputs": {
+      "architecture": "SAME_LAYER_REAUTHORIZATION",
+      "disposition": "CONDITION",
+      "technical_validity": "PASS",
+      "condition_name": "overtimeApproval",
+      "condition_value": "true",
+      "governed_metric_or_basis": "resultingWeeklyHours",
+      "relevant_requested_value_or_scope": "resultingWeeklyHours=48",
+      "expected_execution_selected_by_user": "BLOCK"
+    },
+    "browser_selections": "resultingWeeklyHours=48",
+    "materiality": {
+      "result": "MATERIAL"
+    },
+    "authority_state": "ACTIVE (conditioned, satisfied)",
+    "workflow": "SAME_LAYER_REAUTHORIZATION",
+    "actor": "Workforce Scheduling",
+    "resulting_authority": "AUTH-DECISION-WORK-2 v31",
+    "enforceable_boundary": "BOUNDARY-AUTH-DECISION-WORK-2",
+    "technical_validity": {
+      "status": "PASS"
+    },
+    "recommendation": "ASSIGN SHIFT",
+    "confidence": null,
+    "actual_execution": {
+      "result": "ALLOW",
+      "reason": "Completes CONDITION causal pair with S3-001 (probe A)."
+    },
+    "expected_actual_comparison": {
+      "expected": "BLOCK",
+      "comparison": "MISMATCH"
+    },
+    "control_assertion": "valid",
+    "application_validation": "valid",
+    "browser_validation": "executed via UI",
+    "replay_result": "",
+    "independent_classification": "PASS",
+    "independent_reasoning": "Completes CONDITION causal pair with S3-001 (probe A).",
+    "anomalies": "",
+    "reproduction": "From S3-001: set Overtime approval=YES, click Run experiment.",
+    "evidence_source": "browser_observed_notes_derived"
+  },
+  {
+    "case_id": "S3-003",
+    "scenario": "Workforce Shift Assignment",
+    "scenario_id": "WORKFORCE_V2",
+    "test_inputs": {
+      "architecture": "SAME_LAYER_REAUTHORIZATION",
+      "disposition": "RENEW",
+      "technical_validity": "PASS",
+      "condition_name": "",
+      "condition_value": "",
+      "governed_metric_or_basis": "resultingWeeklyHours",
+      "relevant_requested_value_or_scope": "resultingWeeklyHours=48",
+      "expected_execution_selected_by_user": "BLOCK"
+    },
+    "browser_selections": "resultingWeeklyHours=48",
+    "materiality": {
+      "result": "MATERIAL"
+    },
+    "authority_state": "prior INVALID; new ACTIVE (renewed)",
+    "workflow": "SAME_LAYER_REAUTHORIZATION",
+    "actor": "Workforce Scheduling",
+    "resulting_authority": "AUTH-DECISION-WORK-2 v31",
+    "enforceable_boundary": "BOUNDARY-AUTH-DECISION-WORK-2",
+    "technical_validity": {
+      "status": "PASS"
+    },
+    "recommendation": "ASSIGN SHIFT",
+    "confidence": null,
+    "actual_execution": {
+      "result": "ALLOW",
+      "reason": "FLAGSHIP FINDING #2 of 4: RENEW raises the enforceable hours cap to exactly match the current over-threshold request (48) instead of reproducing the original 40-hour overtime threshold (baseline AUTH-WORK-30: resultingWeeklyHours LTE 40). Functionally auto-approves overtime beyond the org's own policy threshold with zero condition/narrowing/scrutiny. Same pattern as S2-003. [PHASE 3 CORRECTION: retesting with resultingWeeklyHours=41, 45, and 60 (see S3-B03/B04/B05) proved the resulting cap of 48 is a STATIC/HARDCODED constant, not a dynamic substitution of the live current request as originally described here. Reclassified from FAIL - CONCEPTUAL to FAIL - IMPLEMENTATION accordingly; the practical consequence (silent overtime authorization with zero scrutiny) is unchanged, but the mechanism is a hardcoded value, not a general re-derivation pattern.]"
+    },
+    "expected_actual_comparison": {
+      "expected": "BLOCK",
+      "comparison": "MISMATCH"
+    },
+    "control_assertion": "valid (app label)",
+    "application_validation": "valid",
+    "browser_validation": "executed via UI",
+    "replay_result": "",
+    "independent_classification": "FAIL \u2014 IMPLEMENTATION",
+    "independent_reasoning": "FLAGSHIP FINDING #2 of 4: RENEW raises the enforceable hours cap to exactly match the current over-threshold request (48) instead of reproducing the original 40-hour overtime threshold (baseline AUTH-WORK-30: resultingWeeklyHours LTE 40). Functionally auto-approves overtime beyond the org's own policy threshold with zero condition/narrowing/scrutiny. Same pattern as S2-003. [PHASE 3 CORRECTION: retesting with resultingWeeklyHours=41, 45, and 60 (see S3-B03/B04/B05) proved the resulting cap of 48 is a STATIC/HARDCODED constant, not a dynamic substitution of the live current request as originally described here. Reclassified from FAIL - CONCEPTUAL to FAIL - IMPLEMENTATION accordingly; the practical consequence (silent overtime authorization with zero scrutiny) is unchanged, but the mechanism is a hardcoded value, not a general re-derivation pattern.]",
+    "anomalies": "RENEW re-derives its boundary from the current/changed state rather than the original threshold, on the exact dimension that made the change material. CORRECTED in Phase 3: cap is static/hardcoded (see S3-B03..B05), not dynamically current-value-derived.",
+    "reproduction": "From S3-002: set disposition=RENEW, click Run experiment. Compare resulting scope's resultingWeeklyHours cap (48) against Baseline control run's cap (40).",
+    "evidence_source": "browser_observed_notes_derived"
+  },
+  {
+    "case_id": "S3-004",
+    "scenario": "Workforce Shift Assignment",
+    "scenario_id": "WORKFORCE_V2",
+    "test_inputs": {
+      "architecture": "SAME_LAYER_REAUTHORIZATION",
+      "disposition": "NARROW",
+      "technical_validity": "PASS",
+      "condition_name": "",
+      "condition_value": "",
+      "governed_metric_or_basis": "resultingWeeklyHours",
+      "relevant_requested_value_or_scope": "resultingWeeklyHours=48",
+      "expected_execution_selected_by_user": "BLOCK"
+    },
+    "browser_selections": "resultingWeeklyHours=48",
+    "materiality": {
+      "result": "MATERIAL"
+    },
+    "authority_state": "prior INVALID; new ACTIVE (narrowed)",
+    "workflow": "SAME_LAYER_REAUTHORIZATION",
+    "actor": "Workforce Scheduling",
+    "resulting_authority": "AUTH-DECISION-WORK-2 v31",
+    "enforceable_boundary": "BOUNDARY-AUTH-DECISION-WORK-2",
+    "technical_validity": {
+      "status": "PASS"
+    },
+    "recommendation": "ASSIGN SHIFT",
+    "confidence": null,
+    "actual_execution": {
+      "result": "BLOCK",
+      "reason": "CONTRAST case for S3-003: NARROW is a true subset (36<40) and correctly BLOCKs the 48-hour request. Confirms NARROW behaves correctly where RENEW does not."
+    },
+    "expected_actual_comparison": {
+      "expected": "BLOCK",
+      "comparison": "MATCH"
+    },
+    "control_assertion": "valid",
+    "application_validation": "valid",
+    "browser_validation": "executed via UI",
+    "replay_result": "",
+    "independent_classification": "PASS",
+    "independent_reasoning": "CONTRAST case for S3-003: NARROW is a true subset (36<40) and correctly BLOCKs the 48-hour request. Confirms NARROW behaves correctly where RENEW does not.",
+    "anomalies": "",
+    "reproduction": "From S3-003: set disposition=NARROW, click Run experiment.",
+    "evidence_source": "browser_observed_notes_derived"
+  },
+  {
+    "case_id": "S3-005",
+    "scenario": "Workforce Shift Assignment",
+    "scenario_id": "WORKFORCE_V2",
+    "test_inputs": {
+      "architecture": "SAME_LAYER_REAUTHORIZATION",
+      "disposition": "TRANSFER",
+      "technical_validity": "PASS",
+      "condition_name": "",
+      "condition_value": "",
+      "governed_metric_or_basis": "",
+      "relevant_requested_value_or_scope": "",
+      "expected_execution_selected_by_user": ""
+    },
+    "browser_selections": "Assign Taylor Morgan an additional 8-hour shift",
+    "materiality": {
+      "result": "MATERIAL"
+    },
+    "authority_state": "INVALID (no new authority)",
+    "workflow": "SAME_LAYER_REAUTHORIZATION",
+    "actor": "",
+    "resulting_authority": "authorityCreated=false",
+    "enforceable_boundary": "none",
+    "technical_validity": {
+      "status": "PASS"
+    },
+    "recommendation": "ASSIGN SHIFT",
+    "confidence": null,
+    "actual_execution": {
+      "result": "BLOCK",
+      "reason": "TRANSFER correctly creates no executable authority; owner=ACTOR-WORKFORCE-OPS matches spec's 'Workforce Operations'."
+    },
+    "expected_actual_comparison": {
+      "expected": "",
+      "comparison": "MATCH"
+    },
+    "control_assertion": "valid",
+    "application_validation": "valid",
+    "browser_validation": "executed via UI",
+    "replay_result": "",
+    "independent_classification": "PASS",
+    "independent_reasoning": "TRANSFER correctly creates no executable authority; owner=ACTOR-WORKFORCE-OPS matches spec's 'Workforce Operations'.",
+    "anomalies": "",
+    "reproduction": "From S3-004: set disposition=TRANSFER, click Run experiment.",
+    "evidence_source": "browser_observed_notes_derived"
+  },
+  {
+    "case_id": "S3-006",
+    "scenario": "Workforce Shift Assignment",
+    "scenario_id": "WORKFORCE_V2",
+    "test_inputs": {
+      "architecture": "SAME_LAYER_REAUTHORIZATION",
+      "disposition": "SUSPEND",
+      "technical_validity": "PASS",
+      "condition_name": "",
+      "condition_value": "",
+      "governed_metric_or_basis": "",
+      "relevant_requested_value_or_scope": "",
+      "expected_execution_selected_by_user": ""
+    },
+    "browser_selections": "Assign Taylor Morgan an additional 8-hour shift",
+    "materiality": {
+      "result": "MATERIAL"
+    },
+    "authority_state": "SUSPENDED",
+    "workflow": "SAME_LAYER_REAUTHORIZATION",
+    "actor": "Workforce Scheduling",
+    "resulting_authority": "AUTH-DECISION-WORK-2 status=SUSPENDED",
+    "enforceable_boundary": "none",
+    "technical_validity": {
+      "status": "PASS"
+    },
+    "recommendation": "ASSIGN SHIFT",
+    "confidence": null,
+    "actual_execution": {
+      "result": "BLOCK",
+      "reason": "SUSPEND correctly produces a SUSPENDED authority with no enforceable boundary."
+    },
+    "expected_actual_comparison": {
+      "expected": "",
+      "comparison": "MATCH"
+    },
+    "control_assertion": "valid",
+    "application_validation": "valid",
+    "browser_validation": "executed via UI",
+    "replay_result": "",
+    "independent_classification": "PASS",
+    "independent_reasoning": "SUSPEND correctly produces a SUSPENDED authority with no enforceable boundary.",
+    "anomalies": "",
+    "reproduction": "From S3-005: set disposition=SUSPEND, click Run experiment.",
+    "evidence_source": "browser_observed_notes_derived"
+  },
+  {
+    "case_id": "S3-007",
+    "scenario": "Workforce Shift Assignment",
+    "scenario_id": "WORKFORCE_V2",
+    "test_inputs": {
+      "architecture": "SAME_LAYER_REAUTHORIZATION",
+      "disposition": "REFUSE",
+      "technical_validity": "PASS",
+      "condition_name": "",
+      "condition_value": "",
+      "governed_metric_or_basis": "",
+      "relevant_requested_value_or_scope": "",
+      "expected_execution_selected_by_user": ""
+    },
+    "browser_selections": "Assign Taylor Morgan an additional 8-hour shift",
+    "materiality": {
+      "result": "MATERIAL"
+    },
+    "authority_state": "INVALID (no new authority)",
+    "workflow": "SAME_LAYER_REAUTHORIZATION",
+    "actor": "",
+    "resulting_authority": "authorityCreated=false",
+    "enforceable_boundary": "none",
+    "technical_validity": {
+      "status": "PASS"
+    },
+    "recommendation": "ASSIGN SHIFT",
+    "confidence": null,
+    "actual_execution": {
+      "result": "BLOCK",
+      "reason": "REFUSE correctly creates no executable authority."
+    },
+    "expected_actual_comparison": {
+      "expected": "",
+      "comparison": "MATCH"
+    },
+    "control_assertion": "valid",
+    "application_validation": "valid",
+    "browser_validation": "executed via UI",
+    "replay_result": "",
+    "independent_classification": "PASS",
+    "independent_reasoning": "REFUSE correctly creates no executable authority.",
+    "anomalies": "",
+    "reproduction": "From S3-006: set disposition=REFUSE, click Run experiment.",
+    "evidence_source": "browser_observed_notes_derived"
+  },
+  {
+    "case_id": "S3-008",
+    "scenario": "Workforce Shift Assignment",
+    "scenario_id": "WORKFORCE_V2",
+    "test_inputs": {
+      "architecture": "SAME_LAYER_REAUTHORIZATION",
+      "disposition": "CONDITION",
+      "technical_validity": "FAIL",
+      "condition_name": "overtimeApproval",
+      "condition_value": "true",
+      "governed_metric_or_basis": "",
+      "relevant_requested_value_or_scope": "",
+      "expected_execution_selected_by_user": ""
+    },
+    "browser_selections": "Assign Taylor Morgan an additional 8-hour shift",
+    "materiality": {
+      "result": "MATERIAL"
+    },
+    "authority_state": "ACTIVE (conditioned, satisfied) but technically invalid",
+    "workflow": "SAME_LAYER_REAUTHORIZATION",
+    "actor": "Workforce Scheduling",
+    "resulting_authority": "AUTH-DECISION-WORK-2 v31",
+    "enforceable_boundary": "BOUNDARY-AUTH-DECISION-WORK-2",
+    "technical_validity": {
+      "status": "FAIL"
+    },
+    "recommendation": "ASSIGN SHIFT",
+    "confidence": null,
+    "actual_execution": {
+      "result": "BLOCK",
+      "reason": "Tech/org independence: identical to ALLOW case S3-002 except Technical validity=FAIL; execution correctly BLOCKs solely on the technical dimension."
+    },
+    "expected_actual_comparison": {
+      "expected": "",
+      "comparison": "MATCH"
+    },
+    "control_assertion": "valid",
+    "application_validation": "valid",
+    "browser_validation": "executed via UI",
+    "replay_result": "",
+    "independent_classification": "PASS",
+    "independent_reasoning": "Tech/org independence: identical to ALLOW case S3-002 except Technical validity=FAIL; execution correctly BLOCKs solely on the technical dimension.",
+    "anomalies": "",
+    "reproduction": "From S3-004: set disposition=CONDITION, Overtime approval=YES, Technical validity=FAIL, click Run experiment.",
+    "evidence_source": "browser_observed_notes_derived"
+  },
+  {
+    "case_id": "S3-009",
+    "scenario": "Workforce Shift Assignment",
+    "scenario_id": "WORKFORCE_V2",
+    "test_inputs": {
+      "architecture": "SEPARATED_REAUTHORIZATION",
+      "disposition": "NARROW",
+      "technical_validity": "PASS",
+      "condition_name": "",
+      "condition_value": "",
+      "governed_metric_or_basis": "",
+      "relevant_requested_value_or_scope": "",
+      "expected_execution_selected_by_user": ""
+    },
+    "browser_selections": "Assign Taylor Morgan an additional 8-hour shift",
+    "materiality": {
+      "result": "MATERIAL"
+    },
+    "authority_state": "identical to S3-004",
+    "workflow": "SEPARATED_REAUTHORIZATION",
+    "actor": "Workforce Operations",
+    "resulting_authority": "AUTH-DECISION-WORK-2 v31",
+    "enforceable_boundary": "BOUNDARY-AUTH-DECISION-WORK-2",
+    "technical_validity": {
+      "status": "PASS"
+    },
+    "recommendation": "ASSIGN SHIFT",
+    "confidence": null,
+    "actual_execution": {
+      "result": "BLOCK",
+      "reason": "Architecture-attribution pair with S3-004: decision actor correctly 'Workforce Operations' (matches spec); scope/boundary/execution identical. No hidden confound."
+    },
+    "expected_actual_comparison": {
+      "expected": "",
+      "comparison": "MATCH"
+    },
+    "control_assertion": "valid",
+    "application_validation": "valid",
+    "browser_validation": "executed via UI",
+    "replay_result": "",
+    "independent_classification": "PASS",
+    "independent_reasoning": "Architecture-attribution pair with S3-004: decision actor correctly 'Workforce Operations' (matches spec); scope/boundary/execution identical. No hidden confound.",
+    "anomalies": "",
+    "reproduction": "From S3-008: click Separated-reauthorization radio, set disposition=NARROW, Technical validity=PASS, click Run experiment.",
+    "evidence_source": "browser_observed_notes_derived"
+  },
+  {
+    "case_id": "S3-010",
+    "scenario": "Workforce Shift Assignment",
+    "scenario_id": "WORKFORCE_V2",
+    "test_inputs": {
+      "architecture": "SEPARATED_REAUTHORIZATION",
+      "disposition": "N/A (skipped)",
+      "technical_validity": "PASS",
+      "condition_name": "",
+      "condition_value": "",
+      "governed_metric_or_basis": "resultingWeeklyHours",
+      "relevant_requested_value_or_scope": "resultingWeeklyHours=36",
+      "expected_execution_selected_by_user": "BLOCK"
+    },
+    "browser_selections": "resultingWeeklyHours=36",
+    "materiality": {
+      "result": "NON_MATERIAL"
+    },
+    "authority_state": "ACTIVE (original, untouched)",
+    "workflow": "NO_REAUTHORIZATION_REQUIRED",
+    "actor": "",
+    "resulting_authority": "AUTH-WORK-30",
+    "enforceable_boundary": "BOUNDARY-AUTH-WORK-30",
+    "technical_validity": {
+      "status": "PASS"
+    },
+    "recommendation": "ASSIGN SHIFT",
+    "confidence": null,
+    "actual_execution": {
+      "result": "ALLOW",
+      "reason": "36<=40, no threshold crossing -> correctly NON_MATERIAL, original authority governs, ALLOW."
+    },
+    "expected_actual_comparison": {
+      "expected": "BLOCK",
+      "comparison": "MISMATCH"
+    },
+    "control_assertion": "",
+    "application_validation": "valid (NON_MATERIAL correctly detected)",
+    "browser_validation": "executed via UI",
+    "replay_result": "",
+    "independent_classification": "PASS",
+    "independent_reasoning": "36<=40, no threshold crossing -> correctly NON_MATERIAL, original authority governs, ALLOW.",
+    "anomalies": "",
+    "reproduction": "From S3-009: set Resulting weekly hours=36, click Run experiment.",
+    "evidence_source": "browser_observed_notes_derived"
+  },
+  {
+    "case_id": "S4-001",
+    "scenario": "Procurement / Total Acquisition Cost",
+    "scenario_id": "PROCUREMENT_V2",
+    "test_inputs": {
+      "architecture": "SAME_LAYER_REAUTHORIZATION",
+      "disposition": "RENEW",
+      "technical_validity": "PASS",
+      "condition_name": "",
+      "condition_value": "",
+      "governed_metric_or_basis": "totalAcquisitionCostCents (selected)",
+      "relevant_requested_value_or_scope": "Vendor C: equipment=$145,000 shipping=$55,000 total=$200,000",
+      "expected_execution_selected_by_user": "BLOCK"
+    },
+    "browser_selections": "Vendor C: equipment=$145,000 shipping=$55,000 total=$200,000",
+    "materiality": {
+      "result": "MATERIAL"
+    },
+    "authority_state": "prior INVALID; new ACTIVE (renewed)",
+    "workflow": "SAME_LAYER_REAUTHORIZATION",
+    "actor": "Procurement",
+    "resulting_authority": "AUTH-DECISION-PROC-2 v41",
+    "enforceable_boundary": "BOUNDARY-AUTH-DECISION-PROC-2",
+    "technical_validity": {
+      "status": "PASS"
+    },
+    "recommendation": "APPROVE PURCHASE",
+    "confidence": null,
+    "actual_execution": {
+      "result": "BLOCK",
+      "reason": "RENEW keeps the same $175,000 numeric cap but reapplies it to the new totalAcquisitionCost metric; $200,000 > $175,000 -> correctly BLOCK. A fourth distinct RENEW behavior pattern (vs S1/S2/S3), reinforcing that RENEW is scenario-specific rather than one general rule."
+    },
+    "expected_actual_comparison": {
+      "expected": "BLOCK",
+      "comparison": "MATCH"
+    },
+    "control_assertion": "valid",
+    "application_validation": "valid",
+    "browser_validation": "executed via UI",
+    "replay_result": "",
+    "independent_classification": "PASS",
+    "independent_reasoning": "RENEW keeps the same $175,000 numeric cap but reapplies it to the new totalAcquisitionCost metric; $200,000 > $175,000 -> correctly BLOCK. A fourth distinct RENEW behavior pattern (vs S1/S2/S3), reinforcing that RENEW is scenario-specific rather than one general rule.",
+    "anomalies": "",
+    "reproduction": "Scenario=Procurement default load (Vendor C, metric=totalAcquisitionCostCents, disposition=RENEW, financeApproval=NO); click Run experiment.",
+    "evidence_source": "browser_observed_notes_derived"
+  },
+  {
+    "case_id": "S4-002",
+    "scenario": "Procurement / Total Acquisition Cost",
+    "scenario_id": "PROCUREMENT_V2",
+    "test_inputs": {
+      "architecture": "SAME_LAYER_REAUTHORIZATION",
+      "disposition": "N/A (skipped)",
+      "technical_validity": "PASS",
+      "condition_name": "",
+      "condition_value": "",
+      "governed_metric_or_basis": "equipmentPriceCents (reverted to original)",
+      "relevant_requested_value_or_scope": "Vendor C: equipment=$145,000, total=$200,000",
+      "expected_execution_selected_by_user": "BLOCK"
+    },
+    "browser_selections": "Vendor C: equipment=$145,000, total=$200,000",
+    "materiality": {
+      "result": "NON_MATERIAL"
+    },
+    "authority_state": "ACTIVE (original, untouched)",
+    "workflow": "NO_REAUTHORIZATION_REQUIRED",
+    "actor": "",
+    "resulting_authority": "AUTH-PROC-40",
+    "enforceable_boundary": "BOUNDARY-AUTH-PROC-40",
+    "technical_validity": {
+      "status": "PASS"
+    },
+    "recommendation": "APPROVE PURCHASE",
+    "confidence": null,
+    "actual_execution": {
+      "result": "ALLOW",
+      "reason": "LEGITIMATE EXPERIMENTAL RESULT (Procurement finding #1, supplementary probe D): governed metric set to equipmentPriceCents (matching the original baseline exactly); Vendor C's equipment price ($145,000) is within the $175,000 cap, so ALLOW -- even though Vendor C has the HIGHEST total acquisition cost of all three vendors ($200,000 vs $185,000 Vendor A and $178,000 Vendor B). Demonstrates a system can faithfully enforce a wrong-but-selected boundary; the UI accurately reflected what was enforced."
+    },
+    "expected_actual_comparison": {
+      "expected": "BLOCK",
+      "comparison": "MISMATCH"
+    },
+    "control_assertion": "",
+    "application_validation": "valid (NON_MATERIAL correctly detected: metric reverted to original = no change)",
+    "browser_validation": "executed via UI",
+    "replay_result": "",
+    "independent_classification": "PASS",
+    "independent_reasoning": "LEGITIMATE EXPERIMENTAL RESULT (Procurement finding #1, supplementary probe D): governed metric set to equipmentPriceCents (matching the original baseline exactly); Vendor C's equipment price ($145,000) is within the $175,000 cap, so ALLOW -- even though Vendor C has the HIGHEST total acquisition cost of all three vendors ($200,000 vs $185,000 Vendor A and $178,000 Vendor B). Demonstrates a system can faithfully enforce a wrong-but-selected boundary; the UI accurately reflected what was enforced.",
+    "anomalies": "",
+    "reproduction": "From S4-001: set Governed procurement metric=equipmentPriceCents, click Run experiment.",
+    "evidence_source": "browser_observed_notes_derived"
+  },
+  {
+    "case_id": "S4-003",
+    "scenario": "Procurement / Total Acquisition Cost",
+    "scenario_id": "PROCUREMENT_V2",
+    "test_inputs": {
+      "architecture": "SAME_LAYER_REAUTHORIZATION",
+      "disposition": "NARROW",
+      "technical_validity": "PASS",
+      "condition_name": "",
+      "condition_value": "",
+      "governed_metric_or_basis": "totalAcquisitionCostCents (SELECTED/displayed) but equipmentPriceCents (ACTUALLY ENFORCED)",
+      "relevant_requested_value_or_scope": "Vendor C: equipment=$145,000, total=$200,000",
+      "expected_execution_selected_by_user": "BLOCK"
+    },
+    "browser_selections": "Vendor C: equipment=$145,000, total=$200,000",
+    "materiality": {
+      "result": "MATERIAL"
+    },
+    "authority_state": "prior INVALID; new ACTIVE (narrowed)",
+    "workflow": "SAME_LAYER_REAUTHORIZATION",
+    "actor": "Procurement",
+    "resulting_authority": "AUTH-DECISION-PROC-2 v41",
+    "enforceable_boundary": "BOUNDARY-AUTH-DECISION-PROC-2",
+    "technical_validity": {
+      "status": "PASS"
+    },
+    "recommendation": "APPROVE PURCHASE",
+    "confidence": null,
+    "actual_execution": {
+      "result": "ALLOW",
+      "reason": "CENTRAL PROCUREMENT FINDING #2 (distinct from #1, supplementary probe D): 'Your current selections' explicitly reports 'Governed procurement metric: totalAcquisitionCostCents', but NARROW's actual resulting scope is 'equipmentPriceCents LTE 15000000' -- it silently reverted to the OLD metric and merely tightened its numeric cap, ignoring the user's selected/displayed metric entirely. Vendor C ($145,000 equipment) is let through despite having the WORST total cost ($200,000). CONTRAST: RENEW (S4-001) and CONDITION (S4-005/006) both correctly honored totalAcquisitionCostCents in the identical scenario -- isolating this to NARROW specifically. This is a genuine displayed-selection-vs-enforcement discrepancy, more serious than Finding #1's faithful-enforcement-of-a-selected-wrong-metric."
+    },
+    "expected_actual_comparison": {
+      "expected": "BLOCK",
+      "comparison": "MISMATCH"
+    },
+    "control_assertion": "valid (app label)",
+    "application_validation": "valid",
+    "browser_validation": "executed via UI",
+    "replay_result": "",
+    "independent_classification": "FAIL \u2014 IMPLEMENTATION",
+    "independent_reasoning": "CENTRAL PROCUREMENT FINDING #2 (distinct from #1, supplementary probe D): 'Your current selections' explicitly reports 'Governed procurement metric: totalAcquisitionCostCents', but NARROW's actual resulting scope is 'equipmentPriceCents LTE 15000000' -- it silently reverted to the OLD metric and merely tightened its numeric cap, ignoring the user's selected/displayed metric entirely. Vendor C ($145,000 equipment) is let through despite having the WORST total cost ($200,000). CONTRAST: RENEW (S4-001) and CONDITION (S4-005/006) both correctly honored totalAcquisitionCostCents in the identical scenario -- isolating this to NARROW specifically. This is a genuine displayed-selection-vs-enforcement discrepancy, more serious than Finding #1's faithful-enforcement-of-a-selected-wrong-metric.",
+    "anomalies": "NARROW's enforced governed metric silently disagrees with the metric shown as configured in 'Your current selections'.",
+    "reproduction": "From S4-002: set Governed procurement metric back to totalAcquisitionCostCents, click Run experiment; confirm 'Your current selections' states totalAcquisitionCostCents while resulting scope shows equipmentPriceCents.",
+    "evidence_source": "browser_observed_notes_derived"
+  },
+  {
+    "case_id": "S4-004",
+    "scenario": "Procurement / Total Acquisition Cost",
+    "scenario_id": "PROCUREMENT_V2",
+    "test_inputs": {
+      "architecture": "SAME_LAYER_REAUTHORIZATION",
+      "disposition": "NARROW",
+      "technical_validity": "PASS",
+      "condition_name": "",
+      "condition_value": "",
+      "governed_metric_or_basis": "totalAcquisitionCostCents (SELECTED) but equipmentPriceCents (ENFORCED)",
+      "relevant_requested_value_or_scope": "",
+      "expected_execution_selected_by_user": "BLOCK"
+    },
+    "browser_selections": "Approve purchase from Vendor C",
+    "materiality": {
+      "result": "MATERIAL"
+    },
+    "authority_state": "",
+    "workflow": "",
+    "actor": "",
+    "resulting_authority": "AUTH-DECISION-PROC-2 v41",
+    "enforceable_boundary": "BOUNDARY-AUTH-DECISION-PROC-2",
+    "technical_validity": {
+      "status": "PASS"
+    },
+    "recommendation": "APPROVE PURCHASE",
+    "confidence": null,
+    "actual_execution": {
+      "result": "ALLOW",
+      "reason": "DETERMINISM CHECK for S4-003: identical unmodified re-run reproduced the exact same (anomalous) equipmentPriceCents LTE 15000000 scope and ALLOW result, confirming the metric-substitution behavior is deterministic/reproducible, not a one-off render glitch."
+    },
+    "expected_actual_comparison": {
+      "expected": "BLOCK",
+      "comparison": "MISMATCH"
+    },
+    "control_assertion": "",
+    "application_validation": "valid",
+    "browser_validation": "executed via UI",
+    "replay_result": "re-run of identical inputs (no changes) reproduced identical result",
+    "independent_classification": "FAIL \u2014 IMPLEMENTATION",
+    "independent_reasoning": "DETERMINISM CHECK for S4-003: identical unmodified re-run reproduced the exact same (anomalous) equipmentPriceCents LTE 15000000 scope and ALLOW result, confirming the metric-substitution behavior is deterministic/reproducible, not a one-off render glitch.",
+    "anomalies": "Same as S4-003 (confirmed reproducible).",
+    "reproduction": "Re-ran S4-003's exact configuration with no changes; clicked Run experiment again.",
+    "evidence_source": "browser_observed_notes_derived"
+  },
+  {
+    "case_id": "S4-005",
+    "scenario": "Procurement / Total Acquisition Cost",
+    "scenario_id": "PROCUREMENT_V2",
+    "test_inputs": {
+      "architecture": "SAME_LAYER_REAUTHORIZATION",
+      "disposition": "CONDITION",
+      "technical_validity": "PASS",
+      "condition_name": "financeApproval",
+      "condition_value": "false",
+      "governed_metric_or_basis": "totalAcquisitionCostCents",
+      "relevant_requested_value_or_scope": "",
+      "expected_execution_selected_by_user": "BLOCK"
+    },
+    "browser_selections": "Approve purchase from Vendor C",
+    "materiality": {
+      "result": "MATERIAL"
+    },
+    "authority_state": "ACTIVE (conditioned)",
+    "workflow": "SAME_LAYER_REAUTHORIZATION",
+    "actor": "Procurement",
+    "resulting_authority": "AUTH-DECISION-PROC-2 v41",
+    "enforceable_boundary": "BOUNDARY-AUTH-DECISION-PROC-2",
+    "technical_validity": {
+      "status": "PASS"
+    },
+    "recommendation": "APPROVE PURCHASE",
+    "confidence": null,
+    "actual_execution": {
+      "result": "BLOCK",
+      "reason": "CONDITION correctly honors the selected totalAcquisitionCostCents metric (contrast with NARROW's S4-003 bug) and correctly gates on financeApproval."
+    },
+    "expected_actual_comparison": {
+      "expected": "BLOCK",
+      "comparison": "MATCH"
+    },
+    "control_assertion": "valid",
+    "application_validation": "valid",
+    "browser_validation": "executed via UI",
+    "replay_result": "",
+    "independent_classification": "PASS",
+    "independent_reasoning": "CONDITION correctly honors the selected totalAcquisitionCostCents metric (contrast with NARROW's S4-003 bug) and correctly gates on financeApproval.",
+    "anomalies": "",
+    "reproduction": "From S4-003: set disposition=CONDITION, click Run experiment (financeApproval defaults to NO).",
+    "evidence_source": "browser_observed_notes_derived"
+  },
+  {
+    "case_id": "S4-006",
+    "scenario": "Procurement / Total Acquisition Cost",
+    "scenario_id": "PROCUREMENT_V2",
+    "test_inputs": {
+      "architecture": "SAME_LAYER_REAUTHORIZATION",
+      "disposition": "CONDITION",
+      "technical_validity": "PASS",
+      "condition_name": "financeApproval",
+      "condition_value": "true",
+      "governed_metric_or_basis": "totalAcquisitionCostCents",
+      "relevant_requested_value_or_scope": "",
+      "expected_execution_selected_by_user": "BLOCK"
+    },
+    "browser_selections": "Approve purchase from Vendor C",
+    "materiality": {
+      "result": "MATERIAL"
+    },
+    "authority_state": "ACTIVE (conditioned, satisfied)",
+    "workflow": "SAME_LAYER_REAUTHORIZATION",
+    "actor": "Procurement",
+    "resulting_authority": "AUTH-DECISION-PROC-2 v41",
+    "enforceable_boundary": "BOUNDARY-AUTH-DECISION-PROC-2",
+    "technical_validity": {
+      "status": "PASS"
+    },
+    "recommendation": "APPROVE PURCHASE",
+    "confidence": null,
+    "actual_execution": {
+      "result": "ALLOW",
+      "reason": "Completes CONDITION causal pair with S4-005. Requested $200,000 exactly equals the $200,000 cap; LTE is correctly inclusive (ALLOW)."
+    },
+    "expected_actual_comparison": {
+      "expected": "BLOCK",
+      "comparison": "MISMATCH"
+    },
+    "control_assertion": "valid",
+    "application_validation": "valid",
+    "browser_validation": "executed via UI",
+    "replay_result": "",
+    "independent_classification": "PASS",
+    "independent_reasoning": "Completes CONDITION causal pair with S4-005. Requested $200,000 exactly equals the $200,000 cap; LTE is correctly inclusive (ALLOW).",
+    "anomalies": "",
+    "reproduction": "From S4-005: set Finance approval=YES, click Run experiment.",
+    "evidence_source": "browser_observed_notes_derived"
+  },
+  {
+    "case_id": "S4-007",
+    "scenario": "Procurement / Total Acquisition Cost",
+    "scenario_id": "PROCUREMENT_V2",
+    "test_inputs": {
+      "architecture": "SAME_LAYER_REAUTHORIZATION",
+      "disposition": "TRANSFER",
+      "technical_validity": "PASS",
+      "condition_name": "",
+      "condition_value": "",
+      "governed_metric_or_basis": "",
+      "relevant_requested_value_or_scope": "",
+      "expected_execution_selected_by_user": ""
+    },
+    "browser_selections": "Approve purchase from Vendor C",
+    "materiality": {
+      "result": "MATERIAL"
+    },
+    "authority_state": "INVALID (no new authority)",
+    "workflow": "SAME_LAYER_REAUTHORIZATION",
+    "actor": "",
+    "resulting_authority": "authorityCreated=false",
+    "enforceable_boundary": "none",
+    "technical_validity": {
+      "status": "PASS"
+    },
+    "recommendation": "APPROVE PURCHASE",
+    "confidence": null,
+    "actual_execution": {
+      "result": "BLOCK",
+      "reason": "TRANSFER correctly creates no executable authority."
+    },
+    "expected_actual_comparison": {
+      "expected": "",
+      "comparison": "MATCH"
+    },
+    "control_assertion": "valid",
+    "application_validation": "valid",
+    "browser_validation": "executed via UI",
+    "replay_result": "",
+    "independent_classification": "PASS",
+    "independent_reasoning": "TRANSFER correctly creates no executable authority.",
+    "anomalies": "",
+    "reproduction": "From S4-006: set disposition=TRANSFER, click Run experiment.",
+    "evidence_source": "browser_observed_notes_derived"
+  },
+  {
+    "case_id": "S4-008",
+    "scenario": "Procurement / Total Acquisition Cost",
+    "scenario_id": "PROCUREMENT_V2",
+    "test_inputs": {
+      "architecture": "SAME_LAYER_REAUTHORIZATION",
+      "disposition": "SUSPEND",
+      "technical_validity": "PASS",
+      "condition_name": "",
+      "condition_value": "",
+      "governed_metric_or_basis": "",
+      "relevant_requested_value_or_scope": "",
+      "expected_execution_selected_by_user": ""
+    },
+    "browser_selections": "Approve purchase from Vendor C",
+    "materiality": {
+      "result": "MATERIAL"
+    },
+    "authority_state": "SUSPENDED",
+    "workflow": "SAME_LAYER_REAUTHORIZATION",
+    "actor": "Procurement",
+    "resulting_authority": "AUTH-DECISION-PROC-2 status=SUSPENDED",
+    "enforceable_boundary": "none",
+    "technical_validity": {
+      "status": "PASS"
+    },
+    "recommendation": "APPROVE PURCHASE",
+    "confidence": null,
+    "actual_execution": {
+      "result": "BLOCK",
+      "reason": "SUSPEND correctly produces a SUSPENDED authority with no enforceable boundary."
+    },
+    "expected_actual_comparison": {
+      "expected": "",
+      "comparison": "MATCH"
+    },
+    "control_assertion": "valid",
+    "application_validation": "valid",
+    "browser_validation": "executed via UI",
+    "replay_result": "",
+    "independent_classification": "PASS",
+    "independent_reasoning": "SUSPEND correctly produces a SUSPENDED authority with no enforceable boundary.",
+    "anomalies": "",
+    "reproduction": "From S4-007: set disposition=SUSPEND, click Run experiment.",
+    "evidence_source": "browser_observed_notes_derived"
+  },
+  {
+    "case_id": "S4-009",
+    "scenario": "Procurement / Total Acquisition Cost",
+    "scenario_id": "PROCUREMENT_V2",
+    "test_inputs": {
+      "architecture": "SAME_LAYER_REAUTHORIZATION",
+      "disposition": "REFUSE",
+      "technical_validity": "PASS",
+      "condition_name": "",
+      "condition_value": "",
+      "governed_metric_or_basis": "",
+      "relevant_requested_value_or_scope": "",
+      "expected_execution_selected_by_user": ""
+    },
+    "browser_selections": "Approve purchase from Vendor C",
+    "materiality": {
+      "result": "MATERIAL"
+    },
+    "authority_state": "INVALID (no new authority)",
+    "workflow": "SAME_LAYER_REAUTHORIZATION",
+    "actor": "",
+    "resulting_authority": "authorityCreated=false",
+    "enforceable_boundary": "none",
+    "technical_validity": {
+      "status": "PASS"
+    },
+    "recommendation": "APPROVE PURCHASE",
+    "confidence": null,
+    "actual_execution": {
+      "result": "BLOCK",
+      "reason": "REFUSE correctly creates no executable authority."
+    },
+    "expected_actual_comparison": {
+      "expected": "",
+      "comparison": "MATCH"
+    },
+    "control_assertion": "valid",
+    "application_validation": "valid",
+    "browser_validation": "executed via UI",
+    "replay_result": "",
+    "independent_classification": "PASS",
+    "independent_reasoning": "REFUSE correctly creates no executable authority.",
+    "anomalies": "",
+    "reproduction": "From S4-008: set disposition=REFUSE, click Run experiment.",
+    "evidence_source": "browser_observed_notes_derived"
+  },
+  {
+    "case_id": "S4-010",
+    "scenario": "Procurement / Total Acquisition Cost",
+    "scenario_id": "PROCUREMENT_V2",
+    "test_inputs": {
+      "architecture": "SAME_LAYER_REAUTHORIZATION",
+      "disposition": "CONDITION",
+      "technical_validity": "FAIL",
+      "condition_name": "financeApproval",
+      "condition_value": "true",
+      "governed_metric_or_basis": "",
+      "relevant_requested_value_or_scope": "",
+      "expected_execution_selected_by_user": ""
+    },
+    "browser_selections": "Approve purchase from Vendor C",
+    "materiality": {
+      "result": "MATERIAL"
+    },
+    "authority_state": "ACTIVE (conditioned, satisfied) but technically invalid",
+    "workflow": "SAME_LAYER_REAUTHORIZATION",
+    "actor": "Procurement",
+    "resulting_authority": "AUTH-DECISION-PROC-2 v41",
+    "enforceable_boundary": "BOUNDARY-AUTH-DECISION-PROC-2",
+    "technical_validity": {
+      "status": "FAIL"
+    },
+    "recommendation": "APPROVE PURCHASE",
+    "confidence": null,
+    "actual_execution": {
+      "result": "BLOCK",
+      "reason": "Tech/org independence: identical to ALLOW case S4-006 except Technical validity=FAIL; execution correctly BLOCKs solely on the technical dimension."
+    },
+    "expected_actual_comparison": {
+      "expected": "",
+      "comparison": "MATCH"
+    },
+    "control_assertion": "valid",
+    "application_validation": "valid",
+    "browser_validation": "executed via UI",
+    "replay_result": "",
+    "independent_classification": "PASS",
+    "independent_reasoning": "Tech/org independence: identical to ALLOW case S4-006 except Technical validity=FAIL; execution correctly BLOCKs solely on the technical dimension.",
+    "anomalies": "",
+    "reproduction": "From S4-009: set disposition=CONDITION, Finance approval=YES, Technical validity=FAIL, click Run experiment.",
+    "evidence_source": "browser_observed_notes_derived"
+  },
+  {
+    "case_id": "S4-011",
+    "scenario": "Procurement / Total Acquisition Cost",
+    "scenario_id": "PROCUREMENT_V2",
+    "test_inputs": {
+      "architecture": "SEPARATED_REAUTHORIZATION",
+      "disposition": "CONDITION",
+      "technical_validity": "PASS",
+      "condition_name": "financeApproval",
+      "condition_value": "true",
+      "governed_metric_or_basis": "totalAcquisitionCostCents",
+      "relevant_requested_value_or_scope": "",
+      "expected_execution_selected_by_user": ""
+    },
+    "browser_selections": "Approve purchase from Vendor C",
+    "materiality": {
+      "result": "MATERIAL"
+    },
+    "authority_state": "identical to S4-006",
+    "workflow": "SEPARATED_REAUTHORIZATION",
+    "actor": "Finance and Procurement Authority",
+    "resulting_authority": "AUTH-DECISION-PROC-2 v41",
+    "enforceable_boundary": "BOUNDARY-AUTH-DECISION-PROC-2",
+    "technical_validity": {
+      "status": "PASS"
+    },
+    "recommendation": "APPROVE PURCHASE",
+    "confidence": null,
+    "actual_execution": {
+      "result": "ALLOW",
+      "reason": "Architecture-attribution pair with S4-006: decision actor correctly 'Finance and Procurement Authority' (matches spec); scope/boundary/execution identical. No hidden confound."
+    },
+    "expected_actual_comparison": {
+      "expected": "",
+      "comparison": "MISMATCH"
+    },
+    "control_assertion": "valid",
+    "application_validation": "valid",
+    "browser_validation": "executed via UI",
+    "replay_result": "",
+    "independent_classification": "PASS",
+    "independent_reasoning": "Architecture-attribution pair with S4-006: decision actor correctly 'Finance and Procurement Authority' (matches spec); scope/boundary/execution identical. No hidden confound.",
+    "anomalies": "",
+    "reproduction": "From S4-010: set Technical validity=PASS, click Separated-reauthorization radio, click Run experiment.",
+    "evidence_source": "browser_observed_notes_derived"
+  },
+  {
+    "case_id": "S5-001",
+    "scenario": "Customer Account Restriction",
+    "scenario_id": "ACCOUNT_RESTRICTION_V2",
+    "test_inputs": {
+      "architecture": "SAME_LAYER_REAUTHORIZATION",
+      "disposition": "CONDITION",
+      "technical_validity": "PASS",
+      "condition_name": "secondReviewApproved",
+      "condition_value": "false",
+      "governed_metric_or_basis": "restrictionLevel + identityVerificationSucceeded",
+      "relevant_requested_value_or_scope": "identityVerificationSucceeded=true",
+      "expected_execution_selected_by_user": "BLOCK"
+    },
+    "browser_selections": "identityVerificationSucceeded=true",
+    "materiality": {
+      "result": "MATERIAL"
+    },
+    "authority_state": "prior INVALID; new ACTIVE (conditioned)",
+    "workflow": "SAME_LAYER_REAUTHORIZATION",
+    "actor": "Account Risk Operations",
+    "resulting_authority": "AUTH-DECISION-ACCOUNT-2 v51",
+    "enforceable_boundary": "BOUNDARY-AUTH-DECISION-ACCOUNT-2",
+    "technical_validity": {
+      "status": "PASS"
+    },
+    "recommendation": "RESTRICT ACCOUNT",
+    "confidence": 0.97,
+    "actual_execution": {
+      "result": "BLOCK",
+      "reason": "Condition correctly gates restriction when secondReviewApproved is false. Confidence fixed at 0.97 (not independently determinative)."
+    },
+    "expected_actual_comparison": {
+      "expected": "BLOCK",
+      "comparison": "MATCH"
+    },
+    "control_assertion": "valid",
+    "application_validation": "valid",
+    "browser_validation": "executed via UI",
+    "replay_result": "",
+    "independent_classification": "PASS",
+    "independent_reasoning": "Condition correctly gates restriction when secondReviewApproved is false. Confidence fixed at 0.97 (not independently determinative).",
+    "anomalies": "",
+    "reproduction": "Scenario=Customer Account Restriction default load (identityVerificationSucceeded=YES, disposition=CONDITION, secondReviewApproved=NO); click Run experiment.",
+    "evidence_source": "browser_observed_notes_derived"
+  },
+  {
+    "case_id": "S5-002",
+    "scenario": "Customer Account Restriction",
+    "scenario_id": "ACCOUNT_RESTRICTION_V2",
+    "test_inputs": {
+      "architecture": "SAME_LAYER_REAUTHORIZATION",
+      "disposition": "CONDITION",
+      "technical_validity": "PASS",
+      "condition_name": "secondReviewApproved",
+      "condition_value": "true",
+      "governed_metric_or_basis": "restrictionLevel + identityVerificationSucceeded",
+      "relevant_requested_value_or_scope": "identityVerificationSucceeded=true",
+      "expected_execution_selected_by_user": "BLOCK"
+    },
+    "browser_selections": "identityVerificationSucceeded=true",
+    "materiality": {
+      "result": "MATERIAL"
+    },
+    "authority_state": "ACTIVE (conditioned, satisfied)",
+    "workflow": "SAME_LAYER_REAUTHORIZATION",
+    "actor": "Account Risk Operations",
+    "resulting_authority": "AUTH-DECISION-ACCOUNT-2 v51",
+    "enforceable_boundary": "BOUNDARY-AUTH-DECISION-ACCOUNT-2",
+    "technical_validity": {
+      "status": "PASS"
+    },
+    "recommendation": "RESTRICT ACCOUNT",
+    "confidence": 0.97,
+    "actual_execution": {
+      "result": "ALLOW",
+      "reason": "Completes CONDITION causal pair with S5-001 (probe A). ALSO direct evidence for confidence-independence (probe C): confidence is 0.97 in BOTH this ALLOW case and the BLOCK case S5-001 -- confidence did not determine the outcome."
+    },
+    "expected_actual_comparison": {
+      "expected": "BLOCK",
+      "comparison": "MISMATCH"
+    },
+    "control_assertion": "valid",
+    "application_validation": "valid",
+    "browser_validation": "executed via UI",
+    "replay_result": "",
+    "independent_classification": "PASS",
+    "independent_reasoning": "Completes CONDITION causal pair with S5-001 (probe A). ALSO direct evidence for confidence-independence (probe C): confidence is 0.97 in BOTH this ALLOW case and the BLOCK case S5-001 -- confidence did not determine the outcome.",
+    "anomalies": "",
+    "reproduction": "From S5-001: set Second review approved=YES, click Run experiment.",
+    "evidence_source": "browser_observed_notes_derived"
+  },
+  {
+    "case_id": "S5-003",
+    "scenario": "Customer Account Restriction",
+    "scenario_id": "ACCOUNT_RESTRICTION_V2",
+    "test_inputs": {
+      "architecture": "SAME_LAYER_REAUTHORIZATION",
+      "disposition": "RENEW",
+      "technical_validity": "PASS",
+      "condition_name": "",
+      "condition_value": "",
+      "governed_metric_or_basis": "restrictionLevel + identityVerificationSucceeded",
+      "relevant_requested_value_or_scope": "identityVerificationSucceeded=true",
+      "expected_execution_selected_by_user": "BLOCK"
+    },
+    "browser_selections": "identityVerificationSucceeded=true",
+    "materiality": {
+      "result": "MATERIAL"
+    },
+    "authority_state": "prior INVALID; new ACTIVE (renewed)",
+    "workflow": "SAME_LAYER_REAUTHORIZATION",
+    "actor": "Account Risk Operations",
+    "resulting_authority": "AUTH-DECISION-ACCOUNT-2 v51",
+    "enforceable_boundary": "BOUNDARY-AUTH-DECISION-ACCOUNT-2",
+    "technical_validity": {
+      "status": "PASS"
+    },
+    "recommendation": "RESTRICT ACCOUNT",
+    "confidence": 0.97,
+    "actual_execution": {
+      "result": "ALLOW",
+      "reason": "FLAGSHIP FINDING #4 of 4 (strongest/most consequential): baseline authority AUTH-ACCOUNT-50 required identityVerificationSucceeded IN [false] (restriction was authorized specifically while identity was NOT yet verified). After RENEW, the new authority's scope requires identityVerificationSucceeded IN [true] -- the CURRENT/post-verification value -- so restriction is authorized against an ALREADY-VERIFIED customer with zero condition/scrutiny, using exactly the fact that undercut the original suspicion. Confidence remained 0.97 throughout, unaffected. Fourth confirmed instance of the cross-scenario RENEW pattern (S2-003, S3-003, S4-001-variant)."
+    },
+    "expected_actual_comparison": {
+      "expected": "BLOCK",
+      "comparison": "MISMATCH"
+    },
+    "control_assertion": "valid (app label)",
+    "application_validation": "valid",
+    "browser_validation": "executed via UI",
+    "replay_result": "",
+    "independent_classification": "FAIL \u2014 CONCEPTUAL",
+    "independent_reasoning": "FLAGSHIP FINDING #4 of 4 (strongest/most consequential): baseline authority AUTH-ACCOUNT-50 required identityVerificationSucceeded IN [false] (restriction was authorized specifically while identity was NOT yet verified). After RENEW, the new authority's scope requires identityVerificationSucceeded IN [true] -- the CURRENT/post-verification value -- so restriction is authorized against an ALREADY-VERIFIED customer with zero condition/scrutiny, using exactly the fact that undercut the original suspicion. Confidence remained 0.97 throughout, unaffected. Fourth confirmed instance of the cross-scenario RENEW pattern (S2-003, S3-003, S4-001-variant).",
+    "anomalies": "RENEW re-derives its boundary from the current/changed state rather than the original qualifying state, on the exact dimension that made the change material -- now in the highest-real-world-stakes domain (customer account restriction).",
+    "reproduction": "From S5-002: set disposition=RENEW, click Run experiment. Compare resulting scope's identityVerificationSucceeded value (true) against Baseline control run's value (false).",
+    "evidence_source": "browser_observed_notes_derived"
+  },
+  {
+    "case_id": "S5-004",
+    "scenario": "Customer Account Restriction",
+    "scenario_id": "ACCOUNT_RESTRICTION_V2",
+    "test_inputs": {
+      "architecture": "SAME_LAYER_REAUTHORIZATION",
+      "disposition": "NARROW",
+      "technical_validity": "PASS",
+      "condition_name": "",
+      "condition_value": "",
+      "governed_metric_or_basis": "restrictionLevel + identityVerificationSucceeded",
+      "relevant_requested_value_or_scope": "identityVerificationSucceeded=true",
+      "expected_execution_selected_by_user": "BLOCK"
+    },
+    "browser_selections": "identityVerificationSucceeded=true",
+    "materiality": {
+      "result": "MATERIAL"
+    },
+    "authority_state": "prior INVALID; new ACTIVE (narrowed)",
+    "workflow": "SAME_LAYER_REAUTHORIZATION",
+    "actor": "Account Risk Operations",
+    "resulting_authority": "AUTH-DECISION-ACCOUNT-2 v51",
+    "enforceable_boundary": "BOUNDARY-AUTH-DECISION-ACCOUNT-2",
+    "technical_validity": {
+      "status": "PASS"
+    },
+    "recommendation": "RESTRICT ACCOUNT",
+    "confidence": 0.97,
+    "actual_execution": {
+      "result": "BLOCK",
+      "reason": "CONTRAST case for S5-003: NARROW correctly reduces restriction to MONITOR_ONLY (matches spec's suggested behavior) and correctly preserves the ORIGINAL identityVerificationSucceeded=false requirement, so the now-verified customer's restriction request is correctly BLOCKed. Confirms NARROW behaves correctly where RENEW does not."
+    },
+    "expected_actual_comparison": {
+      "expected": "BLOCK",
+      "comparison": "MATCH"
+    },
+    "control_assertion": "valid",
+    "application_validation": "valid",
+    "browser_validation": "executed via UI",
+    "replay_result": "",
+    "independent_classification": "PASS",
+    "independent_reasoning": "CONTRAST case for S5-003: NARROW correctly reduces restriction to MONITOR_ONLY (matches spec's suggested behavior) and correctly preserves the ORIGINAL identityVerificationSucceeded=false requirement, so the now-verified customer's restriction request is correctly BLOCKed. Confirms NARROW behaves correctly where RENEW does not.",
+    "anomalies": "",
+    "reproduction": "From S5-003: set disposition=NARROW, click Run experiment.",
+    "evidence_source": "browser_observed_notes_derived"
+  },
+  {
+    "case_id": "S5-005",
+    "scenario": "Customer Account Restriction",
+    "scenario_id": "ACCOUNT_RESTRICTION_V2",
+    "test_inputs": {
+      "architecture": "SAME_LAYER_REAUTHORIZATION",
+      "disposition": "TRANSFER",
+      "technical_validity": "PASS",
+      "condition_name": "",
+      "condition_value": "",
+      "governed_metric_or_basis": "",
+      "relevant_requested_value_or_scope": "",
+      "expected_execution_selected_by_user": ""
+    },
+    "browser_selections": "Restrict customer account",
+    "materiality": {
+      "result": "MATERIAL"
+    },
+    "authority_state": "INVALID (no new authority)",
+    "workflow": "SAME_LAYER_REAUTHORIZATION",
+    "actor": "",
+    "resulting_authority": "authorityCreated=false",
+    "enforceable_boundary": "none",
+    "technical_validity": {
+      "status": "PASS"
+    },
+    "recommendation": "RESTRICT ACCOUNT",
+    "confidence": 0.97,
+    "actual_execution": {
+      "result": "BLOCK",
+      "reason": "TRANSFER correctly creates no executable authority; owner=ACTOR-ACCOUNT-REVIEW matches spec's 'Account Risk Review'."
+    },
+    "expected_actual_comparison": {
+      "expected": "",
+      "comparison": "MATCH"
+    },
+    "control_assertion": "valid",
+    "application_validation": "valid",
+    "browser_validation": "executed via UI",
+    "replay_result": "",
+    "independent_classification": "PASS",
+    "independent_reasoning": "TRANSFER correctly creates no executable authority; owner=ACTOR-ACCOUNT-REVIEW matches spec's 'Account Risk Review'.",
+    "anomalies": "",
+    "reproduction": "From S5-004: set disposition=TRANSFER, click Run experiment.",
+    "evidence_source": "browser_observed_notes_derived"
+  },
+  {
+    "case_id": "S5-006",
+    "scenario": "Customer Account Restriction",
+    "scenario_id": "ACCOUNT_RESTRICTION_V2",
+    "test_inputs": {
+      "architecture": "SAME_LAYER_REAUTHORIZATION",
+      "disposition": "SUSPEND",
+      "technical_validity": "PASS",
+      "condition_name": "",
+      "condition_value": "",
+      "governed_metric_or_basis": "",
+      "relevant_requested_value_or_scope": "",
+      "expected_execution_selected_by_user": ""
+    },
+    "browser_selections": "Restrict customer account",
+    "materiality": {
+      "result": "MATERIAL"
+    },
+    "authority_state": "SUSPENDED",
+    "workflow": "SAME_LAYER_REAUTHORIZATION",
+    "actor": "Account Risk Operations",
+    "resulting_authority": "AUTH-DECISION-ACCOUNT-2 status=SUSPENDED",
+    "enforceable_boundary": "none",
+    "technical_validity": {
+      "status": "PASS"
+    },
+    "recommendation": "RESTRICT ACCOUNT",
+    "confidence": 0.97,
+    "actual_execution": {
+      "result": "BLOCK",
+      "reason": "SUSPEND correctly produces a SUSPENDED authority with no enforceable boundary."
+    },
+    "expected_actual_comparison": {
+      "expected": "",
+      "comparison": "MATCH"
+    },
+    "control_assertion": "valid",
+    "application_validation": "valid",
+    "browser_validation": "executed via UI",
+    "replay_result": "",
+    "independent_classification": "PASS",
+    "independent_reasoning": "SUSPEND correctly produces a SUSPENDED authority with no enforceable boundary.",
+    "anomalies": "",
+    "reproduction": "From S5-005: set disposition=SUSPEND, click Run experiment.",
+    "evidence_source": "browser_observed_notes_derived"
+  },
+  {
+    "case_id": "S5-007",
+    "scenario": "Customer Account Restriction",
+    "scenario_id": "ACCOUNT_RESTRICTION_V2",
+    "test_inputs": {
+      "architecture": "SAME_LAYER_REAUTHORIZATION",
+      "disposition": "REFUSE",
+      "technical_validity": "PASS",
+      "condition_name": "",
+      "condition_value": "",
+      "governed_metric_or_basis": "",
+      "relevant_requested_value_or_scope": "",
+      "expected_execution_selected_by_user": ""
+    },
+    "browser_selections": "Restrict customer account",
+    "materiality": {
+      "result": "MATERIAL"
+    },
+    "authority_state": "INVALID (no new authority)",
+    "workflow": "SAME_LAYER_REAUTHORIZATION",
+    "actor": "",
+    "resulting_authority": "authorityCreated=false",
+    "enforceable_boundary": "none",
+    "technical_validity": {
+      "status": "PASS"
+    },
+    "recommendation": "RESTRICT ACCOUNT",
+    "confidence": 0.97,
+    "actual_execution": {
+      "result": "BLOCK",
+      "reason": "REFUSE correctly creates no executable authority."
+    },
+    "expected_actual_comparison": {
+      "expected": "",
+      "comparison": "MATCH"
+    },
+    "control_assertion": "valid",
+    "application_validation": "valid",
+    "browser_validation": "executed via UI",
+    "replay_result": "",
+    "independent_classification": "PASS",
+    "independent_reasoning": "REFUSE correctly creates no executable authority.",
+    "anomalies": "",
+    "reproduction": "From S5-006: set disposition=REFUSE, click Run experiment.",
+    "evidence_source": "browser_observed_notes_derived"
+  },
+  {
+    "case_id": "S5-008",
+    "scenario": "Customer Account Restriction",
+    "scenario_id": "ACCOUNT_RESTRICTION_V2",
+    "test_inputs": {
+      "architecture": "SAME_LAYER_REAUTHORIZATION",
+      "disposition": "CONDITION",
+      "technical_validity": "FAIL",
+      "condition_name": "secondReviewApproved",
+      "condition_value": "true",
+      "governed_metric_or_basis": "",
+      "relevant_requested_value_or_scope": "",
+      "expected_execution_selected_by_user": ""
+    },
+    "browser_selections": "Restrict customer account",
+    "materiality": {
+      "result": "MATERIAL"
+    },
+    "authority_state": "ACTIVE (conditioned, satisfied) but technically invalid",
+    "workflow": "SAME_LAYER_REAUTHORIZATION",
+    "actor": "Account Risk Operations",
+    "resulting_authority": "AUTH-DECISION-ACCOUNT-2 v51",
+    "enforceable_boundary": "BOUNDARY-AUTH-DECISION-ACCOUNT-2",
+    "technical_validity": {
+      "status": "FAIL"
+    },
+    "recommendation": "RESTRICT ACCOUNT",
+    "confidence": 0.97,
+    "actual_execution": {
+      "result": "BLOCK",
+      "reason": "Tech/org independence: identical to ALLOW case S5-002 except Technical validity=FAIL; execution correctly BLOCKs solely on the technical dimension. Confidence again unchanged at 0.97 while outcome flips -- reinforces confidence independence."
+    },
+    "expected_actual_comparison": {
+      "expected": "",
+      "comparison": "MATCH"
+    },
+    "control_assertion": "valid",
+    "application_validation": "valid",
+    "browser_validation": "executed via UI",
+    "replay_result": "",
+    "independent_classification": "PASS",
+    "independent_reasoning": "Tech/org independence: identical to ALLOW case S5-002 except Technical validity=FAIL; execution correctly BLOCKs solely on the technical dimension. Confidence again unchanged at 0.97 while outcome flips -- reinforces confidence independence.",
+    "anomalies": "",
+    "reproduction": "From S5-004: set disposition=CONDITION, Second review approved=YES, Technical validity=FAIL, click Run experiment.",
+    "evidence_source": "browser_observed_notes_derived"
+  },
+  {
+    "case_id": "S5-009",
+    "scenario": "Customer Account Restriction",
+    "scenario_id": "ACCOUNT_RESTRICTION_V2",
+    "test_inputs": {
+      "architecture": "SEPARATED_REAUTHORIZATION",
+      "disposition": "CONDITION",
+      "technical_validity": "PASS",
+      "condition_name": "secondReviewApproved",
+      "condition_value": "true",
+      "governed_metric_or_basis": "",
+      "relevant_requested_value_or_scope": "",
+      "expected_execution_selected_by_user": ""
+    },
+    "browser_selections": "Restrict customer account",
+    "materiality": {
+      "result": "MATERIAL"
+    },
+    "authority_state": "identical to S5-002",
+    "workflow": "SEPARATED_REAUTHORIZATION",
+    "actor": "Account Risk Review",
+    "resulting_authority": "AUTH-DECISION-ACCOUNT-2 v51",
+    "enforceable_boundary": "BOUNDARY-AUTH-DECISION-ACCOUNT-2",
+    "technical_validity": {
+      "status": "PASS"
+    },
+    "recommendation": "RESTRICT ACCOUNT",
+    "confidence": 0.97,
+    "actual_execution": {
+      "result": "ALLOW",
+      "reason": "Architecture-attribution pair with S5-002: decision actor correctly 'Account Risk Review' (matches spec); scope/boundary/execution identical. No hidden confound."
+    },
+    "expected_actual_comparison": {
+      "expected": "",
+      "comparison": "MISMATCH"
+    },
+    "control_assertion": "valid",
+    "application_validation": "valid",
+    "browser_validation": "executed via UI",
+    "replay_result": "",
+    "independent_classification": "PASS",
+    "independent_reasoning": "Architecture-attribution pair with S5-002: decision actor correctly 'Account Risk Review' (matches spec); scope/boundary/execution identical. No hidden confound.",
+    "anomalies": "",
+    "reproduction": "From S5-008: set Technical validity=PASS, click Separated-reauthorization radio, click Run experiment.",
+    "evidence_source": "browser_observed_notes_derived"
+  },
+  {
+    "case_id": "S5-010",
+    "scenario": "Customer Account Restriction",
+    "scenario_id": "ACCOUNT_RESTRICTION_V2",
+    "test_inputs": {
+      "architecture": "SEPARATED_REAUTHORIZATION",
+      "disposition": "N/A (skipped)",
+      "technical_validity": "PASS",
+      "condition_name": "",
+      "condition_value": "",
+      "governed_metric_or_basis": "restrictionLevel + identityVerificationSucceeded",
+      "relevant_requested_value_or_scope": "identityVerificationSucceeded=false",
+      "expected_execution_selected_by_user": "BLOCK"
+    },
+    "browser_selections": "identityVerificationSucceeded=false",
+    "materiality": {
+      "result": "NON_MATERIAL"
+    },
+    "authority_state": "ACTIVE (original, untouched)",
+    "workflow": "NO_REAUTHORIZATION_REQUIRED",
+    "actor": "",
+    "resulting_authority": "AUTH-ACCOUNT-50",
+    "enforceable_boundary": "BOUNDARY-AUTH-ACCOUNT-50",
+    "technical_validity": {
+      "status": "PASS"
+    },
+    "recommendation": "RESTRICT ACCOUNT",
+    "confidence": 0.97,
+    "actual_execution": {
+      "result": "ALLOW",
+      "reason": "identityVerificationSucceeded set back to NO (matches original/no-change) -> correctly NON_MATERIAL, original authority governs, restriction proceeds (ALLOW), consistent with the original pre-change recommendation."
+    },
+    "expected_actual_comparison": {
+      "expected": "BLOCK",
+      "comparison": "MISMATCH"
+    },
+    "control_assertion": "",
+    "application_validation": "valid (NON_MATERIAL correctly detected)",
+    "browser_validation": "executed via UI",
+    "replay_result": "",
+    "independent_classification": "PASS",
+    "independent_reasoning": "identityVerificationSucceeded set back to NO (matches original/no-change) -> correctly NON_MATERIAL, original authority governs, restriction proceeds (ALLOW), consistent with the original pre-change recommendation.",
+    "anomalies": "",
+    "reproduction": "From S5-009: set Identity verification succeeded=NO, click Run experiment.",
+    "evidence_source": "browser_observed_notes_derived"
+  },
+  {
+    "case_id": "SW-001",
+    "scenario": "Scenario-switching regression (5->1)",
+    "scenario_id": "MULTI",
+    "test_inputs": {
+      "architecture": "SAME_LAYER_REAUTHORIZATION",
+      "disposition": "NARROW",
+      "technical_validity": "PASS",
+      "condition_name": "",
+      "condition_value": "",
+      "governed_metric_or_basis": "",
+      "relevant_requested_value_or_scope": "",
+      "expected_execution_selected_by_user": ""
+    },
+    "browser_selections": "Issue $400 automated refund",
+    "materiality": {
+      "result": "MATERIAL"
+    },
+    "authority_state": "",
+    "workflow": "",
+    "actor": "",
+    "resulting_authority": "AUTH-DECISION-REFUND-3",
+    "enforceable_boundary": "BOUNDARY-AUTH-DECISION-REFUND-3",
+    "technical_validity": {
+      "status": "PASS"
+    },
+    "recommendation": "",
+    "confidence": null,
+    "actual_execution": {
+      "result": "BLOCK",
+      "reason": "After cycling through all 5 scenarios in sequence (1->2->3->4->5), switching back to Scenario 1 (Automated Refund) correctly reset ALL fields to that scenario's own defaults with NO leftover fields from scenarios 2-5 present in the DOM (confirmed via full <label> enumeration: exactly the 9 fields native to Scenario 1, nothing else). Governance decision/Execution reproduced S1-001 exactly. This shows navigating TO Scenario 1 specifically performs a clean reset."
+    },
+    "expected_actual_comparison": {
+      "expected": "",
+      "comparison": ""
+    },
+    "control_assertion": "",
+    "application_validation": "valid",
+    "browser_validation": "executed via UI + DOM label query",
+    "replay_result": "",
+    "independent_classification": "PASS",
+    "independent_reasoning": "After cycling through all 5 scenarios in sequence (1->2->3->4->5), switching back to Scenario 1 (Automated Refund) correctly reset ALL fields to that scenario's own defaults with NO leftover fields from scenarios 2-5 present in the DOM (confirmed via full <label> enumeration: exactly the 9 fields native to Scenario 1, nothing else). Governance decision/Execution reproduced S1-001 exactly. This shows navigating TO Scenario 1 specifically performs a clean reset.",
+    "anomalies": "",
+    "reproduction": "After completing all Scenario 5 cases, set Select scenario back to Automated Refund, click Run experiment, enumerate all <label> elements via DOM query.",
+    "evidence_source": "browser_observed_notes_derived"
+  },
+  {
+    "case_id": "SW-002",
+    "scenario": "Scenario-switching regression (1->2, repeat)",
+    "scenario_id": "MULTI",
+    "test_inputs": {
+      "architecture": "",
+      "disposition": "",
+      "technical_validity": "",
+      "condition_name": "",
+      "condition_value": "",
+      "governed_metric_or_basis": "",
+      "relevant_requested_value_or_scope": "",
+      "expected_execution_selected_by_user": ""
+    },
+    "browser_selections": "N/A (UI probe, no run)",
+    "materiality": {
+      "result": ""
+    },
+    "authority_state": "",
+    "workflow": "",
+    "actor": "",
+    "resulting_authority": "",
+    "enforceable_boundary": "",
+    "technical_validity": {
+      "status": ""
+    },
+    "recommendation": "",
+    "confidence": null,
+    "actual_execution": {
+      "result": "",
+      "reason": "Immediately after SW-001's clean Scenario-1 reset, switching again to Scenario 2 (Privileged System Access) reproduced the SAME stale-field defect as S2-STALE-001: 'Current customer risk' and 'Requested refund amount ($)' (Scenario-1 fields) reappeared in the Experiment Inputs form alongside the correct Scenario-2 fields. This confirms the stale-field leak is a systematic, repeatable property of switching AWAY FROM Scenario 1 to any other scenario (2-5), not a one-off first-visit artifact -- while switching TO Scenario 1 (SW-001) reliably clears the form. Net characterization: Scenario 1 acts as a 'clean' reset target; Scenarios 2-5 do not clear fields left by whichever scenario was active before them."
+    },
+    "expected_actual_comparison": {
+      "expected": "",
+      "comparison": ""
+    },
+    "control_assertion": "",
+    "application_validation": "N/A",
+    "browser_validation": "observed via DOM label query",
+    "replay_result": "",
+    "independent_classification": "FAIL \u2014 UI/STATE PROPAGATION",
+    "independent_reasoning": "Immediately after SW-001's clean Scenario-1 reset, switching again to Scenario 2 (Privileged System Access) reproduced the SAME stale-field defect as S2-STALE-001: 'Current customer risk' and 'Requested refund amount ($)' (Scenario-1 fields) reappeared in the Experiment Inputs form alongside the correct Scenario-2 fields. This confirms the stale-field leak is a systematic, repeatable property of switching AWAY FROM Scenario 1 to any other scenario (2-5), not a one-off first-visit artifact -- while switching TO Scenario 1 (SW-001) reliably clears the form. Net characterization: Scenario 1 acts as a 'clean' reset target; Scenarios 2-5 do not clear fields left by whichever scenario was active before them.",
+    "anomalies": "Reproducible, direction-dependent stale-control accumulation on scenario switch (confirmed on 2 separate occasions for the 1->2 transition alone, plus observed compounding further through 2->3->4->5).",
+    "reproduction": "Immediately after SW-001, set Select scenario=Privileged System Access again; enumerate <label> elements via DOM query; compare against the clean Scenario-1 list from SW-001.",
+    "evidence_source": "browser_observed_notes_derived"
+  },
+  {
+    "case_id": "S1-B01",
+    "scenario": "Automated Refund",
+    "scenario_id": "AUTO_REFUND_V2",
+    "test_inputs": {
+      "architecture": "SAME_LAYER_REAUTHORIZATION",
+      "disposition": "N/A (skipped)",
+      "technical_validity": "PASS",
+      "condition_name": "",
+      "condition_value": "",
+      "governed_metric_or_basis": "amountCents/customerRisk",
+      "relevant_requested_value_or_scope": "requestedAmount=$100, risk=LOW(unchanged)",
+      "expected_execution_selected_by_user": ""
+    },
+    "browser_selections": "requestedAmount=$100, risk=LOW(unchanged)",
+    "materiality": {
+      "result": "NON_MATERIAL"
+    },
+    "authority_state": "original ACTIVE (unchanged)",
+    "workflow": "SAME_LAYER_REAUTHORIZATION",
+    "actor": "",
+    "resulting_authority": "AUTH-REFUND-104",
+    "enforceable_boundary": "BOUNDARY-AUTH-REFUND-104",
+    "technical_validity": {
+      "status": "PASS"
+    },
+    "recommendation": "",
+    "confidence": null,
+    "actual_execution": {
+      "result": "ALLOW",
+      "reason": "Boundary-precision check: $100 request against unchanged LOW risk is NON_MATERIAL and correctly ALLOWed under the original $500 cap."
+    },
+    "expected_actual_comparison": {
+      "expected": "",
+      "comparison": ""
+    },
+    "control_assertion": "",
+    "application_validation": "",
+    "browser_validation": "",
+    "replay_result": "",
+    "independent_classification": "PASS",
+    "independent_reasoning": "Boundary-precision check: $100 request against unchanged LOW risk is NON_MATERIAL and correctly ALLOWed under the original $500 cap.",
+    "anomalies": "",
+    "reproduction": "Scenario=Automated Refund; risk=LOW; amount=$100; techValidity=PASS; Run.",
+    "evidence_source": "browser_observed_notes_derived"
+  },
+  {
+    "case_id": "S1-B02",
+    "scenario": "Automated Refund",
+    "scenario_id": "AUTO_REFUND_V2",
+    "test_inputs": {
+      "architecture": "SAME_LAYER_REAUTHORIZATION",
+      "disposition": "N/A (skipped)",
+      "technical_validity": "PASS",
+      "condition_name": "",
+      "condition_value": "",
+      "governed_metric_or_basis": "amountCents",
+      "relevant_requested_value_or_scope": "requestedAmount=$500 (exact cap), risk=LOW(unchanged)",
+      "expected_execution_selected_by_user": ""
+    },
+    "browser_selections": "requestedAmount=$500 (exact cap), risk=LOW(unchanged)",
+    "materiality": {
+      "result": "NON_MATERIAL"
+    },
+    "authority_state": "original ACTIVE (unchanged)",
+    "workflow": "SAME_LAYER_REAUTHORIZATION",
+    "actor": "",
+    "resulting_authority": "AUTH-REFUND-104",
+    "enforceable_boundary": "BOUNDARY-AUTH-REFUND-104",
+    "technical_validity": {
+      "status": "PASS"
+    },
+    "recommendation": "",
+    "confidence": null,
+    "actual_execution": {
+      "result": "ALLOW",
+      "reason": "Confirms LTE boundary is inclusive on the ORIGINAL (non-renewed) authority: exactly $500 against a $500 cap correctly ALLOWs."
+    },
+    "expected_actual_comparison": {
+      "expected": "",
+      "comparison": ""
+    },
+    "control_assertion": "",
+    "application_validation": "",
+    "browser_validation": "",
+    "replay_result": "",
+    "independent_classification": "PASS",
+    "independent_reasoning": "Confirms LTE boundary is inclusive on the ORIGINAL (non-renewed) authority: exactly $500 against a $500 cap correctly ALLOWs.",
+    "anomalies": "",
+    "reproduction": "Scenario=Automated Refund; risk=LOW; amount=$500; techValidity=PASS; Run.",
+    "evidence_source": "browser_observed_notes_derived"
+  },
+  {
+    "case_id": "S1-B03",
+    "scenario": "Automated Refund",
+    "scenario_id": "AUTO_REFUND_V2",
+    "test_inputs": {
+      "architecture": "SAME_LAYER_REAUTHORIZATION",
+      "disposition": "N/A (skipped)",
+      "technical_validity": "PASS",
+      "condition_name": "",
+      "condition_value": "",
+      "governed_metric_or_basis": "amountCents",
+      "relevant_requested_value_or_scope": "requestedAmount=$501, risk=LOW(unchanged)",
+      "expected_execution_selected_by_user": ""
+    },
+    "browser_selections": "requestedAmount=$501, risk=LOW(unchanged)",
+    "materiality": {
+      "result": "NON_MATERIAL"
+    },
+    "authority_state": "original ACTIVE (unchanged)",
+    "workflow": "SAME_LAYER_REAUTHORIZATION",
+    "actor": "",
+    "resulting_authority": "AUTH-REFUND-104",
+    "enforceable_boundary": "BOUNDARY-AUTH-REFUND-104",
+    "technical_validity": {
+      "status": "PASS"
+    },
+    "recommendation": "",
+    "confidence": null,
+    "actual_execution": {
+      "result": "BLOCK",
+      "reason": "Confirms LTE boundary excludes one dollar over cap ($501 > $500) on the ORIGINAL authority. Completes precise boundary-inclusivity trio with S1-B01/B02."
+    },
+    "expected_actual_comparison": {
+      "expected": "",
+      "comparison": ""
+    },
+    "control_assertion": "",
+    "application_validation": "",
+    "browser_validation": "",
+    "replay_result": "",
+    "independent_classification": "PASS",
+    "independent_reasoning": "Confirms LTE boundary excludes one dollar over cap ($501 > $500) on the ORIGINAL authority. Completes precise boundary-inclusivity trio with S1-B01/B02.",
+    "anomalies": "",
+    "reproduction": "Scenario=Automated Refund; risk=LOW; amount=$501; techValidity=PASS; Run.",
+    "evidence_source": "browser_observed_notes_derived"
+  },
+  {
+    "case_id": "S1-B04",
+    "scenario": "Automated Refund",
+    "scenario_id": "AUTO_REFUND_V2",
+    "test_inputs": {
+      "architecture": "SAME_LAYER_REAUTHORIZATION",
+      "disposition": "RENEW",
+      "technical_validity": "PASS",
+      "condition_name": "",
+      "condition_value": "",
+      "governed_metric_or_basis": "customerRisk",
+      "relevant_requested_value_or_scope": "risk=HIGH (new tier, not tested in Phase 1/2), amount=$300",
+      "expected_execution_selected_by_user": ""
+    },
+    "browser_selections": "risk=HIGH (new tier, not tested in Phase 1/2), amount=$300",
+    "materiality": {
+      "result": "MATERIAL"
+    },
+    "authority_state": "prior INVALID; new ACTIVE (renewed)",
+    "workflow": "SAME_LAYER_REAUTHORIZATION",
+    "actor": "",
+    "resulting_authority": "AUTH-DECISION-REFUND-3",
+    "enforceable_boundary": "BOUNDARY-AUTH-DECISION-REFUND-3",
+    "technical_validity": {
+      "status": "PASS"
+    },
+    "recommendation": "",
+    "confidence": null,
+    "actual_execution": {
+      "result": "BLOCK",
+      "reason": "Extends the Scenario-1 conservative-RENEW reference behavior (first shown in S1-002 for LOW->MEDIUM) to a second, more extreme risk tier (LOW->HIGH): RENEW again preserves the ORIGINAL LOW-only value rather than adopting HIGH, correctly BLOCKing."
+    },
+    "expected_actual_comparison": {
+      "expected": "",
+      "comparison": ""
+    },
+    "control_assertion": "",
+    "application_validation": "",
+    "browser_validation": "",
+    "replay_result": "",
+    "independent_classification": "PASS",
+    "independent_reasoning": "Extends the Scenario-1 conservative-RENEW reference behavior (first shown in S1-002 for LOW->MEDIUM) to a second, more extreme risk tier (LOW->HIGH): RENEW again preserves the ORIGINAL LOW-only value rather than adopting HIGH, correctly BLOCKing.",
+    "anomalies": "",
+    "reproduction": "Scenario=Automated Refund; risk=HIGH; amount=$300; disposition=RENEW; techValidity=PASS; Run.",
+    "evidence_source": "browser_observed_notes_derived"
+  },
+  {
+    "case_id": "S1-B05",
+    "scenario": "Automated Refund",
+    "scenario_id": "AUTO_REFUND_V2",
+    "test_inputs": {
+      "architecture": "SAME_LAYER_REAUTHORIZATION",
+      "disposition": "NARROW",
+      "technical_validity": "PASS",
+      "condition_name": "",
+      "condition_value": "",
+      "governed_metric_or_basis": "customerRisk/amountCents",
+      "relevant_requested_value_or_scope": "risk=HIGH, amount=$300",
+      "expected_execution_selected_by_user": ""
+    },
+    "browser_selections": "risk=HIGH, amount=$300",
+    "materiality": {
+      "result": "MATERIAL"
+    },
+    "authority_state": "prior INVALID; new ACTIVE (narrowed)",
+    "workflow": "SAME_LAYER_REAUTHORIZATION",
+    "actor": "",
+    "resulting_authority": "AUTH-DECISION-REFUND-3",
+    "enforceable_boundary": "BOUNDARY-AUTH-DECISION-REFUND-3",
+    "technical_validity": {
+      "status": "PASS"
+    },
+    "recommendation": "",
+    "confidence": null,
+    "actual_execution": {
+      "result": "BLOCK",
+      "reason": "Contrast case for S1-B04: NARROW with the same HIGH-risk inputs correctly tightens BOTH the amount cap (now below $300) and the risk scope, BLOCKing on both dimensions simultaneously -- confirms true subset-narrowing extends to this new risk tier too."
+    },
+    "expected_actual_comparison": {
+      "expected": "",
+      "comparison": ""
+    },
+    "control_assertion": "",
+    "application_validation": "",
+    "browser_validation": "",
+    "replay_result": "",
+    "independent_classification": "PASS",
+    "independent_reasoning": "Contrast case for S1-B04: NARROW with the same HIGH-risk inputs correctly tightens BOTH the amount cap (now below $300) and the risk scope, BLOCKing on both dimensions simultaneously -- confirms true subset-narrowing extends to this new risk tier too.",
+    "anomalies": "",
+    "reproduction": "Scenario=Automated Refund; risk=HIGH; amount=$300; disposition=NARROW; techValidity=PASS; Run.",
+    "evidence_source": "browser_observed_notes_derived"
+  },
+  {
+    "case_id": "S2-B01",
+    "scenario": "Privileged System Access",
+    "scenario_id": "ACCESS_V2",
+    "test_inputs": {
+      "architecture": "SEPARATED_REAUTHORIZATION",
+      "disposition": "RENEW",
+      "technical_validity": "PASS",
+      "condition_name": "",
+      "condition_value": "",
+      "governed_metric_or_basis": "accessLevel + organizationalContext",
+      "relevant_requested_value_or_scope": "org=BUSINESS_ANALYTICS, changeTicket=YES",
+      "expected_execution_selected_by_user": ""
+    },
+    "browser_selections": "org=BUSINESS_ANALYTICS, changeTicket=YES",
+    "materiality": {
+      "result": "MATERIAL"
+    },
+    "authority_state": "prior INVALID; new ACTIVE (renewed)",
+    "workflow": "SEPARATED_REAUTHORIZATION",
+    "actor": "Production Operations Authority Owner",
+    "resulting_authority": "AUTH-DECISION-ACCESS-2 v21",
+    "enforceable_boundary": "BOUNDARY-AUTH-DECISION-ACCESS-2",
+    "technical_validity": {
+      "status": "PASS"
+    },
+    "recommendation": "",
+    "confidence": null,
+    "actual_execution": {
+      "result": "ALLOW",
+      "reason": "Architecture-robustness re-test of the flagship finding S2-003: identical current-value substitution reproduces under SEPARATED_REAUTHORIZATION, confirming the defect is in RENEW's scope-computation logic itself and not an artifact of the SAME_LAYER architecture."
+    },
+    "expected_actual_comparison": {
+      "expected": "",
+      "comparison": ""
+    },
+    "control_assertion": "",
+    "application_validation": "",
+    "browser_validation": "",
+    "replay_result": "",
+    "independent_classification": "FAIL \u2014 CONCEPTUAL",
+    "independent_reasoning": "Architecture-robustness re-test of the flagship finding S2-003: identical current-value substitution reproduces under SEPARATED_REAUTHORIZATION, confirming the defect is in RENEW's scope-computation logic itself and not an artifact of the SAME_LAYER architecture.",
+    "anomalies": "RENEW re-derives its boundary from the current/changed state rather than the original qualifying state; confirmed architecture-independent.",
+    "reproduction": "Scenario=Privileged System Access; org=BUSINESS_ANALYTICS; changeTicket=YES; disposition=RENEW; arch=SEPARATED; techValidity=PASS; Run.",
+    "evidence_source": "browser_observed_notes_derived"
+  },
+  {
+    "case_id": "S2-B02",
+    "scenario": "Privileged System Access",
+    "scenario_id": "ACCESS_V2",
+    "test_inputs": {
+      "architecture": "SEPARATED_REAUTHORIZATION",
+      "disposition": "TRANSFER",
+      "technical_validity": "PASS",
+      "condition_name": "",
+      "condition_value": "",
+      "governed_metric_or_basis": "",
+      "relevant_requested_value_or_scope": "org=BUSINESS_ANALYTICS",
+      "expected_execution_selected_by_user": ""
+    },
+    "browser_selections": "org=BUSINESS_ANALYTICS",
+    "materiality": {
+      "result": "MATERIAL"
+    },
+    "authority_state": "no new authority created",
+    "workflow": "SEPARATED_REAUTHORIZATION",
+    "actor": "",
+    "resulting_authority": "",
+    "enforceable_boundary": "",
+    "technical_validity": {
+      "status": "PASS"
+    },
+    "recommendation": "",
+    "confidence": null,
+    "actual_execution": {
+      "result": "BLOCK",
+      "reason": "TRANSFER under SEPARATED architecture matches the SAME_LAYER equivalent (S2-005) exactly: transferredDecisionOwner=ACTOR-DATA-SECURITY, no authority created, BLOCK."
+    },
+    "expected_actual_comparison": {
+      "expected": "",
+      "comparison": ""
+    },
+    "control_assertion": "",
+    "application_validation": "",
+    "browser_validation": "",
+    "replay_result": "",
+    "independent_classification": "PASS",
+    "independent_reasoning": "TRANSFER under SEPARATED architecture matches the SAME_LAYER equivalent (S2-005) exactly: transferredDecisionOwner=ACTOR-DATA-SECURITY, no authority created, BLOCK.",
+    "anomalies": "",
+    "reproduction": "Scenario=Privileged System Access; org=BUSINESS_ANALYTICS; disposition=TRANSFER; arch=SEPARATED; Run.",
+    "evidence_source": "browser_observed_notes_derived"
+  },
+  {
+    "case_id": "S2-B03",
+    "scenario": "Privileged System Access",
+    "scenario_id": "ACCESS_V2",
+    "test_inputs": {
+      "architecture": "SEPARATED_REAUTHORIZATION",
+      "disposition": "REFUSE",
+      "technical_validity": "PASS",
+      "condition_name": "",
+      "condition_value": "",
+      "governed_metric_or_basis": "",
+      "relevant_requested_value_or_scope": "org=BUSINESS_ANALYTICS",
+      "expected_execution_selected_by_user": ""
+    },
+    "browser_selections": "org=BUSINESS_ANALYTICS",
+    "materiality": {
+      "result": "MATERIAL"
+    },
+    "authority_state": "no new authority created",
+    "workflow": "SEPARATED_REAUTHORIZATION",
+    "actor": "",
+    "resulting_authority": "",
+    "enforceable_boundary": "",
+    "technical_validity": {
+      "status": "PASS"
+    },
+    "recommendation": "",
+    "confidence": null,
+    "actual_execution": {
+      "result": "BLOCK",
+      "reason": "REFUSE under SEPARATED architecture: authorityCreated=false, BLOCK, consistent with SAME_LAYER equivalent (S2-007)."
+    },
+    "expected_actual_comparison": {
+      "expected": "",
+      "comparison": ""
+    },
+    "control_assertion": "",
+    "application_validation": "",
+    "browser_validation": "",
+    "replay_result": "",
+    "independent_classification": "PASS",
+    "independent_reasoning": "REFUSE under SEPARATED architecture: authorityCreated=false, BLOCK, consistent with SAME_LAYER equivalent (S2-007).",
+    "anomalies": "",
+    "reproduction": "Scenario=Privileged System Access; org=BUSINESS_ANALYTICS; disposition=REFUSE; arch=SEPARATED; Run.",
+    "evidence_source": "browser_observed_notes_derived"
+  },
+  {
+    "case_id": "S3-B01",
+    "scenario": "Workforce Shift Assignment",
+    "scenario_id": "WORKFORCE_V2",
+    "test_inputs": {
+      "architecture": "SAME_LAYER_REAUTHORIZATION",
+      "disposition": "N/A (skipped)",
+      "technical_validity": "PASS",
+      "condition_name": "",
+      "condition_value": "",
+      "governed_metric_or_basis": "resultingWeeklyHours",
+      "relevant_requested_value_or_scope": "resultingWeeklyHours=40 (exact threshold)",
+      "expected_execution_selected_by_user": ""
+    },
+    "browser_selections": "resultingWeeklyHours=40 (exact threshold)",
+    "materiality": {
+      "result": "NON_MATERIAL"
+    },
+    "authority_state": "original ACTIVE (unchanged)",
+    "workflow": "SAME_LAYER_REAUTHORIZATION",
+    "actor": "",
+    "resulting_authority": "AUTH-WORK-30",
+    "enforceable_boundary": "BOUNDARY-AUTH-WORK-30",
+    "technical_validity": {
+      "status": "PASS"
+    },
+    "recommendation": "",
+    "confidence": null,
+    "actual_execution": {
+      "result": "ALLOW",
+      "reason": "Confirms LTE inclusive at exactly the 40-hour threshold on the original authority; correctly NON_MATERIAL and ALLOWed."
+    },
+    "expected_actual_comparison": {
+      "expected": "",
+      "comparison": ""
+    },
+    "control_assertion": "",
+    "application_validation": "",
+    "browser_validation": "",
+    "replay_result": "",
+    "independent_classification": "PASS",
+    "independent_reasoning": "Confirms LTE inclusive at exactly the 40-hour threshold on the original authority; correctly NON_MATERIAL and ALLOWed.",
+    "anomalies": "",
+    "reproduction": "Scenario=Workforce Shift Assignment; resultingWeeklyHours=40; techValidity=PASS; Run.",
+    "evidence_source": "browser_observed_notes_derived"
+  },
+  {
+    "case_id": "S3-B02",
+    "scenario": "Workforce Shift Assignment",
+    "scenario_id": "WORKFORCE_V2",
+    "test_inputs": {
+      "architecture": "SAME_LAYER_REAUTHORIZATION",
+      "disposition": "CONDITION",
+      "technical_validity": "PASS",
+      "condition_name": "overtimeApproval",
+      "condition_value": "false",
+      "governed_metric_or_basis": "resultingWeeklyHours",
+      "relevant_requested_value_or_scope": "resultingWeeklyHours=41 (one hour over threshold)",
+      "expected_execution_selected_by_user": ""
+    },
+    "browser_selections": "resultingWeeklyHours=41 (one hour over threshold)",
+    "materiality": {
+      "result": "MATERIAL"
+    },
+    "authority_state": "prior INVALID; new ACTIVE (condition)",
+    "workflow": "SAME_LAYER_REAUTHORIZATION",
+    "actor": "",
+    "resulting_authority": "AUTH-DECISION-WORK-2",
+    "enforceable_boundary": "BOUNDARY-AUTH-DECISION-WORK-2",
+    "technical_validity": {
+      "status": "PASS"
+    },
+    "recommendation": "",
+    "confidence": null,
+    "actual_execution": {
+      "result": "BLOCK",
+      "reason": "Precisely pins the OVERTIME-THRESHOLD materiality rule to >40 with zero buffer: 41 hours triggers MATERIAL immediately (contrast with S3-B01 at exactly 40 = NON_MATERIAL). Condition-gated BLOCK is correct given overtimeApproval=false."
+    },
+    "expected_actual_comparison": {
+      "expected": "",
+      "comparison": ""
+    },
+    "control_assertion": "",
+    "application_validation": "",
+    "browser_validation": "",
+    "replay_result": "",
+    "independent_classification": "PASS",
+    "independent_reasoning": "Precisely pins the OVERTIME-THRESHOLD materiality rule to >40 with zero buffer: 41 hours triggers MATERIAL immediately (contrast with S3-B01 at exactly 40 = NON_MATERIAL). Condition-gated BLOCK is correct given overtimeApproval=false.",
+    "anomalies": "",
+    "reproduction": "Scenario=Workforce Shift Assignment; resultingWeeklyHours=41; disposition=CONDITION; overtimeApproval=NO; Run.",
+    "evidence_source": "browser_observed_notes_derived"
+  },
+  {
+    "case_id": "S3-B03",
+    "scenario": "Workforce Shift Assignment",
+    "scenario_id": "WORKFORCE_V2",
+    "test_inputs": {
+      "architecture": "SEPARATED_REAUTHORIZATION",
+      "disposition": "RENEW",
+      "technical_validity": "PASS",
+      "condition_name": "",
+      "condition_value": "",
+      "governed_metric_or_basis": "resultingWeeklyHours",
+      "relevant_requested_value_or_scope": "resultingWeeklyHours=41 (freshly set, confirmed via DOM read and \"Your current selections\")",
+      "expected_execution_selected_by_user": ""
+    },
+    "browser_selections": "resultingWeeklyHours=41 (freshly set, confirmed via DOM read and \"Your current selections\")",
+    "materiality": {
+      "result": "MATERIAL"
+    },
+    "authority_state": "prior INVALID; new ACTIVE (renewed)",
+    "workflow": "SEPARATED_REAUTHORIZATION",
+    "actor": "",
+    "resulting_authority": "AUTH-DECISION-WORK-2 v31",
+    "enforceable_boundary": "BOUNDARY-AUTH-DECISION-WORK-2",
+    "technical_validity": {
+      "status": "PASS"
+    },
+    "recommendation": "",
+    "confidence": null,
+    "actual_execution": {
+      "result": "ALLOW",
+      "reason": "CORRECTS the Phase 1/2 characterization of S3-003: with a live input of 41 (not 48), RENEW's resulting cap is STILL 48, proving the cap is a static/hardcoded value decoupled from the live requested hours, not a dynamic substitution of \"the current value\" as previously described. Re-run with no other change reproduced identically, ruling out a rendering artifact."
+    },
+    "expected_actual_comparison": {
+      "expected": "",
+      "comparison": ""
+    },
+    "control_assertion": "",
+    "application_validation": "",
+    "browser_validation": "",
+    "replay_result": "",
+    "independent_classification": "FAIL \u2014 IMPLEMENTATION",
+    "independent_reasoning": "CORRECTS the Phase 1/2 characterization of S3-003: with a live input of 41 (not 48), RENEW's resulting cap is STILL 48, proving the cap is a static/hardcoded value decoupled from the live requested hours, not a dynamic substitution of \"the current value\" as previously described. Re-run with no other change reproduced identically, ruling out a rendering artifact.",
+    "anomalies": "RENEW's resulting scope is a fixed constant (48) unrelated to the live resultingWeeklyHours input, confirmed with 3 distinct input values (41, 45, 60) in S3-B03/B04/B05 all producing the same 48 cap.",
+    "reproduction": "Scenario=Workforce Shift Assignment; resultingWeeklyHours=41; disposition=RENEW; arch=SEPARATED; techValidity=PASS; Run. Verified via direct DOM value read that the input field genuinely held 41 at run time.",
+    "evidence_source": "browser_observed_notes_derived"
+  },
+  {
+    "case_id": "S3-B04",
+    "scenario": "Workforce Shift Assignment",
+    "scenario_id": "WORKFORCE_V2",
+    "test_inputs": {
+      "architecture": "SEPARATED_REAUTHORIZATION",
+      "disposition": "RENEW",
+      "technical_validity": "PASS",
+      "condition_name": "",
+      "condition_value": "",
+      "governed_metric_or_basis": "resultingWeeklyHours",
+      "relevant_requested_value_or_scope": "resultingWeeklyHours=45 (second independent value)",
+      "expected_execution_selected_by_user": ""
+    },
+    "browser_selections": "resultingWeeklyHours=45 (second independent value)",
+    "materiality": {
+      "result": "MATERIAL"
+    },
+    "authority_state": "prior INVALID; new ACTIVE (renewed)",
+    "workflow": "SEPARATED_REAUTHORIZATION",
+    "actor": "",
+    "resulting_authority": "AUTH-DECISION-WORK-2 v31",
+    "enforceable_boundary": "BOUNDARY-AUTH-DECISION-WORK-2",
+    "technical_validity": {
+      "status": "PASS"
+    },
+    "recommendation": "",
+    "confidence": null,
+    "actual_execution": {
+      "result": "ALLOW",
+      "reason": "Second independent data point (45) reproduces the same fixed 48 cap seen in S3-B03, ruling out that 48 happened to equal the live input by coincidence."
+    },
+    "expected_actual_comparison": {
+      "expected": "",
+      "comparison": ""
+    },
+    "control_assertion": "",
+    "application_validation": "",
+    "browser_validation": "",
+    "replay_result": "",
+    "independent_classification": "FAIL \u2014 IMPLEMENTATION",
+    "independent_reasoning": "Second independent data point (45) reproduces the same fixed 48 cap seen in S3-B03, ruling out that 48 happened to equal the live input by coincidence.",
+    "anomalies": "Same as S3-B03: static/hardcoded RENEW cap.",
+    "reproduction": "Same as S3-B03 with resultingWeeklyHours changed to 45; Run.",
+    "evidence_source": "browser_observed_notes_derived"
+  },
+  {
+    "case_id": "S3-B05",
+    "scenario": "Workforce Shift Assignment",
+    "scenario_id": "WORKFORCE_V2",
+    "test_inputs": {
+      "architecture": "SEPARATED_REAUTHORIZATION",
+      "disposition": "RENEW",
+      "technical_validity": "PASS",
+      "condition_name": "",
+      "condition_value": "",
+      "governed_metric_or_basis": "resultingWeeklyHours",
+      "relevant_requested_value_or_scope": "resultingWeeklyHours=60 (third independent value, now above even the fixed 48 cap)",
+      "expected_execution_selected_by_user": ""
+    },
+    "browser_selections": "resultingWeeklyHours=60 (third independent value, now above even the fixed 48 cap)",
+    "materiality": {
+      "result": "MATERIAL"
+    },
+    "authority_state": "prior INVALID; new ACTIVE (renewed)",
+    "workflow": "SEPARATED_REAUTHORIZATION",
+    "actor": "",
+    "resulting_authority": "AUTH-DECISION-WORK-2 v31",
+    "enforceable_boundary": "BOUNDARY-AUTH-DECISION-WORK-2",
+    "technical_validity": {
+      "status": "PASS"
+    },
+    "recommendation": "",
+    "confidence": null,
+    "actual_execution": {
+      "result": "BLOCK",
+      "reason": "Third independent data point (60) again produces the identical fixed 48 cap, this time correctly BLOCKing since 60>48 -- conclusively demonstrating the RENEW cap for this scenario is a static constant, not derived from live input at all. This is the decisive confirmation closing out the S3-003 root-cause correction."
+    },
+    "expected_actual_comparison": {
+      "expected": "",
+      "comparison": ""
+    },
+    "control_assertion": "",
+    "application_validation": "",
+    "browser_validation": "",
+    "replay_result": "",
+    "independent_classification": "FAIL \u2014 IMPLEMENTATION",
+    "independent_reasoning": "Third independent data point (60) again produces the identical fixed 48 cap, this time correctly BLOCKing since 60>48 -- conclusively demonstrating the RENEW cap for this scenario is a static constant, not derived from live input at all. This is the decisive confirmation closing out the S3-003 root-cause correction.",
+    "anomalies": "Same static-cap defect, now demonstrated with 4 total distinct input values (41, 45, 48-original, 60) all yielding the same 48 cap output.",
+    "reproduction": "Same as S3-B03/B04 with resultingWeeklyHours changed to 60; Run.",
+    "evidence_source": "browser_observed_notes_derived"
+  },
+  {
+    "case_id": "S4-B01",
+    "scenario": "Procurement / Total Acquisition Cost",
+    "scenario_id": "PROCUREMENT_V2",
+    "test_inputs": {
+      "architecture": "SAME_LAYER_REAUTHORIZATION",
+      "disposition": "RENEW",
+      "technical_validity": "PASS",
+      "condition_name": "",
+      "condition_value": "",
+      "governed_metric_or_basis": "totalAcquisitionCostCents (selected)",
+      "relevant_requested_value_or_scope": "Vendor C total acquisition cost changed to $220,000 (independent value, differs from Phase 1/2's $200,000)",
+      "expected_execution_selected_by_user": ""
+    },
+    "browser_selections": "Vendor C total acquisition cost changed to $220,000 (independent value, differs from Phase 1/2's $200,000)",
+    "materiality": {
+      "result": "MATERIAL"
+    },
+    "authority_state": "prior INVALID; new ACTIVE (renewed)",
+    "workflow": "SAME_LAYER_REAUTHORIZATION",
+    "actor": "",
+    "resulting_authority": "AUTH-DECISION-PROC-2",
+    "enforceable_boundary": "BOUNDARY-AUTH-DECISION-PROC-2",
+    "technical_validity": {
+      "status": "PASS"
+    },
+    "recommendation": "",
+    "confidence": null,
+    "actual_execution": {
+      "result": "BLOCK",
+      "reason": "Robustness re-test of S4-001 with an independent cost value: CONFIRMS (rather than corrects) the Phase 1/2 characterization -- RENEW reliably reproduces the true original $175,000 cap regardless of the live requested cost ($200,000 in S4-001, $220,000 here), reapplying it to the new metric basis. This is a genuinely different, more input-independent mechanism than Scenario 3's (see S3-B03..B05), where the cap did not correspond to either the live input or the true original threshold."
+    },
+    "expected_actual_comparison": {
+      "expected": "",
+      "comparison": ""
+    },
+    "control_assertion": "",
+    "application_validation": "",
+    "browser_validation": "",
+    "replay_result": "",
+    "independent_classification": "PASS",
+    "independent_reasoning": "Robustness re-test of S4-001 with an independent cost value: CONFIRMS (rather than corrects) the Phase 1/2 characterization -- RENEW reliably reproduces the true original $175,000 cap regardless of the live requested cost ($200,000 in S4-001, $220,000 here), reapplying it to the new metric basis. This is a genuinely different, more input-independent mechanism than Scenario 3's (see S3-B03..B05), where the cap did not correspond to either the live input or the true original threshold.",
+    "anomalies": "",
+    "reproduction": "Scenario=Procurement; metric=totalAcquisitionCostCents; Vendor C total cost=$220,000; disposition=RENEW; techValidity=PASS; Run.",
+    "evidence_source": "browser_observed_notes_derived"
+  },
+  {
+    "case_id": "S5-B01",
+    "scenario": "Customer Account Restriction",
+    "scenario_id": "ACCOUNT_RESTRICTION_V2",
+    "test_inputs": {
+      "architecture": "SEPARATED_REAUTHORIZATION",
+      "disposition": "RENEW",
+      "technical_validity": "PASS",
+      "condition_name": "",
+      "condition_value": "",
+      "governed_metric_or_basis": "restrictionLevel + identityVerificationSucceeded",
+      "relevant_requested_value_or_scope": "identityVerificationSucceeded=true",
+      "expected_execution_selected_by_user": ""
+    },
+    "browser_selections": "identityVerificationSucceeded=true",
+    "materiality": {
+      "result": "MATERIAL"
+    },
+    "authority_state": "prior INVALID; new ACTIVE (renewed)",
+    "workflow": "SEPARATED_REAUTHORIZATION",
+    "actor": "Account Risk Operations",
+    "resulting_authority": "AUTH-DECISION-ACCOUNT-2 v51",
+    "enforceable_boundary": "BOUNDARY-AUTH-DECISION-ACCOUNT-2",
+    "technical_validity": {
+      "status": "PASS"
+    },
+    "recommendation": "",
+    "confidence": null,
+    "actual_execution": {
+      "result": "ALLOW",
+      "reason": "Architecture-robustness re-test of flagship finding S5-003: identical result under SEPARATED_REAUTHORIZATION. Because identityVerificationSucceeded is boolean and only \"true\" is ever the MATERIAL value in this scenario, this case (like S2-B01) cannot empirically distinguish \"RENEW substitutes the current value\" from \"RENEW is hardcoded to true\" -- both produce the same observation. Disclosed as a methodological limitation rather than resolved by assumption."
+    },
+    "expected_actual_comparison": {
+      "expected": "",
+      "comparison": ""
+    },
+    "control_assertion": "",
+    "application_validation": "",
+    "browser_validation": "",
+    "replay_result": "",
+    "independent_classification": "FAIL \u2014 CONCEPTUAL",
+    "independent_reasoning": "Architecture-robustness re-test of flagship finding S5-003: identical result under SEPARATED_REAUTHORIZATION. Because identityVerificationSucceeded is boolean and only \"true\" is ever the MATERIAL value in this scenario, this case (like S2-B01) cannot empirically distinguish \"RENEW substitutes the current value\" from \"RENEW is hardcoded to true\" -- both produce the same observation. Disclosed as a methodological limitation rather than resolved by assumption.",
+    "anomalies": "Same practical consequence as S5-003 (already-verified customer's account restriction silently re-authorized with zero scrutiny); mechanism ambiguous per above.",
+    "reproduction": "Scenario=Customer Account Restriction; identityVerificationSucceeded=true; disposition=RENEW; arch=SEPARATED; techValidity=PASS; Run.",
+    "evidence_source": "browser_observed_notes_derived"
+  },
+  {
+    "case_id": "S5-B02",
+    "scenario": "Customer Account Restriction",
+    "scenario_id": "ACCOUNT_RESTRICTION_V2",
+    "test_inputs": {
+      "architecture": "SEPARATED_REAUTHORIZATION",
+      "disposition": "SUSPEND",
+      "technical_validity": "PASS",
+      "condition_name": "",
+      "condition_value": "",
+      "governed_metric_or_basis": "",
+      "relevant_requested_value_or_scope": "identityVerificationSucceeded=true",
+      "expected_execution_selected_by_user": ""
+    },
+    "browser_selections": "identityVerificationSucceeded=true",
+    "materiality": {
+      "result": "MATERIAL"
+    },
+    "authority_state": "authority created, status SUSPENDED",
+    "workflow": "SEPARATED_REAUTHORIZATION",
+    "actor": "",
+    "resulting_authority": "AUTH-DECISION-ACCOUNT-2",
+    "enforceable_boundary": "none (suspended)",
+    "technical_validity": {
+      "status": "PASS"
+    },
+    "recommendation": "",
+    "confidence": null,
+    "actual_execution": {
+      "result": "BLOCK",
+      "reason": "SUSPEND under SEPARATED architecture matches the SAME_LAYER equivalent (S5-006): authority created but SUSPENDED, no enforceable boundary, BLOCK."
+    },
+    "expected_actual_comparison": {
+      "expected": "",
+      "comparison": ""
+    },
+    "control_assertion": "",
+    "application_validation": "",
+    "browser_validation": "",
+    "replay_result": "",
+    "independent_classification": "PASS",
+    "independent_reasoning": "SUSPEND under SEPARATED architecture matches the SAME_LAYER equivalent (S5-006): authority created but SUSPENDED, no enforceable boundary, BLOCK.",
+    "anomalies": "",
+    "reproduction": "Scenario=Customer Account Restriction; identityVerificationSucceeded=true; disposition=SUSPEND; arch=SEPARATED; Run.",
+    "evidence_source": "browser_observed_notes_derived"
+  }
+]

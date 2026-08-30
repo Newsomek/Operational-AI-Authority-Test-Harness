@@ -1,0 +1,478 @@
+{
+  "testRunner": {
+    "bodyText": "Operational AI Authority Test Harness Tests\nState Foundation\n\n18/18 tests passed.\n\nAuthority ACTIVE may become INVALID: PASS\nInvalid authority cannot be reactivated in place: PASS\nSuspended authority cannot be reactivated in place: PASS\nStable workflow may enter materiality review: PASS\nMaterial review may require reauthorization: PASS\nReauthorization may enter decision pending: PASS\nDecision pending may complete: PASS\nStable workflow cannot jump directly to decision complete: PASS\nExecution may be allowed only from not attempted: PASS\nAllowed execution may become executed: PASS\nBlocked execution cannot become executed directly: PASS\nExecution reset is explicit and does not reuse prior permission: PASS\nTyped integer predicate validates: PASS\nMalformed predicate fails closed: PASS\nUnknown predicate operator is rejected: PASS\nMoney validation rejects non-integer cents: PASS\nTyped IN predicate accepts an array of matching string values: PASS\nAuthority scope normalization adapts the V1 refund scope: PASS\nAuthority and Boundary Translation\n\n23/23 authority/boundary tests passed.\n\nRENEW creates a new ACTIVE authority version: PASS\nRENEW boundary preserves configured 500 dollar maximum: PASS\nNARROW creates new authority with manually specified 250 dollar maximum: PASS\nNARROW creates a boundary rather than an execution result: PASS\nCONDITION creates ACTIVE authority with typed required condition: PASS\nCONDITION may explicitly reauthorize changed scope while adding a typed condition: PASS\nValid CONDITION authority produces enforceable boundary: PASS\nMalformed required condition does not create boundary: PASS\nTRANSFER creates no authority: PASS\nREFUSE creates no authority: PASS\nSUSPEND creates a new SUSPENDED authority version: PASS\nSUSPENDED authority creates no executable boundary: PASS\nUnsupported disposition is rejected: PASS\nNARROW requires explicit new scope: PASS\nTRANSFER requires explicit new decision owner: PASS\nAuthority translation result is deeply frozen: PASS\nBoundary result is deeply frozen: PASS\nNARROW rejects scope broadening even when another dimension is stricter: PASS\nNARROW rejects scope with no stricter enforceable boundary: PASS\nNARROW rejects broadening of amount: PASS\nRENEW may replace authority scope with a new governed metric: PASS\nGeneric NARROW accepts a stricter comparable constraint: PASS\nGeneric NARROW rejects a governed metric change as incomparable: PASS\nBoundary to Execution Evaluation\n\n22/22 execution tests passed.\n\n400 dollar refund is allowed under 500 dollar boundary: PASS\n400 dollar refund is blocked under 250 dollar boundary: PASS\nBoundary amount equality is allowed: PASS\nAction outside boundary action type is blocked: PASS\nRisk outside authority scope is blocked: PASS\nTransaction age above boundary is blocked: PASS\nMissing boundary blocks execution: PASS\nNon-enforceable boundary blocks execution: PASS\nUnsupported technical capability blocks execution: PASS\nTechnical validity FAIL blocks execution: PASS\nTechnical validity PASS does not override insufficient authority: PASS\nRequired boolean condition satisfied allows execution: PASS\nRequired boolean condition false blocks execution: PASS\nMissing required condition value blocks execution: PASS\nMalformed required condition blocks execution: PASS\nOptional condition is not required for execution: PASS\nExecution result references evaluated boundary: PASS\nExecution result is deeply frozen: PASS\nExecution reports all simultaneous enforceable-boundary violations: PASS\nGeneric integer scope constraint allows an in-bound action: PASS\nGeneric integer scope constraint blocks an out-of-bound action: PASS\nGeneric IN scope constraint evaluates string membership: PASS\nMateriality Evaluation\n\n10/10 materiality tests passed.\n\nLOW to MEDIUM is MATERIAL when configured: PASS\nLOW to HIGH is MATERIAL when configured: PASS\nUnmatched change defaults to NON_MATERIAL: PASS\nConfigured ambiguous transition produces AMBIGUOUS: PASS\nAMBIGUOUS takes precedence over MATERIAL when both rules match: PASS\nNumeric threshold crossing above configured value can be MATERIAL: PASS\nRemaining below numeric threshold does not match crossing rule: PASS\nUnknown materiality rule type is rejected: PASS\nUnknown materiality result is rejected: PASS\nMateriality result is frozen: PASS\nCore End-to-End Chain\n\n8/8 core end-to-end tests passed.\n\nMaterial change invalidates prior authority while revalidation may remain PASS: PASS\nMaterial change routes workflow to REAUTHORIZATION_REQUIRED: PASS\nRENEW restores a 500 dollar authority but blocks MEDIUM-risk action outside unchanged scope: PASS\nNARROW to 250 dollars blocks the same 400 dollar requested action: PASS\nRENEW with changed authority covering MEDIUM risk permits same 400 dollar action: PASS\nSUSPEND creates no executable boundary and remains blocked: PASS\nREFUSE creates no new authority and execution remains blocked: PASS\nTRANSFER creates no executable authority and remains blocked: PASS\nGovernance Decision Controls\n\n16/16 governance-control tests passed.\n\nActor with REAUTHORIZE capability is authorized: PASS\nActor without REAUTHORIZE capability is rejected: PASS\nRequired available reviewed evidence passes validation: PASS\nMissing required evidence fails validation: PASS\nUnavailable required evidence fails validation: PASS\nRequired evidence not reviewed fails validation: PASS\nAuthorized actor with required evidence may create valid governance decision: PASS\nUnauthorized actor cannot complete governance decision: PASS\nGovernance decision without required evidence review is invalid: PASS\nDisallowed disposition is rejected by configured policy: PASS\nValid decision translates through AuthorityEngine: PASS\nInvalid decision produces no authority translation: PASS\nEvent log assigns deterministic sequence numbers: PASS\nEvent log does not trust caller supplied sequence: PASS\nStored events are frozen: PASS\nEvent log listing returns detached frozen evidence: PASS\nComplete Run Evidence\n\n15/15 run-evidence tests passed.\n\nGoverned NARROW run produces BLOCK from 250 dollar boundary: PASS\nExpected versus actual is MATCH when predeclared BLOCK occurs: PASS\nPrediction mismatch remains distinct from control correctness: PASS\nInvalidation control assertion passes independently: PASS\nBoundary maximum assertion passes independently: PASS\nEvent log is deterministically sequenced: PASS\nEvent chain contains authority invalidation before authority creation: PASS\nEvent chain contains boundary creation before execution evaluation: PASS\nRun evidence preserves authority history: PASS\nRun evidence identifies boundary used by execution attempt: PASS\nRun record is deeply frozen: PASS\nExpected result must be declared before execution: PASS\nControl assertion with deliberately wrong normative maximum fails: PASS\nUnauthorized decision produces no authority and remains blocked: PASS\nReplay inputs contain causal commands rather than recorded result commands: PASS\nDeterministic Replay\n\n10/10 replay tests passed.\n\nReplay inputs contain only the permitted causal command vocabulary: PASS\nReplay recomputes the same actual execution result: PASS\nReplay recomputes authority history equivalently: PASS\nReplay recomputes execution attempts equivalently: PASS\nReplay recomputes prediction comparison equivalently: PASS\nReplay recomputes control assertion results equivalently: PASS\nComplete deterministic evidence comparison reports equivalent: PASS\nRecorded actual result is not used as replay command: PASS\nReplay preserves explicit baseline control action and generic control assertion: PASS\nRecorded control result is not used to force replay assertion result: PASS\nArchitecture Topology\n\n10/10 architecture tests passed.\n\nSame-layer reauthorization keeps decision in operational layer: PASS\nSeparated reauthorization moves decision to designated authority owner: PASS\nSeparated reauthorization requires distinct actors: PASS\nSeparated architecture requires designated owner: PASS\nArchitecture result contains no execution result: PASS\nArchitecture result contains no enforceable boundary: PASS\nArchitecture result contains no authority record: PASS\nSeparated result preserves movement reason: PASS\nArchitecture terminology remains neutral: PASS\nArchitecture result is frozen: PASS\nImport and Export\n\n14/14 import/export tests passed.\n\nScenario export uses plain JSON: PASS\nScenario export includes required governing sections: PASS\nScenario export preserves schema and scenario versions: PASS\nExported scenario can be imported: PASS\nRaw compatible scenario JSON can be imported: PASS\nVersion 2 scenario schema survives export/import without downgrade: PASS\nVersion 2 raw scenario JSON is accepted: PASS\nMalformed JSON import is rejected: PASS\nUnsupported scenario schema is rejected: PASS\nRun export uses plain JSON: PASS\nRun export preserves required evidence sections: PASS\nExpected-versus-actual remains separate from control assertion result: PASS\nScenario filename is deterministic: PASS\nRun filename is deterministic: PASS\nBaseline Control Run\n\n13/13 baseline control-run tests passed.\n\nBaseline control run creates boundary from initial ACTIVE authority: PASS\nBaseline control run uses initial LOW-risk conditions: PASS\nBaseline control run evaluates 400 dollar request: PASS\nBaseline 500 dollar authority ALLOWs 400 dollar refund: PASS\nBaseline expected ALLOW matches actual ALLOW: PASS\nBaseline boundary assertion passes independently: PASS\nBaseline control requires explicit initial technical validity: PASS\nBaseline control requires ACTIVE initial authority: PASS\nGoverned experiment contains baseline control before changed-authority result: PASS\nRun evidence retains the baseline control run: PASS\nGeneric baseline control uses explicit pre-change requested action: PASS\nGeneric control assertion blocks an action outside a typed boundary: PASS\nProcurement control demonstrates faithful enforcement of the configured equipment-price metric: PASS\nVersion 2 Scenario Catalog Tests\n\n14/14 scenario catalog tests passed.\n\nCatalog exposes exactly the five agreed Version 2 scenarios: PASS\nAutomated Refund runs through the shared same-layer authority pipeline: PASS\nPrivileged System Access runs through the shared same-layer authority pipeline: PASS\nWorkforce Shift Assignment runs through the shared same-layer authority pipeline: PASS\nProcurement / Total Acquisition Cost runs through the shared same-layer authority pipeline: PASS\nCustomer Account Restriction runs through the shared same-layer authority pipeline: PASS\nAutomated Refund architecture comparison does not manufacture an execution difference: PASS\nPrivileged System Access architecture comparison does not manufacture an execution difference: PASS\nWorkforce Shift Assignment architecture comparison does not manufacture an execution difference: PASS\nProcurement / Total Acquisition Cost architecture comparison does not manufacture an execution difference: PASS\nCustomer Account Restriction architecture comparison does not manufacture an execution difference: PASS\nProcurement old metric faithfully allows Vendor C while renewed total-cost metric blocks it: PASS\nProcurement UI distinguishes observed materiality metric from resulting authority metric: PASS\nAccount restriction confidence remains 97 percent while authority still blocks: PASS\nVersion 2 Comprehensive Internal Matrix\n\n213/213 Version 2 matrix tests passed.\n\nMATERIAL-REFUND-V2-SAME-RENEW-PASS | Automated Refund | RENEW | PASS: PASS - control=ALLOW; materiality=MATERIAL; actual=ALLOW; expected=ALLOW; actor=ACTOR-OPERATIONS\nMATERIAL-REFUND-V2-SAME-RENEW-FAIL | Automated Refund | RENEW | FAIL: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-OPERATIONS\nMATERIAL-REFUND-V2-SAME-NARROW-PASS | Automated Refund | NARROW | PASS: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-OPERATIONS\nMATERIAL-REFUND-V2-SAME-NARROW-FAIL | Automated Refund | NARROW | FAIL: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-OPERATIONS\nMATERIAL-REFUND-V2-SAME-CONDITION-PASS | Automated Refund | CONDITION | PASS: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-OPERATIONS\nMATERIAL-REFUND-V2-SAME-CONDITION-FAIL | Automated Refund | CONDITION | FAIL: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-OPERATIONS\nMATERIAL-REFUND-V2-SAME-TRANSFER-PASS | Automated Refund | TRANSFER | PASS: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-OPERATIONS\nMATERIAL-REFUND-V2-SAME-TRANSFER-FAIL | Automated Refund | TRANSFER | FAIL: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-OPERATIONS\nMATERIAL-REFUND-V2-SAME-SUSPEND-PASS | Automated Refund | SUSPEND | PASS: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-OPERATIONS\nMATERIAL-REFUND-V2-SAME-SUSPEND-FAIL | Automated Refund | SUSPEND | FAIL: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-OPERATIONS\nMATERIAL-REFUND-V2-SAME-REFUSE-PASS | Automated Refund | REFUSE | PASS: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-OPERATIONS\nMATERIAL-REFUND-V2-SAME-REFUSE-FAIL | Automated Refund | REFUSE | FAIL: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-OPERATIONS\nMATERIAL-REFUND-V2-SEPARATED-RENEW-PASS | Automated Refund | RENEW | PASS: PASS - control=ALLOW; materiality=MATERIAL; actual=ALLOW; expected=ALLOW; actor=ACTOR-GOVERNANCE\nMATERIAL-REFUND-V2-SEPARATED-RENEW-FAIL | Automated Refund | RENEW | FAIL: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-GOVERNANCE\nMATERIAL-REFUND-V2-SEPARATED-NARROW-PASS | Automated Refund | NARROW | PASS: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-GOVERNANCE\nMATERIAL-REFUND-V2-SEPARATED-NARROW-FAIL | Automated Refund | NARROW | FAIL: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-GOVERNANCE\nMATERIAL-REFUND-V2-SEPARATED-CONDITION-PASS | Automated Refund | CONDITION | PASS: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-GOVERNANCE\nMATERIAL-REFUND-V2-SEPARATED-CONDITION-FAIL | Automated Refund | CONDITION | FAIL: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-GOVERNANCE\nMATERIAL-REFUND-V2-SEPARATED-TRANSFER-PASS | Automated Refund | TRANSFER | PASS: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-GOVERNANCE\nMATERIAL-REFUND-V2-SEPARATED-TRANSFER-FAIL | Automated Refund | TRANSFER | FAIL: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-GOVERNANCE\nMATERIAL-REFUND-V2-SEPARATED-SUSPEND-PASS | Automated Refund | SUSPEND | PASS: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-GOVERNANCE\nMATERIAL-REFUND-V2-SEPARATED-SUSPEND-FAIL | Automated Refund | SUSPEND | FAIL: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-GOVERNANCE\nMATERIAL-REFUND-V2-SEPARATED-REFUSE-PASS | Automated Refund | REFUSE | PASS: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-GOVERNANCE\nMATERIAL-REFUND-V2-SEPARATED-REFUSE-FAIL | Automated Refund | REFUSE | FAIL: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-GOVERNANCE\nMATERIAL-ACCESS-V2-SAME-RENEW-PASS | Privileged System Access | RENEW | PASS: PASS - control=ALLOW; materiality=MATERIAL; actual=ALLOW; expected=ALLOW; actor=ACTOR-ACCESS-OPS\nMATERIAL-ACCESS-V2-SAME-RENEW-FAIL | Privileged System Access | RENEW | FAIL: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-ACCESS-OPS\nMATERIAL-ACCESS-V2-SAME-NARROW-PASS | Privileged System Access | NARROW | PASS: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-ACCESS-OPS\nMATERIAL-ACCESS-V2-SAME-NARROW-FAIL | Privileged System Access | NARROW | FAIL: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-ACCESS-OPS\nMATERIAL-ACCESS-V2-SAME-CONDITION-PASS | Privileged System Access | CONDITION | PASS: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-ACCESS-OPS\nMATERIAL-ACCESS-V2-SAME-CONDITION-FAIL | Privileged System Access | CONDITION | FAIL: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-ACCESS-OPS\nMATERIAL-ACCESS-V2-SAME-TRANSFER-PASS | Privileged System Access | TRANSFER | PASS: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-ACCESS-OPS\nMATERIAL-ACCESS-V2-SAME-TRANSFER-FAIL | Privileged System Access | TRANSFER | FAIL: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-ACCESS-OPS\nMATERIAL-ACCESS-V2-SAME-SUSPEND-PASS | Privileged System Access | SUSPEND | PASS: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-ACCESS-OPS\nMATERIAL-ACCESS-V2-SAME-SUSPEND-FAIL | Privileged System Access | SUSPEND | FAIL: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-ACCESS-OPS\nMATERIAL-ACCESS-V2-SAME-REFUSE-PASS | Privileged System Access | REFUSE | PASS: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-ACCESS-OPS\nMATERIAL-ACCESS-V2-SAME-REFUSE-FAIL | Privileged System Access | REFUSE | FAIL: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-ACCESS-OPS\nMATERIAL-ACCESS-V2-SEPARATED-RENEW-PASS | Privileged System Access | RENEW | PASS: PASS - control=ALLOW; materiality=MATERIAL; actual=ALLOW; expected=ALLOW; actor=ACTOR-DATA-SECURITY\nMATERIAL-ACCESS-V2-SEPARATED-RENEW-FAIL | Privileged System Access | RENEW | FAIL: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-DATA-SECURITY\nMATERIAL-ACCESS-V2-SEPARATED-NARROW-PASS | Privileged System Access | NARROW | PASS: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-DATA-SECURITY\nMATERIAL-ACCESS-V2-SEPARATED-NARROW-FAIL | Privileged System Access | NARROW | FAIL: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-DATA-SECURITY\nMATERIAL-ACCESS-V2-SEPARATED-CONDITION-PASS | Privileged System Access | CONDITION | PASS: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-DATA-SECURITY\nMATERIAL-ACCESS-V2-SEPARATED-CONDITION-FAIL | Privileged System Access | CONDITION | FAIL: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-DATA-SECURITY\nMATERIAL-ACCESS-V2-SEPARATED-TRANSFER-PASS | Privileged System Access | TRANSFER | PASS: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-DATA-SECURITY\nMATERIAL-ACCESS-V2-SEPARATED-TRANSFER-FAIL | Privileged System Access | TRANSFER | FAIL: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-DATA-SECURITY\nMATERIAL-ACCESS-V2-SEPARATED-SUSPEND-PASS | Privileged System Access | SUSPEND | PASS: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-DATA-SECURITY\nMATERIAL-ACCESS-V2-SEPARATED-SUSPEND-FAIL | Privileged System Access | SUSPEND | FAIL: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-DATA-SECURITY\nMATERIAL-ACCESS-V2-SEPARATED-REFUSE-PASS | Privileged System Access | REFUSE | PASS: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-DATA-SECURITY\nMATERIAL-ACCESS-V2-SEPARATED-REFUSE-FAIL | Privileged System Access | REFUSE | FAIL: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-DATA-SECURITY\nMATERIAL-WORKFORCE-V2-SAME-RENEW-PASS | Workforce Shift Assignment | RENEW | PASS: PASS - control=ALLOW; materiality=MATERIAL; actual=ALLOW; expected=ALLOW; actor=ACTOR-WORKFORCE-SCHEDULING\nMATERIAL-WORKFORCE-V2-SAME-RENEW-FAIL | Workforce Shift Assignment | RENEW | FAIL: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-WORKFORCE-SCHEDULING\nMATERIAL-WORKFORCE-V2-SAME-NARROW-PASS | Workforce Shift Assignment | NARROW | PASS: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-WORKFORCE-SCHEDULING\nMATERIAL-WORKFORCE-V2-SAME-NARROW-FAIL | Workforce Shift Assignment | NARROW | FAIL: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-WORKFORCE-SCHEDULING\nMATERIAL-WORKFORCE-V2-SAME-CONDITION-PASS | Workforce Shift Assignment | CONDITION | PASS: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-WORKFORCE-SCHEDULING\nMATERIAL-WORKFORCE-V2-SAME-CONDITION-FAIL | Workforce Shift Assignment | CONDITION | FAIL: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-WORKFORCE-SCHEDULING\nMATERIAL-WORKFORCE-V2-SAME-TRANSFER-PASS | Workforce Shift Assignment | TRANSFER | PASS: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-WORKFORCE-SCHEDULING\nMATERIAL-WORKFORCE-V2-SAME-TRANSFER-FAIL | Workforce Shift Assignment | TRANSFER | FAIL: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-WORKFORCE-SCHEDULING\nMATERIAL-WORKFORCE-V2-SAME-SUSPEND-PASS | Workforce Shift Assignment | SUSPEND | PASS: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-WORKFORCE-SCHEDULING\nMATERIAL-WORKFORCE-V2-SAME-SUSPEND-FAIL | Workforce Shift Assignment | SUSPEND | FAIL: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-WORKFORCE-SCHEDULING\nMATERIAL-WORKFORCE-V2-SAME-REFUSE-PASS | Workforce Shift Assignment | REFUSE | PASS: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-WORKFORCE-SCHEDULING\nMATERIAL-WORKFORCE-V2-SAME-REFUSE-FAIL | Workforce Shift Assignment | REFUSE | FAIL: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-WORKFORCE-SCHEDULING\nMATERIAL-WORKFORCE-V2-SEPARATED-RENEW-PASS | Workforce Shift Assignment | RENEW | PASS: PASS - control=ALLOW; materiality=MATERIAL; actual=ALLOW; expected=ALLOW; actor=ACTOR-WORKFORCE-OPS\nMATERIAL-WORKFORCE-V2-SEPARATED-RENEW-FAIL | Workforce Shift Assignment | RENEW | FAIL: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-WORKFORCE-OPS\nMATERIAL-WORKFORCE-V2-SEPARATED-NARROW-PASS | Workforce Shift Assignment | NARROW | PASS: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-WORKFORCE-OPS\nMATERIAL-WORKFORCE-V2-SEPARATED-NARROW-FAIL | Workforce Shift Assignment | NARROW | FAIL: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-WORKFORCE-OPS\nMATERIAL-WORKFORCE-V2-SEPARATED-CONDITION-PASS | Workforce Shift Assignment | CONDITION | PASS: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-WORKFORCE-OPS\nMATERIAL-WORKFORCE-V2-SEPARATED-CONDITION-FAIL | Workforce Shift Assignment | CONDITION | FAIL: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-WORKFORCE-OPS\nMATERIAL-WORKFORCE-V2-SEPARATED-TRANSFER-PASS | Workforce Shift Assignment | TRANSFER | PASS: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-WORKFORCE-OPS\nMATERIAL-WORKFORCE-V2-SEPARATED-TRANSFER-FAIL | Workforce Shift Assignment | TRANSFER | FAIL: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-WORKFORCE-OPS\nMATERIAL-WORKFORCE-V2-SEPARATED-SUSPEND-PASS | Workforce Shift Assignment | SUSPEND | PASS: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-WORKFORCE-OPS\nMATERIAL-WORKFORCE-V2-SEPARATED-SUSPEND-FAIL | Workforce Shift Assignment | SUSPEND | FAIL: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-WORKFORCE-OPS\nMATERIAL-WORKFORCE-V2-SEPARATED-REFUSE-PASS | Workforce Shift Assignment | REFUSE | PASS: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-WORKFORCE-OPS\nMATERIAL-WORKFORCE-V2-SEPARATED-REFUSE-FAIL | Workforce Shift Assignment | REFUSE | FAIL: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-WORKFORCE-OPS\nMATERIAL-PROCUREMENT-V2-SAME-RENEW-PASS | Procurement / Total Acquisition Cost | RENEW | PASS: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-PROCUREMENT\nMATERIAL-PROCUREMENT-V2-SAME-RENEW-FAIL | Procurement / Total Acquisition Cost | RENEW | FAIL: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-PROCUREMENT\nMATERIAL-PROCUREMENT-V2-SAME-NARROW-PASS | Procurement / Total Acquisition Cost | NARROW | PASS: PASS - control=ALLOW; materiality=MATERIAL; actual=ALLOW; expected=ALLOW; actor=ACTOR-PROCUREMENT\nMATERIAL-PROCUREMENT-V2-SAME-NARROW-FAIL | Procurement / Total Acquisition Cost | NARROW | FAIL: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-PROCUREMENT\nMATERIAL-PROCUREMENT-V2-SAME-CONDITION-PASS | Procurement / Total Acquisition Cost | CONDITION | PASS: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-PROCUREMENT\nMATERIAL-PROCUREMENT-V2-SAME-CONDITION-FAIL | Procurement / Total Acquisition Cost | CONDITION | FAIL: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-PROCUREMENT\nMATERIAL-PROCUREMENT-V2-SAME-TRANSFER-PASS | Procurement / Total Acquisition Cost | TRANSFER | PASS: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-PROCUREMENT\nMATERIAL-PROCUREMENT-V2-SAME-TRANSFER-FAIL | Procurement / Total Acquisition Cost | TRANSFER | FAIL: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-PROCUREMENT\nMATERIAL-PROCUREMENT-V2-SAME-SUSPEND-PASS | Procurement / Total Acquisition Cost | SUSPEND | PASS: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-PROCUREMENT\nMATERIAL-PROCUREMENT-V2-SAME-SUSPEND-FAIL | Procurement / Total Acquisition Cost | SUSPEND | FAIL: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-PROCUREMENT\nMATERIAL-PROCUREMENT-V2-SAME-REFUSE-PASS | Procurement / Total Acquisition Cost | REFUSE | PASS: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-PROCUREMENT\nMATERIAL-PROCUREMENT-V2-SAME-REFUSE-FAIL | Procurement / Total Acquisition Cost | REFUSE | FAIL: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-PROCUREMENT\nMATERIAL-PROCUREMENT-V2-SEPARATED-RENEW-PASS | Procurement / Total Acquisition Cost | RENEW | PASS: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-FINANCE-PROCUREMENT\nMATERIAL-PROCUREMENT-V2-SEPARATED-RENEW-FAIL | Procurement / Total Acquisition Cost | RENEW | FAIL: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-FINANCE-PROCUREMENT\nMATERIAL-PROCUREMENT-V2-SEPARATED-NARROW-PASS | Procurement / Total Acquisition Cost | NARROW | PASS: PASS - control=ALLOW; materiality=MATERIAL; actual=ALLOW; expected=ALLOW; actor=ACTOR-FINANCE-PROCUREMENT\nMATERIAL-PROCUREMENT-V2-SEPARATED-NARROW-FAIL | Procurement / Total Acquisition Cost | NARROW | FAIL: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-FINANCE-PROCUREMENT\nMATERIAL-PROCUREMENT-V2-SEPARATED-CONDITION-PASS | Procurement / Total Acquisition Cost | CONDITION | PASS: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-FINANCE-PROCUREMENT\nMATERIAL-PROCUREMENT-V2-SEPARATED-CONDITION-FAIL | Procurement / Total Acquisition Cost | CONDITION | FAIL: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-FINANCE-PROCUREMENT\nMATERIAL-PROCUREMENT-V2-SEPARATED-TRANSFER-PASS | Procurement / Total Acquisition Cost | TRANSFER | PASS: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-FINANCE-PROCUREMENT\nMATERIAL-PROCUREMENT-V2-SEPARATED-TRANSFER-FAIL | Procurement / Total Acquisition Cost | TRANSFER | FAIL: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-FINANCE-PROCUREMENT\nMATERIAL-PROCUREMENT-V2-SEPARATED-SUSPEND-PASS | Procurement / Total Acquisition Cost | SUSPEND | PASS: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-FINANCE-PROCUREMENT\nMATERIAL-PROCUREMENT-V2-SEPARATED-SUSPEND-FAIL | Procurement / Total Acquisition Cost | SUSPEND | FAIL: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-FINANCE-PROCUREMENT\nMATERIAL-PROCUREMENT-V2-SEPARATED-REFUSE-PASS | Procurement / Total Acquisition Cost | REFUSE | PASS: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-FINANCE-PROCUREMENT\nMATERIAL-PROCUREMENT-V2-SEPARATED-REFUSE-FAIL | Procurement / Total Acquisition Cost | REFUSE | FAIL: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-FINANCE-PROCUREMENT\nMATERIAL-ACCOUNT-RESTRICTION-V2-SAME-RENEW-PASS | Customer Account Restriction | RENEW | PASS: PASS - control=ALLOW; materiality=MATERIAL; actual=ALLOW; expected=ALLOW; actor=ACTOR-ACCOUNT-RISK\nMATERIAL-ACCOUNT-RESTRICTION-V2-SAME-RENEW-FAIL | Customer Account Restriction | RENEW | FAIL: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-ACCOUNT-RISK\nMATERIAL-ACCOUNT-RESTRICTION-V2-SAME-NARROW-PASS | Customer Account Restriction | NARROW | PASS: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-ACCOUNT-RISK\nMATERIAL-ACCOUNT-RESTRICTION-V2-SAME-NARROW-FAIL | Customer Account Restriction | NARROW | FAIL: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-ACCOUNT-RISK\nMATERIAL-ACCOUNT-RESTRICTION-V2-SAME-CONDITION-PASS | Customer Account Restriction | CONDITION | PASS: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-ACCOUNT-RISK\nMATERIAL-ACCOUNT-RESTRICTION-V2-SAME-CONDITION-FAIL | Customer Account Restriction | CONDITION | FAIL: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-ACCOUNT-RISK\nMATERIAL-ACCOUNT-RESTRICTION-V2-SAME-TRANSFER-PASS | Customer Account Restriction | TRANSFER | PASS: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-ACCOUNT-RISK\nMATERIAL-ACCOUNT-RESTRICTION-V2-SAME-TRANSFER-FAIL | Customer Account Restriction | TRANSFER | FAIL: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-ACCOUNT-RISK\nMATERIAL-ACCOUNT-RESTRICTION-V2-SAME-SUSPEND-PASS | Customer Account Restriction | SUSPEND | PASS: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-ACCOUNT-RISK\nMATERIAL-ACCOUNT-RESTRICTION-V2-SAME-SUSPEND-FAIL | Customer Account Restriction | SUSPEND | FAIL: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-ACCOUNT-RISK\nMATERIAL-ACCOUNT-RESTRICTION-V2-SAME-REFUSE-PASS | Customer Account Restriction | REFUSE | PASS: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-ACCOUNT-RISK\nMATERIAL-ACCOUNT-RESTRICTION-V2-SAME-REFUSE-FAIL | Customer Account Restriction | REFUSE | FAIL: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-ACCOUNT-RISK\nMATERIAL-ACCOUNT-RESTRICTION-V2-SEPARATED-RENEW-PASS | Customer Account Restriction | RENEW | PASS: PASS - control=ALLOW; materiality=MATERIAL; actual=ALLOW; expected=ALLOW; actor=ACTOR-ACCOUNT-REVIEW\nMATERIAL-ACCOUNT-RESTRICTION-V2-SEPARATED-RENEW-FAIL | Customer Account Restriction | RENEW | FAIL: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-ACCOUNT-REVIEW\nMATERIAL-ACCOUNT-RESTRICTION-V2-SEPARATED-NARROW-PASS | Customer Account Restriction | NARROW | PASS: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-ACCOUNT-REVIEW\nMATERIAL-ACCOUNT-RESTRICTION-V2-SEPARATED-NARROW-FAIL | Customer Account Restriction | NARROW | FAIL: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-ACCOUNT-REVIEW\nMATERIAL-ACCOUNT-RESTRICTION-V2-SEPARATED-CONDITION-PASS | Customer Account Restriction | CONDITION | PASS: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-ACCOUNT-REVIEW\nMATERIAL-ACCOUNT-RESTRICTION-V2-SEPARATED-CONDITION-FAIL | Customer Account Restriction | CONDITION | FAIL: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-ACCOUNT-REVIEW\nMATERIAL-ACCOUNT-RESTRICTION-V2-SEPARATED-TRANSFER-PASS | Customer Account Restriction | TRANSFER | PASS: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-ACCOUNT-REVIEW\nMATERIAL-ACCOUNT-RESTRICTION-V2-SEPARATED-TRANSFER-FAIL | Customer Account Restriction | TRANSFER | FAIL: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-ACCOUNT-REVIEW\nMATERIAL-ACCOUNT-RESTRICTION-V2-SEPARATED-SUSPEND-PASS | Customer Account Restriction | SUSPEND | PASS: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-ACCOUNT-REVIEW\nMATERIAL-ACCOUNT-RESTRICTION-V2-SEPARATED-SUSPEND-FAIL | Customer Account Restriction | SUSPEND | FAIL: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-ACCOUNT-REVIEW\nMATERIAL-ACCOUNT-RESTRICTION-V2-SEPARATED-REFUSE-PASS | Customer Account Restriction | REFUSE | PASS: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-ACCOUNT-REVIEW\nMATERIAL-ACCOUNT-RESTRICTION-V2-SEPARATED-REFUSE-FAIL | Customer Account Restriction | REFUSE | FAIL: PASS - control=ALLOW; materiality=MATERIAL; actual=BLOCK; expected=BLOCK; actor=ACTOR-ACCOUNT-REVIEW\nNONMATERIAL-REFUND-V2-SAME-PASS | Automated Refund non-material change skips reauthorization: PASS - materiality=NON_MATERIAL; skipped=true; actual=ALLOW; expected=ALLOW\nNONMATERIAL-REFUND-V2-SAME-FAIL | Automated Refund non-material change skips reauthorization: PASS - materiality=NON_MATERIAL; skipped=true; actual=BLOCK; expected=BLOCK\nNONMATERIAL-REFUND-V2-SEPARATED-PASS | Automated Refund non-material change skips reauthorization: PASS - materiality=NON_MATERIAL; skipped=true; actual=ALLOW; expected=ALLOW\nNONMATERIAL-REFUND-V2-SEPARATED-FAIL | Automated Refund non-material change skips reauthorization: PASS - materiality=NON_MATERIAL; skipped=true; actual=BLOCK; expected=BLOCK\nNONMATERIAL-ACCESS-V2-SAME-PASS | Privileged System Access non-material change skips reauthorization: PASS - materiality=NON_MATERIAL; skipped=true; actual=ALLOW; expected=ALLOW\nNONMATERIAL-ACCESS-V2-SAME-FAIL | Privileged System Access non-material change skips reauthorization: PASS - materiality=NON_MATERIAL; skipped=true; actual=BLOCK; expected=BLOCK\nNONMATERIAL-ACCESS-V2-SEPARATED-PASS | Privileged System Access non-material change skips reauthorization: PASS - materiality=NON_MATERIAL; skipped=true; actual=ALLOW; expected=ALLOW\nNONMATERIAL-ACCESS-V2-SEPARATED-FAIL | Privileged System Access non-material change skips reauthorization: PASS - materiality=NON_MATERIAL; skipped=true; actual=BLOCK; expected=BLOCK\nNONMATERIAL-WORKFORCE-V2-SAME-PASS | Workforce Shift Assignment non-material change skips reauthorization: PASS - materiality=NON_MATERIAL; skipped=true; actual=ALLOW; expected=ALLOW\nNONMATERIAL-WORKFORCE-V2-SAME-FAIL | Workforce Shift Assignment non-material change skips reauthorization: PASS - materiality=NON_MATERIAL; skipped=true; actual=BLOCK; expected=BLOCK\nNONMATERIAL-WORKFORCE-V2-SEPARATED-PASS | Workforce Shift Assignment non-material change skips reauthorization: PASS - materiality=NON_MATERIAL; skipped=true; actual=ALLOW; expected=ALLOW\nNONMATERIAL-WORKFORCE-V2-SEPARATED-FAIL | Workforce Shift Assignment non-material change skips reauthorization: PASS - materiality=NON_MATERIAL; skipped=true; actual=BLOCK; expected=BLOCK\nNONMATERIAL-PROCUREMENT-V2-SAME-PASS | Procurement / Total Acquisition Cost non-material change skips reauthorization: PASS - materiality=NON_MATERIAL; skipped=true; actual=ALLOW; expected=ALLOW\nNONMATERIAL-PROCUREMENT-V2-SAME-FAIL | Procurement / Total Acquisition Cost non-material change skips reauthorization: PASS - materiality=NON_MATERIAL; skipped=true; actual=BLOCK; expected=BLOCK\nNONMATERIAL-PROCUREMENT-V2-SEPARATED-PASS | Procurement / Total Acquisition Cost non-material change skips reauthorization: PASS - materiality=NON_MATERIAL; skipped=true; actual=ALLOW; expected=ALLOW\nNONMATERIAL-PROCUREMENT-V2-SEPARATED-FAIL | Procurement / Total Acquisition Cost non-material change skips reauthorization: PASS - materiality=NON_MATERIAL; skipped=true; actual=BLOCK; expected=BLOCK\nNONMATERIAL-ACCOUNT-RESTRICTION-V2-SAME-PASS | Customer Account Restriction non-material change skips reauthorization: PASS - materiality=NON_MATERIAL; skipped=true; actual=ALLOW; expected=ALLOW\nNONMATERIAL-ACCOUNT-RESTRICTION-V2-SAME-FAIL | Customer Account Restriction non-material change skips reauthorization: PASS - materiality=NON_MATERIAL; skipped=true; actual=BLOCK; expected=BLOCK\nNONMATERIAL-ACCOUNT-RESTRICTION-V2-SEPARATED-PASS | Customer Account Restriction non-material change skips reauthorization: PASS - materiality=NON_MATERIAL; skipped=true; actual=ALLOW; expected=ALLOW\nNONMATERIAL-ACCOUNT-RESTRICTION-V2-SEPARATED-FAIL | Customer Account Restriction non-material change skips reauthorization: PASS - materiality=NON_MATERIAL; skipped=true; actual=BLOCK; expected=BLOCK\nCONDITION-CAUSAL-REFUND-V2-SAME | Automated Refund typed CONDITION is causally decisive: PASS - false=BLOCK; true=ALLOW\nCONDITION-CAUSAL-REFUND-V2-SEPARATED | Automated Refund typed CONDITION is causally decisive: PASS - false=BLOCK; true=ALLOW\nCONDITION-CAUSAL-ACCESS-V2-SAME | Privileged System Access typed CONDITION is causally decisive: PASS - false=BLOCK; true=ALLOW\nCONDITION-CAUSAL-ACCESS-V2-SEPARATED | Privileged System Access typed CONDITION is causally decisive: PASS - false=BLOCK; true=ALLOW\nCONDITION-CAUSAL-WORKFORCE-V2-SAME | Workforce Shift Assignment typed CONDITION is causally decisive: PASS - false=BLOCK; true=ALLOW\nCONDITION-CAUSAL-WORKFORCE-V2-SEPARATED | Workforce Shift Assignment typed CONDITION is causally decisive: PASS - false=BLOCK; true=ALLOW\nCONDITION-CAUSAL-PROCUREMENT-V2-SAME | Procurement / Total Acquisition Cost typed CONDITION is causally decisive: PASS - false=BLOCK; true=ALLOW\nCONDITION-CAUSAL-PROCUREMENT-V2-SEPARATED | Procurement / Total Acquisition Cost typed CONDITION is causally decisive: PASS - false=BLOCK; true=ALLOW\nCONDITION-CAUSAL-ACCOUNT-RESTRICTION-V2-SAME | Customer Account Restriction typed CONDITION is causally decisive: PASS - false=BLOCK; true=ALLOW\nCONDITION-CAUSAL-ACCOUNT-RESTRICTION-V2-SEPARATED | Customer Account Restriction typed CONDITION is causally decisive: PASS - false=BLOCK; true=ALLOW\nBOUNDARY-RELATIONSHIP-REFUND-V2-SAME | Automated Refund enforceable boundary distinguishes inside from outside: PASS - inside=ALLOW; outside=BLOCK\nBOUNDARY-RELATIONSHIP-REFUND-V2-SEPARATED | Automated Refund enforceable boundary distinguishes inside from outside: PASS - inside=ALLOW; outside=BLOCK\nBOUNDARY-RELATIONSHIP-ACCESS-V2-SAME | Privileged System Access enforceable boundary distinguishes inside from outside: PASS - inside=ALLOW; outside=BLOCK\nBOUNDARY-RELATIONSHIP-ACCESS-V2-SEPARATED | Privileged System Access enforceable boundary distinguishes inside from outside: PASS - inside=ALLOW; outside=BLOCK\nBOUNDARY-RELATIONSHIP-WORKFORCE-V2-SAME | Workforce Shift Assignment enforceable boundary distinguishes inside from outside: PASS - inside=ALLOW; outside=BLOCK\nBOUNDARY-RELATIONSHIP-WORKFORCE-V2-SEPARATED | Workforce Shift Assignment enforceable boundary distinguishes inside from outside: PASS - inside=ALLOW; outside=BLOCK\nBOUNDARY-RELATIONSHIP-PROCUREMENT-V2-SAME | Procurement / Total Acquisition Cost enforceable boundary distinguishes inside from outside: PASS - inside=ALLOW; outside=BLOCK\nBOUNDARY-RELATIONSHIP-PROCUREMENT-V2-SEPARATED | Procurement / Total Acquisition Cost enforceable boundary distinguishes inside from outside: PASS - inside=ALLOW; outside=BLOCK\nBOUNDARY-RELATIONSHIP-ACCOUNT-RESTRICTION-V2-SAME | Customer Account Restriction enforceable boundary distinguishes inside from outside: PASS - inside=ALLOW; outside=BLOCK\nBOUNDARY-RELATIONSHIP-ACCOUNT-RESTRICTION-V2-SEPARATED | Customer Account Restriction enforceable boundary distinguishes inside from outside: PASS - inside=ALLOW; outside=BLOCK\nPREDICTION-INDEPENDENCE-REFUND-V2-SAME | Automated Refund expected-result prediction does not control execution: PASS - actual=ALLOW; prediction=MISMATCH\nPREDICTION-INDEPENDENCE-REFUND-V2-SEPARATED | Automated Refund expected-result prediction does not control execution: PASS - actual=ALLOW; prediction=MISMATCH\nPREDICTION-INDEPENDENCE-ACCESS-V2-SAME | Privileged System Access expected-result prediction does not control execution: PASS - actual=ALLOW; prediction=MISMATCH\nPREDICTION-INDEPENDENCE-ACCESS-V2-SEPARATED | Privileged System Access expected-result prediction does not control execution: PASS - actual=ALLOW; prediction=MISMATCH\nPREDICTION-INDEPENDENCE-WORKFORCE-V2-SAME | Workforce Shift Assignment expected-result prediction does not control execution: PASS - actual=ALLOW; prediction=MISMATCH\nPREDICTION-INDEPENDENCE-WORKFORCE-V2-SEPARATED | Workforce Shift Assignment expected-result prediction does not control execution: PASS - actual=ALLOW; prediction=MISMATCH\nPREDICTION-INDEPENDENCE-PROCUREMENT-V2-SAME | Procurement / Total Acquisition Cost expected-result prediction does not control execution: PASS - actual=ALLOW; prediction=MISMATCH\nPREDICTION-INDEPENDENCE-PROCUREMENT-V2-SEPARATED | Procurement / Total Acquisition Cost expected-result prediction does not control execution: PASS - actual=ALLOW; prediction=MISMATCH\nPREDICTION-INDEPENDENCE-ACCOUNT-RESTRICTION-V2-SAME | Customer Account Restriction expected-result prediction does not control execution: PASS - actual=ALLOW; prediction=MISMATCH\nPREDICTION-INDEPENDENCE-ACCOUNT-RESTRICTION-V2-SEPARATED | Customer Account Restriction expected-result prediction does not control execution: PASS - actual=ALLOW; prediction=MISMATCH\nCONFIDENCE-INDEPENDENCE-ACCOUNT-SAME | Account restriction confidence does not create or preserve authority: PASS - highConfidence=BLOCK; lowConfidence=BLOCK\nCONFIDENCE-INDEPENDENCE-ACCOUNT-SEPARATED | Account restriction confidence does not create or preserve authority: PASS - highConfidence=BLOCK; lowConfidence=BLOCK\nIMPORT-EXPORT-REFUND-V2 | Automated Refund import/export preserves scenario identity and governed result: PASS - importedId=REFUND-V2; original=BLOCK; imported=BLOCK\nIMPORT-EXPORT-ACCESS-V2 | Privileged System Access import/export preserves scenario identity and governed result: PASS - importedId=ACCESS-V2; original=BLOCK; imported=BLOCK\nIMPORT-EXPORT-WORKFORCE-V2 | Workforce Shift Assignment import/export preserves scenario identity and governed result: PASS - importedId=WORKFORCE-V2; original=BLOCK; imported=BLOCK\nIMPORT-EXPORT-PROCUREMENT-V2 | Procurement / Total Acquisition Cost import/export preserves scenario identity and governed result: PASS - importedId=PROCUREMENT-V2; original=BLOCK; imported=BLOCK\nIMPORT-EXPORT-ACCOUNT-RESTRICTION-V2 | Customer Account Restriction import/export preserves scenario identity and governed result: PASS - importedId=ACCOUNT-RESTRICTION-V2; original=BLOCK; imported=BLOCK\nREPLAY-DOMAIN-REFUND-V2 | Automated Refund domain replay remains equivalent: PASS - equivalent=true\nREPLAY-DOMAIN-ACCESS-V2 | Privileged System Access domain replay remains equivalent: PASS - equivalent=true\nREPLAY-DOMAIN-WORKFORCE-V2 | Workforce Shift Assignment domain replay remains equivalent: PASS - equivalent=true\nREPLAY-DOMAIN-PROCUREMENT-V2 | Procurement / Total Acquisition Cost domain replay remains equivalent: PASS - equivalent=true\nREPLAY-DOMAIN-ACCOUNT-RESTRICTION-V2 | Customer Account Restriction domain replay remains equivalent: PASS - equivalent=true\nARCHITECTURE-PAIR-REFUND-V2-RENEW | Automated Refund RENEW architecture attribution is explicit without manufactured execution difference: PASS - sameActor=ACTOR-OPERATIONS; separatedActor=ACTOR-GOVERNANCE; sameResult=ALLOW; separatedResult=ALLOW\nARCHITECTURE-PAIR-REFUND-V2-NARROW | Automated Refund NARROW architecture attribution is explicit without manufactured execution difference: PASS - sameActor=ACTOR-OPERATIONS; separatedActor=ACTOR-GOVERNANCE; sameResult=BLOCK; separatedResult=BLOCK\nARCHITECTURE-PAIR-REFUND-V2-CONDITION | Automated Refund CONDITION architecture attribution is explicit without manufactured execution difference: PASS - sameActor=ACTOR-OPERATIONS; separatedActor=ACTOR-GOVERNANCE; sameResult=BLOCK; separatedResult=BLOCK\nARCHITECTURE-PAIR-REFUND-V2-TRANSFER | Automated Refund TRANSFER architecture attribution is explicit without manufactured execution difference: PASS - sameActor=ACTOR-OPERATIONS; separatedActor=ACTOR-GOVERNANCE; sameResult=BLOCK; separatedResult=BLOCK\nARCHITECTURE-PAIR-REFUND-V2-SUSPEND | Automated Refund SUSPEND architecture attribution is explicit without manufactured execution difference: PASS - sameActor=ACTOR-OPERATIONS; separatedActor=ACTOR-GOVERNANCE; sameResult=BLOCK; separatedResult=BLOCK\nARCHITECTURE-PAIR-REFUND-V2-REFUSE | Automated Refund REFUSE architecture attribution is explicit without manufactured execution difference: PASS - sameActor=ACTOR-OPERATIONS; separatedActor=ACTOR-GOVERNANCE; sameResult=BLOCK; separatedResult=BLOCK\nARCHITECTURE-PAIR-ACCESS-V2-RENEW | Privileged System Access RENEW architecture attribution is explicit without manufactured execution difference: PASS - sameActor=ACTOR-ACCESS-OPS; separatedActor=ACTOR-DATA-SECURITY; sameResult=ALLOW; separatedResult=ALLOW\nARCHITECTURE-PAIR-ACCESS-V2-NARROW | Privileged System Access NARROW architecture attribution is explicit without manufactured execution difference: PASS - sameActor=ACTOR-ACCESS-OPS; separatedActor=ACTOR-DATA-SECURITY; sameResult=BLOCK; separatedResult=BLOCK\nARCHITECTURE-PAIR-ACCESS-V2-CONDITION | Privileged System Access CONDITION architecture attribution is explicit without manufactured execution difference: PASS - sameActor=ACTOR-ACCESS-OPS; separatedActor=ACTOR-DATA-SECURITY; sameResult=BLOCK; separatedResult=BLOCK\nARCHITECTURE-PAIR-ACCESS-V2-TRANSFER | Privileged System Access TRANSFER architecture attribution is explicit without manufactured execution difference: PASS - sameActor=ACTOR-ACCESS-OPS; separatedActor=ACTOR-DATA-SECURITY; sameResult=BLOCK; separatedResult=BLOCK\nARCHITECTURE-PAIR-ACCESS-V2-SUSPEND | Privileged System Access SUSPEND architecture attribution is explicit without manufactured execution difference: PASS - sameActor=ACTOR-ACCESS-OPS; separatedActor=ACTOR-DATA-SECURITY; sameResult=BLOCK; separatedResult=BLOCK\nARCHITECTURE-PAIR-ACCESS-V2-REFUSE | Privileged System Access REFUSE architecture attribution is explicit without manufactured execution difference: PASS - sameActor=ACTOR-ACCESS-OPS; separatedActor=ACTOR-DATA-SECURITY; sameResult=BLOCK; separatedResult=BLOCK\nARCHITECTURE-PAIR-WORKFORCE-V2-RENEW | Workforce Shift Assignment RENEW architecture attribution is explicit without manufactured execution difference: PASS - sameActor=ACTOR-WORKFORCE-SCHEDULING; separatedActor=ACTOR-WORKFORCE-OPS; sameResult=ALLOW; separatedResult=ALLOW\nARCHITECTURE-PAIR-WORKFORCE-V2-NARROW | Workforce Shift Assignment NARROW architecture attribution is explicit without manufactured execution difference: PASS - sameActor=ACTOR-WORKFORCE-SCHEDULING; separatedActor=ACTOR-WORKFORCE-OPS; sameResult=BLOCK; separatedResult=BLOCK\nARCHITECTURE-PAIR-WORKFORCE-V2-CONDITION | Workforce Shift Assignment CONDITION architecture attribution is explicit without manufactured execution difference: PASS - sameActor=ACTOR-WORKFORCE-SCHEDULING; separatedActor=ACTOR-WORKFORCE-OPS; sameResult=BLOCK; separatedResult=BLOCK\nARCHITECTURE-PAIR-WORKFORCE-V2-TRANSFER | Workforce Shift Assignment TRANSFER architecture attribution is explicit without manufactured execution difference: PASS - sameActor=ACTOR-WORKFORCE-SCHEDULING; separatedActor=ACTOR-WORKFORCE-OPS; sameResult=BLOCK; separatedResult=BLOCK\nARCHITECTURE-PAIR-WORKFORCE-V2-SUSPEND | Workforce Shift Assignment SUSPEND architecture attribution is explicit without manufactured execution difference: PASS - sameActor=ACTOR-WORKFORCE-SCHEDULING; separatedActor=ACTOR-WORKFORCE-OPS; sameResult=BLOCK; separatedResult=BLOCK\nARCHITECTURE-PAIR-WORKFORCE-V2-REFUSE | Workforce Shift Assignment REFUSE architecture attribution is explicit without manufactured execution difference: PASS - sameActor=ACTOR-WORKFORCE-SCHEDULING; separatedActor=ACTOR-WORKFORCE-OPS; sameResult=BLOCK; separatedResult=BLOCK\nARCHITECTURE-PAIR-PROCUREMENT-V2-RENEW | Procurement / Total Acquisition Cost RENEW architecture attribution is explicit without manufactured execution difference: PASS - sameActor=ACTOR-PROCUREMENT; separatedActor=ACTOR-FINANCE-PROCUREMENT; sameResult=BLOCK; separatedResult=BLOCK\nARCHITECTURE-PAIR-PROCUREMENT-V2-NARROW | Procurement / Total Acquisition Cost NARROW architecture attribution is explicit without manufactured execution difference: PASS - sameActor=ACTOR-PROCUREMENT; separatedActor=ACTOR-FINANCE-PROCUREMENT; sameResult=ALLOW; separatedResult=ALLOW\nARCHITECTURE-PAIR-PROCUREMENT-V2-CONDITION | Procurement / Total Acquisition Cost CONDITION architecture attribution is explicit without manufactured execution difference: PASS - sameActor=ACTOR-PROCUREMENT; separatedActor=ACTOR-FINANCE-PROCUREMENT; sameResult=BLOCK; separatedResult=BLOCK\nARCHITECTURE-PAIR-PROCUREMENT-V2-TRANSFER | Procurement / Total Acquisition Cost TRANSFER architecture attribution is explicit without manufactured execution difference: PASS - sameActor=ACTOR-PROCUREMENT; separatedActor=ACTOR-FINANCE-PROCUREMENT; sameResult=BLOCK; separatedResult=BLOCK\nARCHITECTURE-PAIR-PROCUREMENT-V2-SUSPEND | Procurement / Total Acquisition Cost SUSPEND architecture attribution is explicit without manufactured execution difference: PASS - sameActor=ACTOR-PROCUREMENT; separatedActor=ACTOR-FINANCE-PROCUREMENT; sameResult=BLOCK; separatedResult=BLOCK\nARCHITECTURE-PAIR-PROCUREMENT-V2-REFUSE | Procurement / Total Acquisition Cost REFUSE architecture attribution is explicit without manufactured execution difference: PASS - sameActor=ACTOR-PROCUREMENT; separatedActor=ACTOR-FINANCE-PROCUREMENT; sameResult=BLOCK; separatedResult=BLOCK\nARCHITECTURE-PAIR-ACCOUNT-RESTRICTION-V2-RENEW | Customer Account Restriction RENEW architecture attribution is explicit without manufactured execution difference: PASS - sameActor=ACTOR-ACCOUNT-RISK; separatedActor=ACTOR-ACCOUNT-REVIEW; sameResult=ALLOW; separatedResult=ALLOW\nARCHITECTURE-PAIR-ACCOUNT-RESTRICTION-V2-NARROW | Customer Account Restriction NARROW architecture attribution is explicit without manufactured execution difference: PASS - sameActor=ACTOR-ACCOUNT-RISK; separatedActor=ACTOR-ACCOUNT-REVIEW; sameResult=BLOCK; separatedResult=BLOCK\nARCHITECTURE-PAIR-ACCOUNT-RESTRICTION-V2-CONDITION | Customer Account Restriction CONDITION architecture attribution is explicit without manufactured execution difference: PASS - sameActor=ACTOR-ACCOUNT-RISK; separatedActor=ACTOR-ACCOUNT-REVIEW; sameResult=BLOCK; separatedResult=BLOCK\nARCHITECTURE-PAIR-ACCOUNT-RESTRICTION-V2-TRANSFER | Customer Account Restriction TRANSFER architecture attribution is explicit without manufactured execution difference: PASS - sameActor=ACTOR-ACCOUNT-RISK; separatedActor=ACTOR-ACCOUNT-REVIEW; sameResult=BLOCK; separatedResult=BLOCK\nARCHITECTURE-PAIR-ACCOUNT-RESTRICTION-V2-SUSPEND | Customer Account Restriction SUSPEND architecture attribution is explicit without manufactured execution difference: PASS - sameActor=ACTOR-ACCOUNT-RISK; separatedActor=ACTOR-ACCOUNT-REVIEW; sameResult=BLOCK; separatedResult=BLOCK\nARCHITECTURE-PAIR-ACCOUNT-RESTRICTION-V2-REFUSE | Customer Account Restriction REFUSE architecture attribution is explicit without manufactured execution difference: PASS - sameActor=ACTOR-ACCOUNT-RISK; separatedActor=ACTOR-ACCOUNT-REVIEW; sameResult=BLOCK; separatedResult=BLOCK\nPROCUREMENT-WRONG-METRIC-NARROW | Procurement can faithfully narrow the wrong metric and still authorize Vendor C: PASS - actual=ALLOW; field=equipmentPriceCents\nNegative and Attack Tests\n\n16/16 negative / attack tests passed.\n\nATTACK: execute while authority is INVALID remains blocked: PASS\nATTACK: materiality actor cannot become separated decision owner merely by being detector: PASS\nATTACK: original operational owner cannot bypass required escalation: PASS\nATTACK: missing disposition where reauthorization is required remains blocked: PASS\nATTACK: unauthorized designated actor cannot modify authority: PASS\nATTACK: prior authority is not reused after material change: PASS\nATTACK: missing required evidence prevents reauthorization: PASS\nATTACK: required evidence present but not reviewed prevents reauthorization: PASS\nATTACK: 400 dollar execution after NARROW to 250 is blocked: PASS\nATTACK: recommendation outside authority does not create permission: PASS\nATTACK: increasing recommendation confidence does not change authority or execution: PASS\nATTACK: technical revalidation PASS while authority invalid remains blocked: PASS\nDEPENDENCY: NARROW does not itself imply BLOCK when boundary permits action: PASS\nATTACK: tampered recorded replay result cannot force recomputed execution: PASS\nATTACK: unsupported imported schema is rejected: PASS\nSEPARATION: inserting a different approver without downstream outcome difference is not reported as superior: PASS\nAccessibility Verification\n\n8/8 accessibility tests passed.\n\nPage contains semantic main landmark: PASS\nInteractive controls use native keyboard-accessible elements: PASS\nScenario editor has associated label: PASS\nStatus region exposes live text status: PASS\nResult states are represented with text not color alone: PASS\nPrimary body contrast meets WCAG AA normal-text threshold: PASS\nButtons retain visible text labels: PASS\nHeadings provide navigable structure: PASS\nApplication UI Contract\n\n29/29 UI interaction tests passed.\n\nRun Experiment render targets are bound: PASS\nArchitecture comparison render targets are bound: PASS\nHuman-readable experiment story targets exist: PASS\nHuman-readable architecture comparison targets exist: PASS\nRaw deterministic evidence remains present beneath narrative: PASS\nPrimary controls explain what they do and when to use them: PASS\nMoney controls display dollars while scenario values remain cents: PASS\nHuman-readable story renders authoritative experiment values: PASS\nExperiment Story reports the executed change instead of stale scenario narrative: PASS\nScenario-specific controls replace prior scenario controls without stale remnants: PASS\nApplication controller is exposed: PASS\nStructured architecture controls exist: PASS\nReset control exists: PASS\nRaw JSON editor remains visible: PASS\nArchitecture selection remains a scenario input: PASS\nSeparated architecture also does not create execution result: PASS\nRecommendation and execution outputs remain separate: PASS\nAuthority and boundary outputs remain separate: PASS\nPrediction and control results remain separate: PASS\nStructured controls modify scenario data rather than output state: PASS\nArchitecture comparison button exists: PASS\nArchitecture comparison summary does not declare separated architecture superior: PASS\nExplain outputs are separate visible artifacts: PASS\nArchitecture comparison output is separate from execution result: PASS\nScenario import control exists: PASS\nScenario export control exists: PASS\nRun evidence export control exists: PASS\nImporting compatible scenario updates inputs but does not manufacture run evidence: PASS\nAll editable selections propagate without stale defaults: PASS",
+    "summaries": [
+      {
+        "passed": 18,
+        "total": 18,
+        "raw": "18/18 tests passed."
+      },
+      {
+        "passed": 23,
+        "total": 23,
+        "raw": "23/23 authority/boundary tests passed."
+      },
+      {
+        "passed": 22,
+        "total": 22,
+        "raw": "22/22 execution tests passed."
+      },
+      {
+        "passed": 10,
+        "total": 10,
+        "raw": "10/10 materiality tests passed."
+      },
+      {
+        "passed": 8,
+        "total": 8,
+        "raw": "8/8 core end-to-end tests passed."
+      },
+      {
+        "passed": 16,
+        "total": 16,
+        "raw": "16/16 governance-control tests passed."
+      },
+      {
+        "passed": 15,
+        "total": 15,
+        "raw": "15/15 run-evidence tests passed."
+      },
+      {
+        "passed": 10,
+        "total": 10,
+        "raw": "10/10 replay tests passed."
+      },
+      {
+        "passed": 10,
+        "total": 10,
+        "raw": "10/10 architecture tests passed."
+      },
+      {
+        "passed": 14,
+        "total": 14,
+        "raw": "14/14 import/export tests passed."
+      },
+      {
+        "passed": 13,
+        "total": 13,
+        "raw": "13/13 baseline control-run tests passed."
+      },
+      {
+        "passed": 14,
+        "total": 14,
+        "raw": "14/14 scenario catalog tests passed."
+      },
+      {
+        "passed": 213,
+        "total": 213,
+        "raw": "213/213 Version 2 matrix tests passed."
+      },
+      {
+        "passed": 16,
+        "total": 16,
+        "raw": "16/16 negative / attack tests passed."
+      },
+      {
+        "passed": 8,
+        "total": 8,
+        "raw": "8/8 accessibility tests passed."
+      },
+      {
+        "passed": 29,
+        "total": 29,
+        "raw": "29/29 UI interaction tests passed."
+      }
+    ],
+    "summaryCount": 16,
+    "failedSummaries": []
+  },
+  "focusedScenarioSwitching": {
+    "pass": true,
+    "optionCount": 5,
+    "options": [
+      {
+        "value": "REFUND-V2",
+        "text": "Automated Refund"
+      },
+      {
+        "value": "ACCESS-V2",
+        "text": "Privileged System Access"
+      },
+      {
+        "value": "WORKFORCE-V2",
+        "text": "Workforce Shift Assignment"
+      },
+      {
+        "value": "PROCUREMENT-V2",
+        "text": "Procurement / Total Acquisition Cost"
+      },
+      {
+        "value": "ACCOUNT-RESTRICTION-V2",
+        "text": "Customer Account Restriction"
+      }
+    ],
+    "transitionCount": 20,
+    "failureCount": 0,
+    "failures": [],
+    "transitions": [
+      {
+        "from": "REFUND-V2",
+        "to": "ACCESS-V2",
+        "fromIds": [],
+        "toIds": [
+          "access-context",
+          "access-ticket"
+        ],
+        "staleStillMounted": []
+      },
+      {
+        "from": "REFUND-V2",
+        "to": "WORKFORCE-V2",
+        "fromIds": [],
+        "toIds": [
+          "work-resulting-hours",
+          "work-overtime-approval"
+        ],
+        "staleStillMounted": []
+      },
+      {
+        "from": "REFUND-V2",
+        "to": "PROCUREMENT-V2",
+        "fromIds": [],
+        "toIds": [
+          "proc-metric",
+          "proc-equipment",
+          "proc-shipping",
+          "proc-total",
+          "proc-finance-approval"
+        ],
+        "staleStillMounted": []
+      },
+      {
+        "from": "REFUND-V2",
+        "to": "ACCOUNT-RESTRICTION-V2",
+        "fromIds": [],
+        "toIds": [
+          "account-identity",
+          "account-second-review"
+        ],
+        "staleStillMounted": []
+      },
+      {
+        "from": "ACCESS-V2",
+        "to": "REFUND-V2",
+        "fromIds": [
+          "access-context",
+          "access-ticket"
+        ],
+        "toIds": [],
+        "staleStillMounted": []
+      },
+      {
+        "from": "ACCESS-V2",
+        "to": "WORKFORCE-V2",
+        "fromIds": [
+          "access-context",
+          "access-ticket"
+        ],
+        "toIds": [
+          "work-resulting-hours",
+          "work-overtime-approval"
+        ],
+        "staleStillMounted": []
+      },
+      {
+        "from": "ACCESS-V2",
+        "to": "PROCUREMENT-V2",
+        "fromIds": [
+          "access-context",
+          "access-ticket"
+        ],
+        "toIds": [
+          "proc-metric",
+          "proc-equipment",
+          "proc-shipping",
+          "proc-total",
+          "proc-finance-approval"
+        ],
+        "staleStillMounted": []
+      },
+      {
+        "from": "ACCESS-V2",
+        "to": "ACCOUNT-RESTRICTION-V2",
+        "fromIds": [
+          "access-context",
+          "access-ticket"
+        ],
+        "toIds": [
+          "account-identity",
+          "account-second-review"
+        ],
+        "staleStillMounted": []
+      },
+      {
+        "from": "WORKFORCE-V2",
+        "to": "REFUND-V2",
+        "fromIds": [
+          "work-resulting-hours",
+          "work-overtime-approval"
+        ],
+        "toIds": [],
+        "staleStillMounted": []
+      },
+      {
+        "from": "WORKFORCE-V2",
+        "to": "ACCESS-V2",
+        "fromIds": [
+          "work-resulting-hours",
+          "work-overtime-approval"
+        ],
+        "toIds": [
+          "access-context",
+          "access-ticket"
+        ],
+        "staleStillMounted": []
+      },
+      {
+        "from": "WORKFORCE-V2",
+        "to": "PROCUREMENT-V2",
+        "fromIds": [
+          "work-resulting-hours",
+          "work-overtime-approval"
+        ],
+        "toIds": [
+          "proc-metric",
+          "proc-equipment",
+          "proc-shipping",
+          "proc-total",
+          "proc-finance-approval"
+        ],
+        "staleStillMounted": []
+      },
+      {
+        "from": "WORKFORCE-V2",
+        "to": "ACCOUNT-RESTRICTION-V2",
+        "fromIds": [
+          "work-resulting-hours",
+          "work-overtime-approval"
+        ],
+        "toIds": [
+          "account-identity",
+          "account-second-review"
+        ],
+        "staleStillMounted": []
+      },
+      {
+        "from": "PROCUREMENT-V2",
+        "to": "REFUND-V2",
+        "fromIds": [
+          "proc-metric",
+          "proc-equipment",
+          "proc-shipping",
+          "proc-total",
+          "proc-finance-approval"
+        ],
+        "toIds": [],
+        "staleStillMounted": []
+      },
+      {
+        "from": "PROCUREMENT-V2",
+        "to": "ACCESS-V2",
+        "fromIds": [
+          "proc-metric",
+          "proc-equipment",
+          "proc-shipping",
+          "proc-total",
+          "proc-finance-approval"
+        ],
+        "toIds": [
+          "access-context",
+          "access-ticket"
+        ],
+        "staleStillMounted": []
+      },
+      {
+        "from": "PROCUREMENT-V2",
+        "to": "WORKFORCE-V2",
+        "fromIds": [
+          "proc-metric",
+          "proc-equipment",
+          "proc-shipping",
+          "proc-total",
+          "proc-finance-approval"
+        ],
+        "toIds": [
+          "work-resulting-hours",
+          "work-overtime-approval"
+        ],
+        "staleStillMounted": []
+      },
+      {
+        "from": "PROCUREMENT-V2",
+        "to": "ACCOUNT-RESTRICTION-V2",
+        "fromIds": [
+          "proc-metric",
+          "proc-equipment",
+          "proc-shipping",
+          "proc-total",
+          "proc-finance-approval"
+        ],
+        "toIds": [
+          "account-identity",
+          "account-second-review"
+        ],
+        "staleStillMounted": []
+      },
+      {
+        "from": "ACCOUNT-RESTRICTION-V2",
+        "to": "REFUND-V2",
+        "fromIds": [
+          "account-identity",
+          "account-second-review"
+        ],
+        "toIds": [],
+        "staleStillMounted": []
+      },
+      {
+        "from": "ACCOUNT-RESTRICTION-V2",
+        "to": "ACCESS-V2",
+        "fromIds": [
+          "account-identity",
+          "account-second-review"
+        ],
+        "toIds": [
+          "access-context",
+          "access-ticket"
+        ],
+        "staleStillMounted": []
+      },
+      {
+        "from": "ACCOUNT-RESTRICTION-V2",
+        "to": "WORKFORCE-V2",
+        "fromIds": [
+          "account-identity",
+          "account-second-review"
+        ],
+        "toIds": [
+          "work-resulting-hours",
+          "work-overtime-approval"
+        ],
+        "staleStillMounted": []
+      },
+      {
+        "from": "ACCOUNT-RESTRICTION-V2",
+        "to": "PROCUREMENT-V2",
+        "fromIds": [
+          "account-identity",
+          "account-second-review"
+        ],
+        "toIds": [
+          "proc-metric",
+          "proc-equipment",
+          "proc-shipping",
+          "proc-total",
+          "proc-finance-approval"
+        ],
+        "staleStillMounted": []
+      }
+    ]
+  },
+  "requiredSummaryChecks": [
+    {
+      "passed": 18,
+      "total": 18,
+      "label": "tests passed",
+      "found": true
+    },
+    {
+      "passed": 23,
+      "total": 23,
+      "label": "authority/boundary tests passed",
+      "found": true
+    },
+    {
+      "passed": 22,
+      "total": 22,
+      "label": "execution tests passed",
+      "found": true
+    },
+    {
+      "passed": 10,
+      "total": 10,
+      "label": "materiality tests passed",
+      "found": true
+    },
+    {
+      "passed": 8,
+      "total": 8,
+      "label": "core end-to-end tests passed",
+      "found": true
+    },
+    {
+      "passed": 16,
+      "total": 16,
+      "label": "governance-control tests passed",
+      "found": true
+    },
+    {
+      "passed": 15,
+      "total": 15,
+      "label": "run-evidence tests passed",
+      "found": true
+    },
+    {
+      "passed": 10,
+      "total": 10,
+      "label": "replay tests passed",
+      "found": true
+    },
+    {
+      "passed": 10,
+      "total": 10,
+      "label": "architecture tests passed",
+      "found": true
+    },
+    {
+      "passed": 14,
+      "total": 14,
+      "label": "import/export tests passed",
+      "found": true
+    },
+    {
+      "passed": 13,
+      "total": 13,
+      "label": "baseline control-run tests passed",
+      "found": true
+    },
+    {
+      "passed": 14,
+      "total": 14,
+      "label": "scenario catalog tests passed",
+      "found": true
+    },
+    {
+      "passed": 213,
+      "total": 213,
+      "label": "Version 2 matrix tests passed",
+      "found": true
+    },
+    {
+      "passed": 16,
+      "total": 16,
+      "label": "negative / attack tests passed",
+      "found": true
+    },
+    {
+      "passed": 8,
+      "total": 8,
+      "label": "accessibility tests passed",
+      "found": true
+    },
+    {
+      "passed": 29,
+      "total": 29,
+      "label": "UI interaction tests passed",
+      "found": true
+    }
+  ]
+}

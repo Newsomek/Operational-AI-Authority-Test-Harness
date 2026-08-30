@@ -882,6 +882,55 @@
         }).join("; ");
     }
 
+    function formatObservedStoryValue(value) {
+        if (Array.isArray(value)) {
+            return value.join(", ");
+        }
+        if (typeof value === "boolean") {
+            return value ? "TRUE" : "FALSE";
+        }
+        if (value === null || typeof value === "undefined" || value === "") {
+            return "not recorded";
+        }
+        return String(value);
+    }
+
+    function observedChangeText(scenario, fallback) {
+        const rules = scenario && Array.isArray(scenario.materialityRules)
+            ? scenario.materialityRules
+            : [];
+        const rule = rules.length > 0 ? rules[0] : null;
+        const field = rule && rule.field;
+
+        if (
+            !field ||
+            !scenario ||
+            !scenario.priorConditions ||
+            !scenario.currentConditions ||
+            typeof scenario.priorConditions[field] === "undefined" ||
+            typeof scenario.currentConditions[field] === "undefined"
+        ) {
+            return fallback;
+        }
+
+        const labels = {
+            customerRisk: "Customer risk",
+            organizationalContext: "Organizational context",
+            resultingWeeklyHours: "Resulting weekly hours",
+            governedMetric: "Governed procurement metric",
+            identityVerificationSucceeded: "Identity verification succeeded"
+        };
+
+        return (
+            (labels[field] || field) +
+            " changed from " +
+            formatObservedStoryValue(scenario.priorConditions[field]) +
+            " to " +
+            formatObservedStoryValue(scenario.currentConditions[field]) +
+            "."
+        );
+    }
+
     function renderHumanSummary(result, scenario) {
         const control = result.controlRun || {};
         const changed = result.changedState || {};
@@ -963,7 +1012,10 @@
             ".";
 
         elements.storyChange.textContent =
-            (presentation.change || "A configured condition changed.") +
+            observedChangeText(
+                scenario,
+                presentation.change || "A configured condition changed."
+            ) +
             " The materiality engine classified the change as " +
             (materiality.result || "not recorded") + ".";
 

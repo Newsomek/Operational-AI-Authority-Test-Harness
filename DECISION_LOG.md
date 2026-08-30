@@ -283,3 +283,13 @@ A five-scenario UI is not sufficient evidence of model generalization. Version 2
 **Consequences**
 
 Version 2 receives a larger internal evidence base before independent review. The matrix also makes the procurement wrong-boundary result explicit rather than treating every ALLOW under a material change as an implementation defect.
+## D-024 - Independent-review adjudication does not redefine RENEW semantics
+
+Decision:
+A material change invalidates prior authority, but a subsequent valid RENEW decision may create a new authority version whose scope is explicitly configured for the post-change facts. RENEW is not required to reproduce the prior qualifying facts or to derive its boundary from the requested consequence.
+
+Reason:
+The independent V2 black-box review correctly observed several renewed scopes but initially treated configured post-change authority as an implementation defect. Source adjudication confirmed that these scopes are declared in scenario governance configuration and consumed by the shared authority engine. Changing RENEW to mirror the request or the prior qualifying fact would collapse the distinction between governance decision, resulting authority, and requested consequence.
+
+Consequence:
+Reviewer disagreement with the organizational decision encoded in a RENEW scope is evaluated as a conceptual or policy question unless the implementation fails to enforce the configured decision. UI evidence must make the executed facts and resulting authority boundary separately visible.

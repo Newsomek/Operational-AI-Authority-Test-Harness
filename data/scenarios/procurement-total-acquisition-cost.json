@@ -209,7 +209,7 @@
     "priorAuthority": "The old authority boundary evaluated equipmentPriceCents <= 175,000 dollars, under which Vendor C passed despite the higher delivered cost.",
     "authorityQuestion": "Can the current organizational authority still permit this consequence after the material change?",
     "consequence": "Execution controls whether the purchase/vendor action can proceed under the currently configured authority basis.",
-    "evidence": "This scenario demonstrates the difference between faithfully enforcing a boundary and having the right organizational boundary. The harness does not declare which procurement policy is economically correct.",
+    "evidence": "This scenario demonstrates the difference between faithfully enforcing a boundary and having the right organizational boundary. The metric selected above establishes the observed current basis for the materiality change; the selected governance disposition defines the resulting executable authority and may intentionally use a different metric. The harness does not declare which procurement policy is economically correct.",
     "block": "Purchase/vendor action not authorized.",
     "allow": "Purchase/vendor action authorized."
   },
@@ -224,7 +224,7 @@
           "equipmentPriceCents",
           "totalAcquisitionCostCents"
         ],
-        "help": "Which economic quantity the current organizational authority is defined over."
+        "help": "Observed current governance metric used for materiality. The selected disposition may create a resulting authority boundary over a different metric; inspect Resulting Authority and Enforceable Boundary."
       },
       {
         "id": "proc-equipment",

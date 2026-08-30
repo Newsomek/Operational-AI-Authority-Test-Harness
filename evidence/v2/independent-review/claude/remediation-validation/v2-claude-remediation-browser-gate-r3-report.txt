@@ -1,0 +1,27 @@
+=== VERSION 2 CLAUDE REMEDIATION BROWSER GATE R3 ===
+
+Parent HEAD: a9e62be26586a6fdc99f9da7829d20613c5c986a
+Oracle: rendered N/N suite summaries plus focused scenario-switch DOM verification
+
+VALIDATION
+Repository/tag/patch boundary: PASS
+git diff --check: PASS
+Standalone gate syntax: PASS
+Source syntax / Procurement JSON: PASS
+Suite summaries found: 16
+Suite summaries with passed != total: 0
+Required suite summaries verified: 16/16
+Scenario-switch transitions checked: 20/20
+Scenario-switch stale-control failures: 0
+Focused stale-control check: True
+
+ADJUDICATION CONSEQUENCE
+The prior R2 71-failure count was a validator false positive caused by matching the word FAIL inside passing test descriptions and FAIL-valued test inputs.
+The rendered suite summaries all report passed == total.
+Claude stale-control observations were not reproduced across all 20 ordered scenario transitions.
+
+SAFETY
+Authority/boundary/execution/materiality engines modified: NO
+Commit/tag/push/Pages mutation: NO
+
+RESULT: PASS

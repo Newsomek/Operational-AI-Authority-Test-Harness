@@ -582,3 +582,13 @@ This file records material implementation changes to the Operational AI Authorit
 - Made the procurement CONDITION template causally testable by allowing the configured total acquisition cost while requiring typed finance approval.
 - Extended scenario import/export compatibility so Version 2 scenario schema `2.0` is accepted and preserved while retaining the `1.0` export-envelope schema for backward compatibility.
 - Added Version 2 matrix documentation and preserved the requirement for independent external review before release/tag creation.
+## 2026-08-29 - Claude V2 independent-review remediation after source adjudication
+
+- Preserved Claude's independent black-box deliverables as raw evidence rather than rewriting the reviewer record.
+- Performed read-only source adjudication against frozen V2 commit a9e62be26586a6fdc99f9da7829d20613c5c986a before remediation.
+- Confirmed that Workforce, Privileged Access, Account Restriction, and Procurement RENEW/NARROW boundaries are scenario-configured authority decisions consumed by the shared authority engine, not hidden scenario-specific permission branches.
+- Did not change RENEW, NARROW, CONDITION, TRANSFER, SUSPEND, or REFUSE semantics.
+- Corrected Experiment Story rendering so the displayed "What changed" sentence is derived from the executed scenario state rather than a stale default presentation sentence.
+- Clarified Procurement UI language so the observed current metric used for materiality cannot be confused with the metric in the resulting executable authority created by the selected disposition.
+- Added regression coverage for stale narrative rendering, scenario-control replacement, and Procurement metric/boundary explanatory separation.
+- The two Claude stale-control browser observations remain subject to focused black-box reproduction; no speculative control-cleanup behavior change was introduced.
